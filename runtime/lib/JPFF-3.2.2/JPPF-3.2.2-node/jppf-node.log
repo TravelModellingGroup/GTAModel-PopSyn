@@ -1,0 +1,7 @@
+2019-04-02 08:13:07,743 [INFO ][org.jppf.node.NodeRunner.main(121)]: --------------------------------------------------------------------------------
+2019-04-02 08:13:07,743 [INFO ][org.jppf.node.NodeRunner.main(122)]: JPPF version information: Version: 3.2.2, Build number: 0907, Build date: 2013-01-27 07:16 CET
+2019-04-02 08:13:07,743 [INFO ][org.jppf.node.NodeRunner.main(123)]: starting node with PID=2740, UUID=205F1D4C-4E68-0DE7-E20B-B29D086AD5C7
+2019-04-02 08:13:07,743 [INFO ][org.jppf.node.NodeRunner.main(124)]: --------------------------------------------------------------------------------
+2019-04-02 08:13:08,808 [INFO ][org.jppf.classloader.ClassLoaderRequestHandler.run(161)]: maxBatchSize = 1
+2019-04-02 08:13:08,839 [INFO ][org.jppf.server.node.NodeExecutionManagerImpl.<init>(146)]: running 1 processing thread
+2019-04-02 08:13:08,839 [INFO ][org.jppf.server.node.NodeExecutionManagerImpl.createThreadManager(178)]: Using default thread manager

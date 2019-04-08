@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<targets>
+  <database>
+    <server>localhost</server>
+    <type>MYSQL</type>
+    <user>root</user>
+    <password>TashaRuns2019</password>
+    <dbName>gtamodelpopsyn</dbName>
+  </database>
+
+  <!-- Specify the PUMS data table names from which PUMA incidence tables are generated, as well as the field name for a unique identifier and the PUMS weight field name -->
+  <pumsData>
+    <idField>hhnum</idField>
+    <pumaFieldName>puma</pumaFieldName>
+    <metaFieldName>region</metaFieldName>
+    <tazFieldName>taz</tazFieldName>
+    <mazFieldName>maz</mazFieldName>
+    <weightField>weight</weightField>
+    <hhTable>hhtable</hhTable>
+    <persTable>perstable</persTable>
+    <pumsHhTable>hhtable</pumsHhTable>
+    <pumsHhIdField>hhnum</pumsHhIdField>
+    <pumsPersTable>perstable</pumsPersTable>
+    <maxExpansionFactor>45</maxExpansionFactor>
+    <synpopOutputHhTableName>synpop_hh</synpopOutputHhTableName>
+    <synpopOutputPersTableName>synpop_person</synpopOutputPersTableName>
+    <outputHhAttributes>EstimationHouseholdId, NumberOfPersons, Vehicles, IncomeClass</outputHhAttributes>
+    <outputPersAttributes>PersonNumber, Age, Sex, Occupation</outputPersAttributes>
+  </pumsData>
+
+  <!-- Specify the table name and name of id field for the MAZ control totals table -->
+  <mazControlsTable>
+    <mazTable id="1">
+      <table_name>control_totals_maz</table_name>
+      <id_field_name>maz</id_field_name>
+      <aggregation_level>maz</aggregation_level>
+    </mazTable>
+  </mazControlsTable>
+
+  <!-- Specify the table name and name of id field for the table of TAZ control totals that are not fields in the MAZ control total table -->
+  <tazControlsTable>
+    <tazTable id="1">
+      <table_name>control_totals_taz</table_name>
+      <id_field_name>taz</id_field_name>
+      <aggregation_level>taz</aggregation_level>
+    </tazTable>
+  </tazControlsTable>
+
+  <!-- Specify the table name, id field name, and aggregation level for each table of META control totals -->
+  <metaControlsTables>
+    <metaTable id="1">
+      <table_name>control_totals_meta</table_name>
+      <id_field_name>REGION</id_field_name>
+      <aggregation_level>PUMA</aggregation_level>
+    </metaTable>
+  </metaControlsTables>
+
+
+
+  <target>
+    <!-- Total households in each MAZ Control#0 -->
+    <marginals>
+      <id>0</id>
+      <description>MAZ Level Control: Total Number of Households</description>
+      <totalHouseholdsControl>true</totalHouseholdsControl>
+      <controlType>simple</controlType>
+      <geographyType>MAZ</geographyType>
+      <table>hhtable</table>
+      <constraint id="1">
+        <importance>1.0E9</importance>
+        <field>weight</field>
+        <controlField>tothh</controlField>
+        <type>interval</type>
+        <lo_value>0</lo_value>
+        <lo_type>open</lo_type>
+        <hi_value>infinity</hi_value>
+        <hi_type>open</hi_type>
+      </constraint>
+    </marginals>
+  </target>
+  
+  <target>
+    
+      <!-- define conditions for 4 persons per household controls for households -->
+   <marginals>
+          <id>1</id>
+      	<description>Number of Households by Persons per Household Category</description>
+          <geographyType>maz</geographyType>
+          <controlType>simple</controlType>
+          <table>hhtable</table>
+          <constraint id="1">
+          	<importance>10000</importance>
+          	<controlField>hhsize1</controlField>
+          	<field>NumberOfPersons</field>
+          	<type>equality</type>
+          	<value>1</value>
+   	</constraint>
+          <constraint id="2">
+          	<importance>10000</importance>
+          	<controlField>hhsize2</controlField>
+          	<field>NumberOfPersons</field>
+          	<type>equality</type>
+          	<value>2</value>
+   	</constraint>
+   	<constraint id="3">
+          	<importance>10000</importance>
+          	<controlField>hhsize3</controlField>
+          	<field>NumberOfPersons</field>
+          	<type>equality</type>
+          	<value>3</value>
+   	</constraint>
+          <constraint id="4">
+          	<importance>10000</importance>
+          	<controlField>hhsize4p</controlField>
+          	<field>NumberOfPersons</field>
+          	<type>interval</type>
+          	<lo_value>4</lo_value>
+          	<lo_type>closed</lo_type>
+          	<hi_value>infinity</hi_value>
+          	<hi_type>open</hi_type>
+   	</constraint>
+   </marginals>    
+  </target>
+  
+D
+
+  
+  <target>
+
+	<!-- define conditions for 10 Meta level occupation type controls -->
+	<marginals>
+		<id>3</id>
+		<description>Number of workers by occupation type</description>
+		<geographyType>maz</geographyType>
+		<controlType>count</controlType>
+		<table>perstable</table>
+		<constraint id="1">
+			<importance>500</importance>
+			<field>occupation</field>
+			<controlField>P</controlField>
+			<type>equality</type>
+			<value>P</value>
+		</constraint>
+		<constraint id="2">
+			<importance>500</importance>
+			<field>occupation</field>
+			<controlField>G</controlField>
+			<type>equality</type>
+			<value>G</value>
+		</constraint>
+		<constraint id="3">
+			<importance>500</importance>
+			<field>occupation</field>
+			<controlField>S</controlField>
+			<type>equality</type>
+			<value>S</value>
+		</constraint>
+		<constraint id="4">
+			<importance>500</importance>
+			<field>occupation</field>
+			<controlField>M</controlField>
+			<type>equality</type>
+			<value>M</value>
+		</constraint>
+	</marginals>
+	
+  </target>
+  
+ 
+   <target>
+    
+        <!-- define conditions for gender -->
+        <marginals>
+            <id>4</id>
+        	<description>population by gender</description>
+            <geographyType>maz</geographyType>
+            <controlType>count</controlType>
+            <table>perstable</table>
+           <constraint id="1">
+            	<importance>1000</importance>
+            	<field>sex</field>
+            	<controlField>male</controlField>
+            	<type>equality</type>
+			<value>M</value>
+    		</constraint>
+           <constraint id="2">
+            	<importance>1000</importance>
+            	<field>sex</field>
+            	<controlField>female</controlField>
+            	<type>equality</type>
+			<value>F</value>
+    		</constraint>
+           
+        </marginals>
+        
+    </target>  
+	
+	<target>
+    
+        <!-- define conditions for total population -->
+        <marginals>
+            <id>5</id>
+        	<description>population</description>
+            <geographyType>meta</geographyType>
+            <controlType>count</controlType>
+            <table>perstable</table>
+           <constraint id="1">
+            	<importance>1000</importance>
+            	<field>weight</field>
+            	<controlField>totpop</controlField>
+            	<type>interval</type>
+				<lo_value>0</lo_value>
+				<lo_type>open</lo_type>
+				<hi_value>999999999</hi_value>
+				<hi_type>open</hi_type>
+    		</constraint>
+           
+           
+        </marginals>
+        
+    </target>
+	
+	  <target>
+    
+      <!-- define conditions for 4 persons per household controls for households -->
+   <marginals>
+          <id>6</id>
+      	<description>Number of Households by Persons per Household Category</description>
+          <geographyType>maz</geographyType>
+          <controlType>simple</controlType>
+          <table>hhtable</table>
+          <constraint id="1">
+          	<importance>70</importance>
+          	<controlField>numv1</controlField>
+          	<field>NumberOfVehicles</field>
+          	<type>equality</type>
+          	<value>1</value>
+   	</constraint>
+          <constraint id="2">
+          	<importance>70</importance>
+          	<controlField>numv2</controlField>
+          	<field>NumberOfVehicles</field>
+          	<type>equality</type>
+          	<value>2</value>
+   	</constraint>
+   	<constraint id="3">
+          	<importance>70</importance>
+          	<controlField>numv3p</controlField>
+          	<field>NumberOfVehicles</field>
+          	<type>equality</type>
+          	<value>3</value>
+     	</constraint>
+   </marginals>    
+   </target>
+
+
+
+</targets>
