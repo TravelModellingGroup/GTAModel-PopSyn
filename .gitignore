@@ -3,3 +3,4 @@ output/
 venv/
 .idea/
 input/
+config.json

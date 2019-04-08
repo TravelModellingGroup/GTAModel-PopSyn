@@ -8,6 +8,12 @@ underlying tool used to generate a population.
 ### Requirements
 
  - MySql Server
- - Python 3+ with pandas
+ - Python 3+
+    - pandas
+    - mysql-connector
  
+### Configuration
+
+Create a copy of config.initial.json as config.json. Fill in the required database information 
+and runtime parameters in the newly copied config.
 
