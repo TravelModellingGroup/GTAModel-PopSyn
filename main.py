@@ -4,8 +4,8 @@ import pandas as pd
 
 # all original input files will remain intact, they will be processed into an input supported by the database
 
-households_base = pd.read_csv("data/EstimationHouseholds.csv")
-persons_base = pd.read_csv("data/EstimationPersons.csv")
+households_base = pd.read_csv("private/data/EstimationHouseholds.csv")
+persons_base = pd.read_csv("private/data/EstimationPersons.csv")
 
 households_base.rename(columns={'ExpansionFactor': 'weighth'}, inplace=True)
 persons_base.rename(columns={'ExpansionFactor': 'weightp'}, inplace=True)
@@ -212,9 +212,9 @@ persons_households.rename(columns={'weightp': 'weight'}, inplace=True)
 households_base = households_base[['HouseholdId', 'DwellingType', 'NumberOfPersons', 'Vehicles',
                                    'IncomeClass', 'weighth', 'puma']]
 
-persons_households.to_csv("input/persons_processed.csv", index=False)
+persons_households.to_csv("private/input/persons.csv", index=False)
 households_base.rename(columns={'weighth': 'weight'}, inplace=True)
 
-households_base.to_csv("input/households_processed.csv", index=False)
+households_base.to_csv("private/input/households.csv", index=False)
 
 sys.exit()

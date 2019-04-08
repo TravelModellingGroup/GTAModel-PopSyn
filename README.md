@@ -10,7 +10,7 @@ underlying tool used to generate a population.
  - MySql Server
  - Python 3+
     - pandas
-    - mysql-connector
+    - SQLAlchemy
  
 ### Configuration
 
