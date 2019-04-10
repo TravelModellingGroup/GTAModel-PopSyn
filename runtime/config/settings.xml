@@ -25,9 +25,9 @@
         <maxExpansionFactor>200</maxExpansionFactor>
         <synpopOutputHhTableName>synpop_hh</synpopOutputHhTableName>
         <synpopOutputPersTableName>synpop_person</synpopOutputPersTableName>
-        <outputHhAttributes>EstimationHouseholdId, DwellingType, NumberOfPersons, Vehicles, IncomeClass
+        <outputHhAttributes>HouseholdId, DwellingType, NumberOfPersons, Vehicles, IncomeClass
         </outputHhAttributes>
-        <outputPersAttributes>PersonNumber, Age, Sex, License, EmploymentStatus, Occupation, StudentStatus
+        <outputPersAttributes>PersonNumber, Age, Sex, License, EmploymentStatus, Occupation, StudentStatus,EmploymentZone
         </outputPersAttributes>
     </pumsData>
 
@@ -71,7 +71,7 @@
             <constraint id="1">
                 <importance>1.0E9</importance>
                 <field>weight</field>
-                <controlField>tothh</controlField>
+                <controlField>totalhh</controlField>
                 <type>interval</type>
                 <lo_value>0</lo_value>
                 <lo_type>open</lo_type>

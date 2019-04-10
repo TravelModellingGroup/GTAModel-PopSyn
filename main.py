@@ -7,6 +7,16 @@ import pandas as pd
 households_base = pd.read_csv("private/data/EstimationHouseholds.csv")
 persons_base = pd.read_csv("private/data/EstimationPersons.csv")
 
+zones = pd.read_csv("data/Zones.csv")[['Zone#', 'PD']].rename(columns={'PD': 'puma'})
+
+zone_map = dict()
+
+def map_zone(x):
+    if x['Zone#'] not in zone_map:
+        zone_map[x['Zone#']] = x['puma']
+    return x
+zones.apply(lambda x: map_zone(x),axis=1)
+
 households_base.rename(columns={'ExpansionFactor': 'weighth'}, inplace=True)
 persons_base.rename(columns={'ExpansionFactor': 'weightp'}, inplace=True)
 # create a new puma column for households and persons (popsyn3 requires this extra separation).
@@ -14,7 +24,7 @@ households_base['puma'] = 0
 
 # re order the columns
 
-
+# households_base = pd.merge(left=households_base, right=zones, left_on="HouseholdZone", right_on="Zone#")
 households_base.sort_values(by=['HouseholdZone'], ascending=True).reset_index(inplace=True)
 
 # <= 624 will be PUMA 0
@@ -24,8 +34,8 @@ households_base.sort_values(by=['HouseholdZone'], ascending=True).reset_index(in
 households_base.loc[households_base.HouseholdZone <= 624, 'puma'] = 1
 households_base.loc[households_base.HouseholdZone >= 625, 'puma'] = 2
 
-households_base = households_base[['HouseholdId', 'DwellingType', 'NumberOfPersons', 'Vehicles',
-                                   'IncomeClass', 'weighth', 'HouseholdZone', 'puma']]
+households_base = households_base[['HouseholdId',  'puma', 'DwellingType', 'NumberOfPersons', 'Vehicles',
+                                   'IncomeClass', 'weighth', 'HouseholdZone']]
 
 # aassign a valid income value to '7' to 1-6
 
@@ -39,9 +49,6 @@ households_base.IncomeClass = households_base.IncomeClass.apply(lambda x: np.ran
 persons_households = pd.merge(left=persons_base, right=households_base, left_on="HouseholdId", right_on="HouseholdId",
                               how="left")
 
-print(persons_households.shape)
-print(persons_base.shape)
-
 persons_households.loc[persons_households.HouseholdZone <= 624, 'puma'] = 1
 persons_households.loc[persons_households.HouseholdZone > 625, 'puma'] = 2
 
@@ -50,7 +57,7 @@ persons_households.loc[persons_households.HouseholdZone > 625, 'puma'] = 2
 persons_households.sort_values(by=['HouseholdId'], ascending=True).reset_index(inplace=True)
 persons_households.to_csv("input/households_persons_merge.csv")
 
-# print(persons_base.shape)
+print(persons_base.shape)
 
 print(persons_households.shape)
 
@@ -88,6 +95,8 @@ persons_households.sort_values(by=['HouseholdZone'], ascending=True).reset_index
 households_base = households_base[households_base.HouseholdZone < 6000]
 persons_households = persons_households[persons_households.HouseholdZone < 6000]
 hh_group = persons_households.copy().groupby(['HouseholdZone'])
+
+persons_households.loc[persons_households.EmploymentZone < 6000,'EmploymentZone'] = 0
 
 hh2_group = households_base.copy().groupby(['HouseholdZone'])
 
@@ -144,8 +153,11 @@ gta_maz['totpop'] = hh_group.weightp.sum().astype(int).to_list()
 
 gta_maz['totalhh'] = hh2_group.weighth.sum().astype(int).to_list()
 
+# gta_maz['puma'] = gta_maz['taz'].apply(lambda x: zone_map[x])
 gta_maz.loc[gta_maz.taz <= 624, 'puma'] = 1
 gta_maz.loc[gta_maz.taz > 624, 'puma'] = 2
+
+#gta_maz['puma'] = gta_maz['taz']
 gta_maz['region'] = 1
 
 gta_maz.to_csv("input/gtamodel_taz.csv", index=False)
@@ -200,21 +212,22 @@ gta_meta.to_csv("input/gtamodel_meta.csv", index=False)
 
 # region', 'puma', 'taz', 'maz', 'totalhh', 'totpop', 's=O', 's=S', 's=P', 'license=Y'  'license=N', 'e=O', 'e=F', 'e=P', 'e=J',
 # 'e=H', 'P', 'G', 'S', 'M', 'age0_14', 'age15_29', 'age30_44', 'age45_64'
-persons_households.loc[persons_households.HouseholdZone <= 624, 'puma'] = 1
-persons_households.loc[persons_households.HouseholdZone > 625, 'puma'] = 2
+# persons_households.loc[persons_households.HouseholdZone <= 624, 'puma'] = 1
+# persons_households.loc[persons_households.HouseholdZone > 625, 'puma'] = 2
 
-households_base.loc[households_base.HouseholdZone <= 624, 'puma'] = 1
-households_base.loc[households_base.HouseholdZone > 625, 'puma'] = 2
+# households_base.loc[households_base.HouseholdZone <= 624, 'puma'] = 1
+# households_base.loc[households_base.HouseholdZone > 625, 'puma'] = 2
 
-persons_households = persons_households[['HouseholdId', 'PersonNumber', 'Age', 'Sex', 'License', 'EmploymentStatus',
-                                         'Occupation', 'StudentStatus', 'weightp', 'puma']]
+persons_households = persons_households[
+    ['HouseholdId', 'puma', 'PersonNumber', 'Age', 'Sex', 'License', 'EmploymentStatus',
+     'Occupation', 'StudentStatus', 'EmploymentZone','weightp']]
 persons_households.rename(columns={'weightp': 'weight'}, inplace=True)
-households_base = households_base[['HouseholdId', 'DwellingType', 'NumberOfPersons', 'Vehicles',
-                                   'IncomeClass', 'weighth', 'puma']]
-
+households_base = households_base[['HouseholdId', 'puma', 'DwellingType', 'NumberOfPersons', 'Vehicles',
+                                   'IncomeClass', 'weighth']]
+persons_households.sort_values(by=['HouseholdId'], ascending=True).reset_index(inplace=True)
 persons_households.to_csv("private/input/persons.csv", index=False)
 households_base.rename(columns={'weighth': 'weight'}, inplace=True)
-
+households_base.sort_values(by=['HouseholdId'], ascending=True).reset_index(inplace=True)
 households_base.to_csv("private/input/households.csv", index=False)
 
 sys.exit()

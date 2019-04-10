@@ -16,11 +16,9 @@ StudentStatus VARCHAR(1),
 EmploymentZone INT DEFAULT 0,
 SchoolZone INT DEFAULT  0,
 ExpansionFactor INT )
-
 as SELECT tempId as HouseholdId, PersonNumber, Age, Sex, License, '0' as TransitPass,
-          EmploymentStatus, Occupation, StudentStatus, '0' as FreeParking, '0' as EmploymentZone,
+          EmploymentStatus, Occupation, StudentStatus, '0' as FreeParking,  EmploymentZone,
           '0' as SchoolZone, finalweight as ExpansionFactor
-
 from synpop_person order by tempId asc ;
 
 drop table if exists GTA_HOUSEHOLDS;

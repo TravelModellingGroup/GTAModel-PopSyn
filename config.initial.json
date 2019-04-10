@@ -7,5 +7,6 @@
   "HouseholdsSeedFile": "",
   "MazLevelControls": "",
   "TazLevelControls": "",
-  "MetaLevelControls": ""
+  "MetaLevelControls": "",
+  "Java64Path": "C:\\Path\\To\\Jre"
 }
