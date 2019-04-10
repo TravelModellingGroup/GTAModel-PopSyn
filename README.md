@@ -11,6 +11,7 @@ underlying tool used to generate a population.
  - Python 3+
     - pandas
     - SQLAlchemy
+    - mysqlclient
  
 ### Configuration
 

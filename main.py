@@ -59,8 +59,8 @@ print(persons_households.shape)
 # create MAZ, TAZ, and META totals
 
 gta_maz = pd.DataFrame(columns=['region',
-                                'puma', 'taz', 'totalhh', 'totpop', 's=O', 's=S', 's=P', 'license=Y'
-    , 'license=N', 'e=O', 'e=F', 'e=P', 'e=J', 'e=H', 'P', 'G', 'S', 'M', 'age0_14', 'age15_29', 'age30_44', 'age45_64'
+                                'puma', 'taz', 'totalhh', 'totpop', 's_O', 's_S', 's_P', 'license_Y'
+    , 'license_N', 'e_O', 'e_F', 'e_P', 'e_J', 'e_H', 'P', 'G', 'S', 'M', 'age0_14', 'age15_29', 'age30_44', 'age45_64'
     , 'age65p', 'hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p', 'numv1', 'numv2', 'numv3p',
                                 'income_class_1',
                                 'income_class_2',
@@ -122,23 +122,23 @@ gta_maz['age30_44'] = hh_group.apply(lambda x: sum_column_range(x, 'Age', 30, 44
 gta_maz['age45_64'] = hh_group.apply(lambda x: sum_column_range(x, 'Age', 45, 64, 'weightp')).astype(int).to_list()
 gta_maz['age65p'] = hh_group.apply(lambda x: sum_column_range(x, 'Age', 65, 2000, 'weightp')).astype(int).to_list()
 
-gta_maz['e=J'] = hh_group.apply(lambda x: sum_column(x, 'EmploymentStatus', 'J', 'weightp')).astype(int).to_list()
-gta_maz['e=P'] = hh_group.apply(lambda x: sum_column(x, 'EmploymentStatus', 'P', 'weightp')).astype(int).to_list()
-gta_maz['e=F'] = hh_group.apply(lambda x: sum_column(x, 'EmploymentStatus', 'F', 'weightp')).astype(int).to_list()
-gta_maz['e=O'] = hh_group.apply(lambda x: sum_column(x, 'EmploymentStatus', 'O', 'weightp')).astype(int).to_list()
-gta_maz['e=H'] = hh_group.apply(lambda x: sum_column(x, 'EmploymentStatus', 'H', 'weightp')).astype(int).to_list()
+gta_maz['e_J'] = hh_group.apply(lambda x: sum_column(x, 'EmploymentStatus', 'J', 'weightp')).astype(int).to_list()
+gta_maz['e_P'] = hh_group.apply(lambda x: sum_column(x, 'EmploymentStatus', 'P', 'weightp')).astype(int).to_list()
+gta_maz['e_F'] = hh_group.apply(lambda x: sum_column(x, 'EmploymentStatus', 'F', 'weightp')).astype(int).to_list()
+gta_maz['e_O'] = hh_group.apply(lambda x: sum_column(x, 'EmploymentStatus', 'O', 'weightp')).astype(int).to_list()
+gta_maz['e_H'] = hh_group.apply(lambda x: sum_column(x, 'EmploymentStatus', 'H', 'weightp')).astype(int).to_list()
 
 gta_maz['P'] = hh_group.apply(lambda x: sum_column(x, 'Occupation', 'P', 'weightp')).astype(int).to_list()
 gta_maz['G'] = hh_group.apply(lambda x: sum_column(x, 'Occupation', 'G', 'weightp')).astype(int).to_list()
 gta_maz['S'] = hh_group.apply(lambda x: sum_column(x, 'Occupation', 'S', 'weightp')).astype(int).to_list()
 gta_maz['M'] = hh_group.apply(lambda x: sum_column(x, 'Occupation', 'M', 'weightp')).astype(int).to_list()
 
-gta_maz['license=Y'] = hh_group.apply(lambda x: sum_column(x, 'License', 'Y', 'weightp')).astype(int).to_list()
-gta_maz['license=N'] = hh_group.apply(lambda x: sum_column(x, 'License', 'N', 'weightp')).astype(int).to_list()
+gta_maz['license_Y'] = hh_group.apply(lambda x: sum_column(x, 'License', 'Y', 'weightp')).astype(int).to_list()
+gta_maz['license_N'] = hh_group.apply(lambda x: sum_column(x, 'License', 'N', 'weightp')).astype(int).to_list()
 
-gta_maz['s=O'] = hh_group.apply(lambda x: sum_column(x, 'StudentStatus', 'O', 'weightp')).astype(int).to_list()
-gta_maz['s=S'] = hh_group.apply(lambda x: sum_column(x, 'StudentStatus', 'S', 'weightp')).astype(int).to_list()
-gta_maz['s=P'] = hh_group.apply(lambda x: sum_column(x, 'StudentStatus', 'P', 'weightp')).astype(int).to_list()
+gta_maz['s_O'] = hh_group.apply(lambda x: sum_column(x, 'StudentStatus', 'O', 'weightp')).astype(int).to_list()
+gta_maz['s_S'] = hh_group.apply(lambda x: sum_column(x, 'StudentStatus', 'S', 'weightp')).astype(int).to_list()
+gta_maz['s_P'] = hh_group.apply(lambda x: sum_column(x, 'StudentStatus', 'P', 'weightp')).astype(int).to_list()
 
 gta_maz['totpop'] = hh_group.weightp.sum().astype(int).to_list()
 
@@ -153,8 +153,8 @@ gta_maz.to_csv("input/gtamodel_taz.csv", index=False)
 gta_maz['maz'] = gta_maz['taz']
 
 gta_maz = gta_maz[['region',
-                   'puma', 'taz', 'maz', 'totalhh', 'totpop', 's=O', 's=S', 's=P', 'license=Y'
-    , 'license=N', 'e=O', 'e=F', 'e=P', 'e=J', 'e=H', 'P', 'G', 'S', 'M', 'age0_14', 'age15_29', 'age30_44', 'age45_64'
+                   'puma', 'taz', 'maz', 'totalhh', 'totpop', 's_O', 's_S', 's_P', 'license_Y'
+    , 'license_N', 'e_O', 'e_F', 'e_P', 'e_J', 'e_H', 'P', 'G', 'S', 'M', 'age0_14', 'age15_29', 'age30_44', 'age45_64'
     , 'age65p', 'hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p', 'numv1', 'numv2', 'numv3p',
                    'income_class_1',
                    'income_class_2',
@@ -196,7 +196,7 @@ gta_meta.loc[0] = [1,
                    gta_maz['income_class_6'].sum()
                    ]
 
-gta_meta.to_csv("input/gta_meta.csv", index=False)
+gta_meta.to_csv("input/gtamodel_meta.csv", index=False)
 
 # region', 'puma', 'taz', 'maz', 'totalhh', 'totpop', 's=O', 's=S', 's=P', 'license=Y'  'license=N', 'e=O', 'e=F', 'e=P', 'e=J',
 # 'e=H', 'P', 'G', 'S', 'M', 'age0_14', 'age15_29', 'age30_44', 'age45_64'
@@ -207,7 +207,7 @@ households_base.loc[households_base.HouseholdZone <= 624, 'puma'] = 1
 households_base.loc[households_base.HouseholdZone > 625, 'puma'] = 2
 
 persons_households = persons_households[['HouseholdId', 'PersonNumber', 'Age', 'Sex', 'License', 'EmploymentStatus',
-                                         'Occupation', 'StudentStatus', 'weightp', 'puma', 'HouseholdZone']]
+                                         'Occupation', 'StudentStatus', 'weightp', 'puma']]
 persons_households.rename(columns={'weightp': 'weight'}, inplace=True)
 households_base = households_base[['HouseholdId', 'DwellingType', 'NumberOfPersons', 'Vehicles',
                                    'IncomeClass', 'weighth', 'puma']]

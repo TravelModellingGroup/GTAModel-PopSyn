@@ -2,5 +2,10 @@
 
   "DatabaseName": "",
   "DatabasePassword": "",
-  "DatabaseUser": ""
+  "DatabaseUser": "",
+  "PersonsSeedFile": "",
+  "HouseholdsSeedFile": "",
+  "MazLevelControls": "",
+  "TazLevelControls": "",
+  "MetaLevelControls": ""
 }

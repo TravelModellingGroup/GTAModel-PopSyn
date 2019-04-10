@@ -27,6 +27,6 @@ ALTER TABLE perstable
 
 UPDATE perstable a
 LEFT JOIN hhtable b ON
-	a.EstimationHouseholdId=b.EstimationHouseholdId 
+	a.HouseholdId=b.HouseholdId
 	SET a.hhnum=b.hhnum;	
 

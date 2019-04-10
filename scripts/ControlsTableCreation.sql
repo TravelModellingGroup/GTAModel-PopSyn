@@ -21,7 +21,7 @@ CREATE TABLE control_totals_maz
     puma      INT NOT NULL,
     taz       INT NOT NULL,
     maz       INT NOT NULL,
-    tothh     INT NULL,
+    totalhh     INT NULL,
     totpop    INT NULL,
     s_O       INT NULL,
     s_S       INT NULL,
@@ -66,7 +66,7 @@ CREATE TABLE control_totals_taz
     region         INT NOT NULL,
     puma           INT NOT NULL,
     taz            INT NOT NULL,
-    tothh          INT NULL,
+    totalhh          INT NULL,
     totpop         INT NULL,
     s_O            INT NULL,
     s_S            INT NULL,
@@ -109,7 +109,7 @@ CREATE TABLE control_totals_taz
 CREATE TABLE control_totals_meta
 (
     region INT NOT NULL,
-    tothh  INT NOT NULL,
+    totalhh  INT NOT NULL,
     totpop INT NOT NULL,
     P      INT NULL,
     G      INT NULL,
