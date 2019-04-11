@@ -6,13 +6,19 @@ import sqlalchemy
 from sqlalchemy import create_engine
 import warnings
 import subprocess
+from logzero import logger
+import logzero
+
+# Set a logfile (all future log messages are also saved there)
+logzero.logfile("output/run.log")
+
 
 try:
     with open('config.json') as config_file:
         config = json.load(config_file)
 
 except FileNotFoundError:
-    print("Please create the configuration file (config.json). Reference config.initial.json for parameters.")
+    logger.error("Please create the configuration file (config.json). Reference config.initial.json for parameters.")
     sys.exit(1)
 
 
@@ -31,6 +37,8 @@ engine = create_engine(
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     with engine.connect() as db_connection:
+
+        logger.info('Generating and processing input databases for popsyn.')
         with open('scripts/PUMFTableCreation.sql') as pumf_table_creation_file:
             pumf_table_creation_sql = pumf_table_creation_file.read()
             execute_multi_sql(db_connection, pumf_table_creation_sql)
@@ -62,7 +70,7 @@ with warnings.catch_warnings():
             controls_table_processing_sql = controls_table_processing_file.read()
             execute_multi_sql(db_connection, controls_table_processing_sql)
 
-print("Finished initial database setup.")
+logger.info("Finished initial database setup.")
 
 ''' SET CLASSPATH=runtime\config
 SET CLASSPATH=%CLASSPATH%;runtime\*
@@ -75,7 +83,7 @@ classpaths = [f'{classpath_root}', 'runtime/*', 'runtime/lib/*', 'runtime/lib/JP
 
 libpath = 'runtime/lib'
 
-print(classpaths)
+logger.debug(classpaths)
 
 # %JAVA_64_PATH%\bin\java -showversion -server -Xms8000m -Xmx15000m -cp "%CLASSPATH%"
 # -Djppf.config=jppf-clientLocal.properties -Djava.library.path=%LIBPATH% popGenerator.PopGenerator runtime/config/settings.xml
@@ -84,10 +92,5 @@ subprocess.run([f'{config["Java64Path"]}/bin/java', "-showversion", '-server', '
                 f'-Djava.library.path={libpath}',
                 'popGenerator.PopGenerator', 'runtime/config/settings.xml'], shell=True)
 
-# reconnect and run GTAModelTransform
-with engine.connect() as db_connection:
-    with open('scripts/GTAModelTransform.sql') as gta_model_transform_file:
-        gta_model_transform_sql = gta_model_transform_file.read()
-        execute_multi_sql(db_connection, gta_model_transform_sql)
-
-print("Synthesized populaton extracted and transformed into TTS-like data")
+logger.info('Popsyn process has completed.')
+subprocess.run(["python", "post.py"], shell=True)

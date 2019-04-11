@@ -34,4 +34,10 @@ Vehicles INT(11),
 IncomeClass INT(11)) AS SELECT tempId as HouseholdId, maz as HouseholdZone, finalweight as ExpansionFactor, DwellingType,NumberOfPersons,Vehicles,IncomeClass from synpop_hh
 order by tempId asc;
 
+drop table if exists zonal_totals;
 
+CREATE TABLE ZONAL_TOTALS(
+    Zone INT NOT NULL DEFAULT 0,
+    ExpandedHouseholds INT NOT NULL DEFAULT 0
+)
+AS (SELECT  HouseholdZone as Zone, SUM(ExpansionFactor) as ExpandedHouseholds from GTA_HOUSEHOLDS group by HouseholdZone)

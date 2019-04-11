@@ -1,6 +1,11 @@
 import sys
 import numpy as np;
 import pandas as pd
+from logzero import logger
+import logzero
+
+# Set a logfile (all future log messages are also saved there)
+logzero.logfile("output/pre-process.log")
 
 # all original input files will remain intact, they will be processed into an input supported by the database
 
@@ -11,11 +16,14 @@ zones = pd.read_csv("data/Zones.csv")[['Zone#', 'PD']].rename(columns={'PD': 'pu
 
 zone_map = dict()
 
+
 def map_zone(x):
     if x['Zone#'] not in zone_map:
         zone_map[x['Zone#']] = x['puma']
     return x
-zones.apply(lambda x: map_zone(x),axis=1)
+
+
+zones.apply(lambda x: map_zone(x), axis=1)
 
 households_base.rename(columns={'ExpansionFactor': 'weighth'}, inplace=True)
 persons_base.rename(columns={'ExpansionFactor': 'weightp'}, inplace=True)
@@ -34,7 +42,7 @@ households_base.sort_values(by=['HouseholdZone'], ascending=True).reset_index(in
 households_base.loc[households_base.HouseholdZone <= 624, 'puma'] = 1
 households_base.loc[households_base.HouseholdZone >= 625, 'puma'] = 2
 
-households_base = households_base[['HouseholdId',  'puma', 'DwellingType', 'NumberOfPersons', 'Vehicles',
+households_base = households_base[['HouseholdId', 'puma', 'DwellingType', 'NumberOfPersons', 'Vehicles',
                                    'IncomeClass', 'weighth', 'HouseholdZone']]
 
 # aassign a valid income value to '7' to 1-6
@@ -96,7 +104,7 @@ households_base = households_base[households_base.HouseholdZone < 6000]
 persons_households = persons_households[persons_households.HouseholdZone < 6000]
 hh_group = persons_households.copy().groupby(['HouseholdZone'])
 
-persons_households.loc[persons_households.EmploymentZone < 6000,'EmploymentZone'] = 0
+persons_households.loc[persons_households.EmploymentZone < 6000, 'EmploymentZone'] = 0
 
 hh2_group = households_base.copy().groupby(['HouseholdZone'])
 
@@ -157,7 +165,7 @@ gta_maz['totalhh'] = hh2_group.weighth.sum().astype(int).to_list()
 gta_maz.loc[gta_maz.taz <= 624, 'puma'] = 1
 gta_maz.loc[gta_maz.taz > 624, 'puma'] = 2
 
-#gta_maz['puma'] = gta_maz['taz']
+# gta_maz['puma'] = gta_maz['taz']
 gta_maz['region'] = 1
 
 gta_maz.to_csv("input/gtamodel_taz.csv", index=False)
@@ -220,14 +228,21 @@ gta_meta.to_csv("input/gtamodel_meta.csv", index=False)
 
 persons_households = persons_households[
     ['HouseholdId', 'puma', 'PersonNumber', 'Age', 'Sex', 'License', 'EmploymentStatus',
-     'Occupation', 'StudentStatus', 'EmploymentZone','weightp']]
+     'Occupation', 'StudentStatus', 'EmploymentZone', 'weightp']]
 persons_households.rename(columns={'weightp': 'weight'}, inplace=True)
 households_base = households_base[['HouseholdId', 'puma', 'DwellingType', 'NumberOfPersons', 'Vehicles',
                                    'IncomeClass', 'weighth']]
 persons_households.sort_values(by=['HouseholdId'], ascending=True).reset_index(inplace=True)
 persons_households.to_csv("private/input/persons.csv", index=False)
+
+logger.info(f'Persons data has been written to file: private/input/persons.csv')
+
 households_base.rename(columns={'weighth': 'weight'}, inplace=True)
 households_base.sort_values(by=['HouseholdId'], ascending=True).reset_index(inplace=True)
 households_base.to_csv("private/input/households.csv", index=False)
+
+logger.info(f'Households data has been written to file: private/input/households.csv')
+
+logger.info('Pre-processing has finished.')
 
 sys.exit()

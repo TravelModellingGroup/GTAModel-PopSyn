@@ -4,3 +4,4 @@ venv/
 .idea/
 input/
 config.json
+*.log
