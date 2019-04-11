@@ -106,6 +106,5 @@ with engine.connect() as db_connection:
 
     logger.info('Employment and occuption vectors output')
 
-    # gta_ph.to_csv('gtamodel_persons_households.csv',index=False)
 
 logger.info("GTAModel popsyn post-processing completed.")

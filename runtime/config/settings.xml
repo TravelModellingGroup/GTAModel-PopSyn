@@ -25,7 +25,7 @@
         <maxExpansionFactor>200</maxExpansionFactor>
         <synpopOutputHhTableName>synpop_hh</synpopOutputHhTableName>
         <synpopOutputPersTableName>synpop_person</synpopOutputPersTableName>
-        <outputHhAttributes>HouseholdId, taz, DwellingType, NumberOfPersons, Vehicles, IncomeClass
+        <outputHhAttributes>HouseholdId, DwellingType, NumberOfPersons, Vehicles, IncomeClass
         </outputHhAttributes>
         <outputPersAttributes>PersonNumber, Age, Sex, License, EmploymentStatus, Occupation, StudentStatus,EmploymentZone
         </outputPersAttributes>
