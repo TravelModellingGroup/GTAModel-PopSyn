@@ -5,8 +5,8 @@
         <server>localhost</server>
         <type>MYSQL</type>
         <user>root</user>
-        <password>TashaRuns2019</password>
-        <dbName>gtamodelpopsyn</dbName>
+        <password>test</password>
+        <dbName>test</dbName>
     </database>
 
     <!-- Specify the PUMS data table names from which PUMA incidence tables are generated, as well as the field name for a unique identifier and the PUMS weight field name -->

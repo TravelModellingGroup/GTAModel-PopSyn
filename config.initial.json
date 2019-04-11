@@ -3,10 +3,12 @@
   "DatabaseName": "",
   "DatabasePassword": "",
   "DatabaseUser": "",
+  "DatabaseServer": "",
   "PersonsSeedFile": "",
   "HouseholdsSeedFile": "",
   "MazLevelControls": "",
   "TazLevelControls": "",
   "MetaLevelControls": "",
-  "Java64Path": "C:\\Path\\To\\Jre"
+  "Java64Path": "C:\\Path\\To\\Jre",
+  "PopSyn3SettingsFile": "runtime\\config\\settings.xml"
 }

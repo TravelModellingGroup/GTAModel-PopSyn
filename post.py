@@ -38,7 +38,8 @@ def execute_multi_sql(connection, sql):
 
 
 engine = create_engine(
-    f'mysql+pymysql://{config["DatabaseUser"]}:{config["DatabasePassword"]}@localhost/{config["DatabaseName"]}'
+    f'mysql+pymysql://{config["DatabaseUser"]}:'
+    f'{config["DatabasePassword"]}@{config["DatabaseServer"]}/{config["DatabaseName"]}'
 )
 
 logger.info("GTAModel popsyn post-processing started.")
