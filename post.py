@@ -64,7 +64,7 @@ with engine.connect() as db_connection:
     gta_zonal_residence = gta_households[['HouseholdZone', 'ExpansionFactor']] \
         .groupby('HouseholdZone').agg({'ExpansionFactor': sum}).reset_index().rename(
         columns={'HouseholdZone': 'Zone', 'ExpansionFactor': 'ExpandedHouseholds'}).to_csv(
-        'output/gtamodel_zonal_residence.csv')
+        'output/gtamodel_zonal_residence.csv',index=False)
 
     logger.info("zonal residence written to file: output/gtamodel_zonal_residence.csv")
 

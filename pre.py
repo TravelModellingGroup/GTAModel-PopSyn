@@ -188,10 +188,12 @@ gta_maz = gta_maz[['region',
 gta_maz.to_csv("input/gtamodel_maz.csv", index=False)
 # generate taz version
 
-# creta meta totals
+# creta meta totals\
+# O F P J H
 
 gta_meta = pd.DataFrame(columns=['region', 'totalhh', 'totpop',
                                  'P', 'G', 'S', 'M',
+                                 'E_O', 'E_F', 'E_P', 'E_J', 'E_H',
                                  'income_class_1',
                                  'income_class_2',
                                  'income_class_3',
@@ -208,6 +210,11 @@ gta_meta.loc[0] = [1,
                    gta_maz['G'].sum(),
                    gta_maz['S'].sum(),
                    gta_maz['M'].sum(),
+                   gta_maz['e_O'].sum(),
+                   gta_maz['e_F'].sum(),
+                   gta_maz['e_P'].sum(),
+                   gta_maz['e_J'].sum(),
+                   gta_maz['e_H'].sum(),
                    gta_maz['income_class_1'].sum(),
                    gta_maz['income_class_2'].sum(),
                    gta_maz['income_class_3'].sum(),
