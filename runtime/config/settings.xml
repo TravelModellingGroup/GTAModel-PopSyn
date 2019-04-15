@@ -92,28 +92,28 @@
             <controlType>simple</controlType>
             <table>hhtable</table>
             <constraint id="1">
-                <importance>1000</importance>
+                <importance>100000</importance>
                 <controlField>hhsize1</controlField>
                 <field>NumberOfPersons</field>
                 <type>equality</type>
                 <value>1</value>
             </constraint>
             <constraint id="2">
-                <importance>1000</importance>
+                <importance>100000</importance>
                 <controlField>hhsize2</controlField>
                 <field>NumberOfPersons</field>
                 <type>equality</type>
                 <value>2</value>
             </constraint>
             <constraint id="3">
-                <importance>1000</importance>
+                <importance>100000</importance>
                 <controlField>hhsize3</controlField>
                 <field>NumberOfPersons</field>
                 <type>equality</type>
                 <value>3</value>
             </constraint>
             <constraint id="4">
-                <importance>1000</importance>
+                <importance>100000</importance>
                 <controlField>hhsize4p</controlField>
                 <field>NumberOfPersons</field>
                 <type>interval</type>
@@ -130,7 +130,7 @@
         <!-- define conditions for 4 persons per household controls for households -->
         <marginals>
             <id>2</id>
-            <description>Number of Households by Persons per Household Category</description>
+            <description>Household Income controls per category</description>
             <geographyType>meta</geographyType>
             <controlType>simple</controlType>
             <table>hhtable</table>
@@ -182,15 +182,15 @@
 
 
         </marginals>
-    </target>
+    </target><!--
         <target>
 
-        <!-- define conditions for 4 persons per household controls for households -->
+        define conditions for 4 persons per household controls for households
         <marginals>
             <id>3</id>
-            <description>Number of Households by Persons per Household Category</description>
+            <description>Number of occupations</description>
             <geographyType>maz</geographyType>
-            <controlType>simple</controlType>
+            <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
                 <importance>1000</importance>
@@ -228,68 +228,96 @@
         </marginals>
     </target>
 
-<!-- e_O,e_F,e_P,e_J,e_H -->
+e_O,e_F,e_P,e_J,e_H
 
             <target>
 
-        <!-- define conditions for 4 persons per household controls for households -->
+     define conditions for 4 persons per household controls for households
         <marginals>
             <id>4</id>
-            <description>Employment categories</description>
+            <description>Employment Statuses</description>
             <geographyType>meta</geographyType>
-            <controlType>simple</controlType>
+            <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>1000</importance>
-                <controlField>e_O</controlField>
+                <importance>10000</importance>
+                <controlField>E_O</controlField>
                 <field>EmploymentStatus</field>
                 <type>equality</type>
                 <value>'O'</value>
             </constraint>
             <constraint id="2">
-                <importance>1000</importance>
-                <controlField>e_F</controlField>
+                <importance>10000</importance>
+                <controlField>E_F</controlField>
                 <field>EmploymentStatus</field>
                 <type>equality</type>
                 <value>'F'</value>
             </constraint>
             <constraint id="3">
-                <importance>1000</importance>
-                <controlField>e_P</controlField>
+                <importance>10000</importance>
+                <controlField>E_P</controlField>
                 <field>EmploymentStatus</field>
                 <type>equality</type>
                 <value>'P'</value>
             </constraint>
             <constraint id="4">
-                <importance>1000</importance>
-                <controlField>e_J</controlField>
+                <importance>10000</importance>
+                <controlField>E_J</controlField>
                 <field>EmploymentStatus</field>
                 <type>equality</type>
                 <value>'J'</value>
             </constraint>
             <constraint id="5">
                 <importance>1000</importance>
-                <controlField>e_H</controlField>
+                <controlField>E_H</controlField>
                 <field>EmploymentStatus</field>
                 <type>equality</type>
                 <value>'H'</value>
             </constraint>
         </marginals>
     </target>
-    <target>
 
-        <!-- define conditions for total population -->
+
+ <target>
+
+        define conditions for 4 persons per household controls for households
         <marginals>
             <id>5</id>
+            <description>Sex Totals</description>
+            <geographyType>taz</geographyType>
+            <controlType>count</controlType>
+            <table>perstable</table>
+            <constraint id="1">
+                <importance>10000</importance>
+                <controlField>male</controlField>
+                <field>Sex</field>
+                <type>equality</type>
+                <value>'M'</value>
+            </constraint>
+            <constraint id="2">
+                <importance>10000</importance>
+                <controlField>female</controlField>
+                <field>Sex</field>
+                <type>equality</type>
+                <value>'F'</value>
+            </constraint>
+
+        </marginals>
+    </target> -->
+
+    <target>
+
+        <marginals>
+            <id>3</id>
             <description>population</description>
             <geographyType>meta</geographyType>
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>1000</importance>
+                <importance>900</importance>
                 <field>weight</field>
                 <controlField>totpop</controlField>
-                <type>interval</type>
+                <type>equality</type>
                 <lo_value>0</lo_value>
                 <lo_type>open</lo_type>
                 <hi_value>999999999</hi_value>
@@ -300,6 +328,5 @@
         </marginals>
 
     </target>
-
 
 </targets>

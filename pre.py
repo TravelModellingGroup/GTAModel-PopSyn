@@ -3,6 +3,7 @@ import numpy as np;
 import pandas as pd
 from logzero import logger
 import logzero
+import random
 
 # Set a logfile (all future log messages are also saved there)
 logzero.logfile("output/pre-process.log")
@@ -52,6 +53,13 @@ households_base = households_base[['HouseholdId', 'puma', 'DwellingType', 'Numbe
 
 households_base.IncomeClass = households_base.IncomeClass.apply(lambda x: np.random.randint(1, 7) if 7 else x)
 
+# employment_statuses = ['J', 'P', 'F', 'O', 'H']
+# persons_base.EmploymentStatus = persons_base.EmploymentStatus.apply(
+#    lambda x: random.choice(employment_statuses) if x == '9' else x)
+
+# remove those with invalid employment statuses
+
+
 # we need to merge households and persons
 
 persons_households = pd.merge(left=persons_base, right=households_base, left_on="HouseholdId", right_on="HouseholdId",
@@ -74,8 +82,8 @@ print(persons_households.shape)
 # create MAZ, TAZ, and META totals
 
 gta_maz = pd.DataFrame(columns=['region',
-                                'puma', 'taz', 'totalhh', 'totpop', 's_O', 's_S', 's_P', 'license_Y'
-    , 'license_N', 'e_O', 'e_F', 'e_P', 'e_J', 'e_H', 'P', 'G', 'S', 'M', 'age0_14', 'age15_29', 'age30_44', 'age45_64'
+                                'puma', 'taz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P', 'license_Y'
+    , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G', 'S', 'M', 'age0_14', 'age15_29', 'age30_44', 'age45_64'
     , 'age65p', 'hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p', 'numv1', 'numv2', 'numv3p',
                                 'income_class_1',
                                 'income_class_2',
@@ -139,11 +147,11 @@ gta_maz['age30_44'] = hh_group.apply(lambda x: sum_column_range(x, 'Age', 30, 44
 gta_maz['age45_64'] = hh_group.apply(lambda x: sum_column_range(x, 'Age', 45, 64, 'weightp')).astype(int).to_list()
 gta_maz['age65p'] = hh_group.apply(lambda x: sum_column_range(x, 'Age', 65, 2000, 'weightp')).astype(int).to_list()
 
-gta_maz['e_J'] = hh_group.apply(lambda x: sum_column(x, 'EmploymentStatus', 'J', 'weightp')).astype(int).to_list()
-gta_maz['e_P'] = hh_group.apply(lambda x: sum_column(x, 'EmploymentStatus', 'P', 'weightp')).astype(int).to_list()
-gta_maz['e_F'] = hh_group.apply(lambda x: sum_column(x, 'EmploymentStatus', 'F', 'weightp')).astype(int).to_list()
-gta_maz['e_O'] = hh_group.apply(lambda x: sum_column(x, 'EmploymentStatus', 'O', 'weightp')).astype(int).to_list()
-gta_maz['e_H'] = hh_group.apply(lambda x: sum_column(x, 'EmploymentStatus', 'H', 'weightp')).astype(int).to_list()
+gta_maz['E_J'] = hh_group.apply(lambda x: sum_column(x, 'EmploymentStatus', 'J', 'weightp')).astype(int).to_list()
+gta_maz['E_P'] = hh_group.apply(lambda x: sum_column(x, 'EmploymentStatus', 'P', 'weightp')).astype(int).to_list()
+gta_maz['E_F'] = hh_group.apply(lambda x: sum_column(x, 'EmploymentStatus', 'F', 'weightp')).astype(int).to_list()
+gta_maz['E_O'] = hh_group.apply(lambda x: sum_column(x, 'EmploymentStatus', 'O', 'weightp')).astype(int).to_list()
+gta_maz['E_H'] = hh_group.apply(lambda x: sum_column(x, 'EmploymentStatus', 'H', 'weightp')).astype(int).to_list()
 
 gta_maz['P'] = hh_group.apply(lambda x: sum_column(x, 'Occupation', 'P', 'weightp')).astype(int).to_list()
 gta_maz['G'] = hh_group.apply(lambda x: sum_column(x, 'Occupation', 'G', 'weightp')).astype(int).to_list()
@@ -153,9 +161,9 @@ gta_maz['M'] = hh_group.apply(lambda x: sum_column(x, 'Occupation', 'M', 'weight
 gta_maz['license_Y'] = hh_group.apply(lambda x: sum_column(x, 'License', 'Y', 'weightp')).astype(int).to_list()
 gta_maz['license_N'] = hh_group.apply(lambda x: sum_column(x, 'License', 'N', 'weightp')).astype(int).to_list()
 
-gta_maz['s_O'] = hh_group.apply(lambda x: sum_column(x, 'StudentStatus', 'O', 'weightp')).astype(int).to_list()
-gta_maz['s_S'] = hh_group.apply(lambda x: sum_column(x, 'StudentStatus', 'S', 'weightp')).astype(int).to_list()
-gta_maz['s_P'] = hh_group.apply(lambda x: sum_column(x, 'StudentStatus', 'P', 'weightp')).astype(int).to_list()
+gta_maz['S_O'] = hh_group.apply(lambda x: sum_column(x, 'StudentStatus', 'O', 'weightp')).astype(int).to_list()
+gta_maz['S_S'] = hh_group.apply(lambda x: sum_column(x, 'StudentStatus', 'S', 'weightp')).astype(int).to_list()
+gta_maz['S_P'] = hh_group.apply(lambda x: sum_column(x, 'StudentStatus', 'P', 'weightp')).astype(int).to_list()
 
 gta_maz['totpop'] = hh_group.weightp.sum().astype(int).to_list()
 
@@ -173,8 +181,8 @@ gta_maz.to_csv("input/gtamodel_taz.csv", index=False)
 gta_maz['maz'] = gta_maz['taz']
 
 gta_maz = gta_maz[['region',
-                   'puma', 'taz', 'maz', 'totalhh', 'totpop', 's_O', 's_S', 's_P', 'license_Y'
-    , 'license_N', 'e_O', 'e_F', 'e_P', 'e_J', 'e_H', 'P', 'G', 'S', 'M', 'age0_14', 'age15_29', 'age30_44', 'age45_64'
+                   'puma', 'taz', 'maz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P', 'license_Y'
+    , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G', 'S', 'M', 'age0_14', 'age15_29', 'age30_44', 'age45_64'
     , 'age65p', 'hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p', 'numv1', 'numv2', 'numv3p',
                    'income_class_1',
                    'income_class_2',
@@ -210,11 +218,11 @@ gta_meta.loc[0] = [1,
                    gta_maz['G'].sum(),
                    gta_maz['S'].sum(),
                    gta_maz['M'].sum(),
-                   gta_maz['e_O'].sum(),
-                   gta_maz['e_F'].sum(),
-                   gta_maz['e_P'].sum(),
-                   gta_maz['e_J'].sum(),
-                   gta_maz['e_H'].sum(),
+                   gta_maz['E_O'].sum(),
+                   gta_maz['E_F'].sum(),
+                   gta_maz['E_P'].sum(),
+                   gta_maz['E_J'].sum(),
+                   gta_maz['E_H'].sum(),
                    gta_maz['income_class_1'].sum(),
                    gta_maz['income_class_2'].sum(),
                    gta_maz['income_class_3'].sum(),
@@ -233,23 +241,35 @@ gta_meta.to_csv("input/gtamodel_meta.csv", index=False)
 # households_base.loc[households_base.HouseholdZone <= 624, 'puma'] = 1
 # households_base.loc[households_base.HouseholdZone > 625, 'puma'] = 2
 
+# persons_households = persons_households[persons_households.EmploymentStatus != '9']
+
 persons_households = persons_households[
+    (persons_households.EmploymentStatus != '9') & (persons_households.Occupation != '9')]
+
+# persons_households = persons_households[
+#    (persons_households.EmploymentStatus == 'O') & (persons_households.Occupation != 'O')]
+
+# persons_households = persons_households[
+#    (persons_households.EmploymentStatus != 'O') & (persons_households.Occupation == 'O')]
+
+persons = persons_households[
     ['HouseholdId', 'puma', 'PersonNumber', 'Age', 'Sex', 'License', 'EmploymentStatus',
-     'Occupation', 'StudentStatus', 'EmploymentZone', 'weightp']]
-persons_households.rename(columns={'weightp': 'weight'}, inplace=True)
-households_base = households_base[['HouseholdId', 'puma', 'DwellingType', 'NumberOfPersons', 'Vehicles',
-                                   'IncomeClass', 'weighth']]
-persons_households.sort_values(by=['HouseholdId'], ascending=True).reset_index(inplace=True)
-persons_households.to_csv("private/input/persons.csv", index=False)
+     'Occupation', 'StudentStatus', 'EmploymentZone', 'weightp']].copy()
+persons.rename(columns={'weightp': 'weight'}, inplace=True)
+
+persons.sort_values(by=['HouseholdId'], ascending=True).reset_index(inplace=True)
+
+persons.to_csv("private/input/persons.csv", index=False)
 
 logger.info(f'Persons data has been written to file: private/input/persons.csv')
 
-households_base.rename(columns={'weighth': 'weight'}, inplace=True)
-households_base.sort_values(by=['HouseholdId'], ascending=True).reset_index(inplace=True)
-households_base.to_csv("private/input/households.csv", index=False)
+households = persons_households[['HouseholdId', 'puma', 'DwellingType', 'NumberOfPersons', 'Vehicles',
+                                 'IncomeClass', 'weighth']].drop_duplicates(['HouseholdId'])
+
+households.rename(columns={'weighth': 'weight'}, inplace=True)
+households.sort_values(by=['HouseholdId'], ascending=True).reset_index(inplace=True)
+households.to_csv("private/input/households.csv", index=False)
 
 logger.info(f'Households data has been written to file: private/input/households.csv')
 
 logger.info('Pre-processing has finished.')
-
-sys.exit()
