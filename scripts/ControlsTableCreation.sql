@@ -131,5 +131,3 @@ CREATE TABLE control_totals_meta
     income_class_6 INT NULL,
     PRIMARY KEY (region)
 );
-
-SELECT 'Created initial control tables...';

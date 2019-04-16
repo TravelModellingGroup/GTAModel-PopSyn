@@ -27,9 +27,7 @@
         <synpopOutputPersTableName>synpop_person</synpopOutputPersTableName>
         <outputHhAttributes>HouseholdId, DwellingType, NumberOfPersons, Vehicles, IncomeClass
         </outputHhAttributes>
-        <outputPersAttributes>PersonNumber, Age, Sex, License, EmploymentStatus, Occupation,
-            StudentStatus,EmploymentZone
-        </outputPersAttributes>
+        <outputPersAttributes>PersonNumber, Age, Sex, License, EmploymentStatus, Occupation, StudentStatus, EmploymentZone</outputPersAttributes>
     </pumsData>
 
     <!-- Specify the table name and name of id field for the MAZ control totals table -->
@@ -125,8 +123,8 @@
             </constraint>
         </marginals>
     </target>
-<!--
-    <target>
+
+   <!--  <target>
 
         define conditions for 4 persons per household controls for households
         <marginals>
