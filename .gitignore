@@ -1,7 +1,8 @@
-private/
-output/
-venv/
-.idea/
-input/
+private/*
+output/*
+venv/*
+.idea/*
+input/*
 config.json
 *.log
+**/*.log

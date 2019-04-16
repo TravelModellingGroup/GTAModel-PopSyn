@@ -83,7 +83,7 @@ print(persons_households.shape)
 
 gta_maz = pd.DataFrame(columns=['region',
                                 'puma', 'taz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P', 'license_Y'
-    , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G', 'S', 'M', 'age0_14', 'age15_29', 'age30_44', 'age45_64'
+    , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G', 'S', 'M', 'O', 'age0_14', 'age15_29', 'age30_44', 'age45_64'
     , 'age65p', 'hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p', 'numv1', 'numv2', 'numv3p',
                                 'income_class_1',
                                 'income_class_2',
@@ -157,6 +157,8 @@ gta_maz['P'] = hh_group.apply(lambda x: sum_column(x, 'Occupation', 'P', 'weight
 gta_maz['G'] = hh_group.apply(lambda x: sum_column(x, 'Occupation', 'G', 'weightp')).astype(int).to_list()
 gta_maz['S'] = hh_group.apply(lambda x: sum_column(x, 'Occupation', 'S', 'weightp')).astype(int).to_list()
 gta_maz['M'] = hh_group.apply(lambda x: sum_column(x, 'Occupation', 'M', 'weightp')).astype(int).to_list()
+gta_maz['O'] = hh_group.apply(lambda x: sum_column(x, 'Occupation', 'O', 'weightp')).astype(int).to_list()
+
 
 gta_maz['license_Y'] = hh_group.apply(lambda x: sum_column(x, 'License', 'Y', 'weightp')).astype(int).to_list()
 gta_maz['license_N'] = hh_group.apply(lambda x: sum_column(x, 'License', 'N', 'weightp')).astype(int).to_list()
@@ -182,7 +184,7 @@ gta_maz['maz'] = gta_maz['taz']
 
 gta_maz = gta_maz[['region',
                    'puma', 'taz', 'maz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P', 'license_Y'
-    , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G', 'S', 'M', 'age0_14', 'age15_29', 'age30_44', 'age45_64'
+    , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G', 'S', 'M', 'O', 'age0_14', 'age15_29', 'age30_44', 'age45_64'
     , 'age65p', 'hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p', 'numv1', 'numv2', 'numv3p',
                    'income_class_1',
                    'income_class_2',
@@ -200,7 +202,7 @@ gta_maz.to_csv("input/gtamodel_maz.csv", index=False)
 # O F P J H
 
 gta_meta = pd.DataFrame(columns=['region', 'totalhh', 'totpop',
-                                 'P', 'G', 'S', 'M',
+                                 'P', 'G', 'S', 'M', 'O',
                                  'E_O', 'E_F', 'E_P', 'E_J', 'E_H',
                                  'income_class_1',
                                  'income_class_2',
@@ -218,6 +220,7 @@ gta_meta.loc[0] = [1,
                    gta_maz['G'].sum(),
                    gta_maz['S'].sum(),
                    gta_maz['M'].sum(),
+                   gta_maz['O'].sum(),
                    gta_maz['E_O'].sum(),
                    gta_maz['E_F'].sum(),
                    gta_maz['E_P'].sum(),

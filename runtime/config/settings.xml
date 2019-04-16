@@ -27,7 +27,8 @@
         <synpopOutputPersTableName>synpop_person</synpopOutputPersTableName>
         <outputHhAttributes>HouseholdId, DwellingType, NumberOfPersons, Vehicles, IncomeClass
         </outputHhAttributes>
-        <outputPersAttributes>PersonNumber, Age, Sex, License, EmploymentStatus, Occupation, StudentStatus,EmploymentZone
+        <outputPersAttributes>PersonNumber, Age, Sex, License, EmploymentStatus, Occupation,
+            StudentStatus,EmploymentZone
         </outputPersAttributes>
     </pumsData>
 
@@ -66,7 +67,7 @@
             <description>MAZ Level Control: Total Number of Households</description>
             <totalHouseholdsControl>true</totalHouseholdsControl>
             <controlType>simple</controlType>
-            <geographyType>MAZ</geographyType>
+            <geographyType>maz</geographyType>
             <table>hhtable</table>
             <constraint id="1">
                 <importance>1.0E9</importance>
@@ -92,28 +93,28 @@
             <controlType>simple</controlType>
             <table>hhtable</table>
             <constraint id="1">
-                <importance>100000</importance>
+                <importance>1000</importance>
                 <controlField>hhsize1</controlField>
                 <field>NumberOfPersons</field>
                 <type>equality</type>
                 <value>1</value>
             </constraint>
             <constraint id="2">
-                <importance>100000</importance>
+                <importance>1000</importance>
                 <controlField>hhsize2</controlField>
                 <field>NumberOfPersons</field>
                 <type>equality</type>
                 <value>2</value>
             </constraint>
             <constraint id="3">
-                <importance>100000</importance>
+                <importance>1000</importance>
                 <controlField>hhsize3</controlField>
                 <field>NumberOfPersons</field>
                 <type>equality</type>
                 <value>3</value>
             </constraint>
             <constraint id="4">
-                <importance>100000</importance>
+                <importance>1000</importance>
                 <controlField>hhsize4p</controlField>
                 <field>NumberOfPersons</field>
                 <type>interval</type>
@@ -124,14 +125,14 @@
             </constraint>
         </marginals>
     </target>
-
+<!--
     <target>
 
-        <!-- define conditions for 4 persons per household controls for households -->
+        define conditions for 4 persons per household controls for households
         <marginals>
             <id>2</id>
             <description>Household Income controls per category</description>
-            <geographyType>meta</geographyType>
+            <geographyType>maz</geographyType>
             <controlType>simple</controlType>
             <table>hhtable</table>
             <constraint id="1">
@@ -182,7 +183,7 @@
 
 
         </marginals>
-    </target><!--
+    </target>
         <target>
 
         define conditions for 4 persons per household controls for households
@@ -308,13 +309,13 @@ e_O,e_F,e_P,e_J,e_H
     <target>
 
         <marginals>
-            <id>3</id>
+            <id>2</id>
             <description>population</description>
             <geographyType>meta</geographyType>
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>900</importance>
+                <importance>2000</importance>
                 <field>weight</field>
                 <controlField>totpop</controlField>
                 <type>equality</type>
