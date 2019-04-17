@@ -82,8 +82,7 @@ settings_root.find('.database/user').text = config['DatabaseUser']
 settings_root.find('.database/password').text = config['DatabasePassword']
 settings_root.find('.database/dbName').text = config['DatabaseName']
 
-
-et.write('input/settings_modified.xml')
+et.write(open('input/settings_modified.xml', 'w'))
 
 classpath_root = 'runtime/config'
 classpaths = [f'{classpath_root}', 'runtime/*', 'runtime/lib/*', 'runtime/lib/JPFF-3.2.2/JPPF-3.2.2-admin-ui/lib/*']

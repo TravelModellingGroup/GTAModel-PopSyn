@@ -100,7 +100,7 @@ def sum_column(group, column, value, weight='weighth'):
 
 
 def sum_column_gte(group, column, value, weight='weighth'):
-    return group[group[column] == value][weight].sum()
+    return group[group[column] >= value][weight].sum()
 
 
 def sum_column_range(group, column, value, value2, weight='weighth'):

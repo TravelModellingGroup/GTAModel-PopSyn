@@ -25,8 +25,7 @@
         <maxExpansionFactor>200</maxExpansionFactor>
         <synpopOutputHhTableName>synpop_hh</synpopOutputHhTableName>
         <synpopOutputPersTableName>synpop_person</synpopOutputPersTableName>
-        <outputHhAttributes>HouseholdId, DwellingType, NumberOfPersons, Vehicles, IncomeClass
-        </outputHhAttributes>
+        <outputHhAttributes>HouseholdId, DwellingType, NumberOfPersons, Vehicles, IncomeClass</outputHhAttributes>
         <outputPersAttributes>PersonNumber, Age, Sex, License, EmploymentStatus, Occupation, StudentStatus, EmploymentZone</outputPersAttributes>
     </pumsData>
 
@@ -276,14 +275,11 @@ e_O,e_F,e_P,e_J,e_H
         </marginals>
     </target>
 
-
  <target>
-
-        define conditions for 4 persons per household controls for households
         <marginals>
-            <id>5</id>
+            <id>2</id>
             <description>Sex Totals</description>
-            <geographyType>taz</geographyType>
+            <geographyType>maz</geographyType>
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
@@ -302,7 +298,8 @@ e_O,e_F,e_P,e_J,e_H
             </constraint>
 
         </marginals>
-    </target> -->
+    </target>
+-->
 
     <target>
 
@@ -313,7 +310,7 @@ e_O,e_F,e_P,e_J,e_H
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>2000</importance>
+                <importance>100000</importance>
                 <field>weight</field>
                 <controlField>totpop</controlField>
                 <type>equality</type>
