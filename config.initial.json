@@ -10,6 +10,7 @@
   "MetaLevelControls": "",
   "Java64Path": "C:\\Path\\To\\Jre",
   "PopSyn3SettingsFile": "runtime\\config\\settings.xml",
+  "OutputFolder": "",
   "CategoryMapping": {
     "Persons": [
       {
