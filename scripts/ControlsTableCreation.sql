@@ -19,6 +19,7 @@ CREATE TABLE control_totals_maz
 (
     region         INT NOT NULL,
     puma           INT NOT NULL,
+    PD             INT NOT NULL,
     taz            INT NOT NULL,
     maz            INT NOT NULL,
     totalhh        INT NULL,
@@ -66,6 +67,7 @@ CREATE TABLE control_totals_taz
 (
     region         INT NOT NULL,
     puma           INT NOT NULL,
+    PD             INT NOT NULL,
     taz            INT NOT NULL,
     totalhh        INT NULL,
     totpop         INT NULL,

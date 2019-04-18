@@ -13,6 +13,7 @@ Numbers;
 CREATE TABLE pumf_hh(
 	HouseholdId INT NOT NULL,
 	puma INT NULL,
+	PD INT NULL,
 	DwellingType INT NULL,
 	NumberOfPersons INT NULL,
 	Vehicles INT NULL,

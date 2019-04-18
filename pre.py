@@ -13,18 +13,19 @@ logzero.logfile("output/pre-process.log")
 households_base = pd.read_csv("private/data/EstimationHouseholds.csv")
 persons_base = pd.read_csv("private/data/EstimationPersons.csv")
 
-zones = pd.read_csv("data/Zones.csv")[['Zone#', 'PD']].rename(columns={'PD': 'puma'})
-
-zone_map = dict()
+zones = pd.read_csv("data/Zones.csv")[['Zone#', 'PD']]
 
 
-def map_zone(x):
-    if x['Zone#'] not in zone_map:
-        zone_map[x['Zone#']] = x['puma']
-    return x
+households_base = pd.merge(households_base,zones,left_on="HouseholdZone", right_on="Zone#")[['HouseholdId', 'DwellingType', 'NumberOfPersons', 'Vehicles',
+                                   'IncomeClass',  'ExpansionFactor','HouseholdZone','PD']]
+
+#def map_zone(x):
+#    if x['Zone#'] not in zone_map:
+#        zone_map[x['Zone#']] = x['puma']
+#    return x
 
 
-zones.apply(lambda x: map_zone(x), axis=1)
+# zones.apply(lambda x: map_zone(x), axis=1)
 
 households_base.rename(columns={'ExpansionFactor': 'weighth'}, inplace=True)
 persons_base.rename(columns={'ExpansionFactor': 'weightp'}, inplace=True)
@@ -44,7 +45,7 @@ households_base.loc[households_base.HouseholdZone <= 624, 'puma'] = 1
 households_base.loc[households_base.HouseholdZone > 624, 'puma'] = 2
 
 households_base = households_base[['HouseholdId', 'puma', 'DwellingType', 'NumberOfPersons', 'Vehicles',
-                                   'IncomeClass', 'weighth', 'HouseholdZone']]
+                                   'IncomeClass', 'weighth', 'HouseholdZone','PD']]
 
 # aassign a valid income value to '7' to 1-6
 
@@ -70,7 +71,7 @@ persons_households.loc[persons_households.HouseholdZone > 624, 'puma'] = 2
 
 # persons_households= persons_households.drop_duplicates()
 # persons_households.sort_values(by=['HouseholdZone', 'HouseholdId'], ascending=True, inplace=True)
-persons_households.sort_values(by=['HouseholdId'], ascending=True).reset_index(inplace=True)
+persons_households.sort_values(by=['HouseholdZone','HouseholdId'], ascending=True).reset_index(inplace=True)
 persons_households.to_csv("input/households_persons_merge.csv")
 
 print(persons_base.shape)
@@ -82,7 +83,7 @@ print(persons_households.shape)
 # create MAZ, TAZ, and META totals
 
 gta_maz = pd.DataFrame(columns=['region',
-                                'puma', 'taz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P', 'license_Y'
+                                'puma','PD', 'taz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P', 'license_Y'
     , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G', 'S', 'M', 'O', 'age0_14', 'age15_29', 'age30_44', 'age45_64'
     , 'age65p', 'hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p', 'numv1', 'numv2', 'numv3p',
                                 'income_class_1',
@@ -121,6 +122,7 @@ gta_maz['totpop'] = hh_group.weightp.sum().astype(int).to_list()
 
 gta_maz.to_csv("input/gtamodel_taz.csv", index=False)
 
+gta_maz['PD'] = households_base.drop_duplicates('HouseholdZone').sort_values(['HouseholdZone'])[['PD']].reset_index(drop=True)
 gta_maz['taz'] = hh_group.groups.keys()
 gta_maz['male'] = hh_group.apply(lambda x: sum_column(x, 'Sex', 'M', 'weightp')).astype(int).to_list()
 gta_maz['female'] = hh_group.apply(lambda x: sum_column(x, 'Sex', 'F', 'weightp')).astype(int).to_list()
@@ -183,7 +185,7 @@ gta_maz.to_csv("input/gtamodel_taz.csv", index=False)
 gta_maz['maz'] = gta_maz['taz']
 
 gta_maz = gta_maz[['region',
-                   'puma', 'taz', 'maz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P', 'license_Y'
+                   'puma', 'PD', 'taz', 'maz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P', 'license_Y'
     , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G', 'S', 'M', 'O', 'age0_14', 'age15_29', 'age30_44', 'age45_64'
     , 'age65p', 'hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p', 'numv1', 'numv2', 'numv3p',
                    'income_class_1',
@@ -266,7 +268,7 @@ persons.to_csv("private/input/persons.csv", index=False)
 
 logger.info(f'Persons data has been written to file: private/input/persons.csv')
 
-households = persons_households[['HouseholdId', 'puma', 'DwellingType', 'NumberOfPersons', 'Vehicles',
+households = persons_households[['HouseholdId', 'puma','PD', 'DwellingType', 'NumberOfPersons', 'Vehicles',
                                  'IncomeClass', 'weighth']].drop_duplicates(['HouseholdId'])
 
 households.rename(columns={'weighth': 'weight'}, inplace=True)
