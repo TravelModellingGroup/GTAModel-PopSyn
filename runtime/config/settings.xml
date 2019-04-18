@@ -22,7 +22,7 @@
         <pumsHhTable>hhtable</pumsHhTable>
         <pumsHhIdField>hhnum</pumsHhIdField>
         <pumsPersTable>perstable</pumsPersTable>
-        <maxExpansionFactor>200</maxExpansionFactor>
+        <maxExpansionFactor>25</maxExpansionFactor>
         <synpopOutputHhTableName>synpop_hh</synpopOutputHhTableName>
         <synpopOutputPersTableName>synpop_person</synpopOutputPersTableName>
         <outputHhAttributes>HouseholdId, DwellingType, NumberOfPersons, Vehicles, IncomeClass</outputHhAttributes>
@@ -67,7 +67,7 @@
             <geographyType>maz</geographyType>
             <table>hhtable</table>
             <constraint id="1">
-                <importance>1.0E9</importance>
+                <importance>1000</importance>
                 <field>weight</field>
                 <controlField>totalhh</controlField>
                 <type>interval</type>
@@ -123,118 +123,118 @@
         </marginals>
     </target>
 
-   <!--  <target>
+    <!--  <target>
 
-        define conditions for 4 persons per household controls for households
+         define conditions for 4 persons per household controls for households
+         <marginals>
+             <id>2</id>
+             <description>Household Income controls per category</description>
+             <geographyType>maz</geographyType>
+             <controlType>simple</controlType>
+             <table>hhtable</table>
+             <constraint id="1">
+                 <importance>1000</importance>
+                 <controlField>income_class_1</controlField>
+                 <field>IncomeClass</field>
+                 <type>equality</type>
+                 <value>1</value>
+             </constraint>
+             <constraint id="2">
+                 <importance>1000</importance>
+                 <controlField>income_class_2</controlField>
+                 <field>IncomeClass</field>
+                 <type>equality</type>
+                 <value>2</value>
+             </constraint>
+             <constraint id="3">
+                 <importance>1000</importance>
+                 <controlField>income_class_3</controlField>
+                 <field>IncomeClass</field>
+                 <type>equality</type>
+                 <value>3</value>
+             </constraint>
+
+             <constraint id="4">
+                 <importance>1000</importance>
+                 <controlField>income_class_4</controlField>
+                 <field>IncomeClass</field>
+                 <type>equality</type>
+                 <value>4</value>
+             </constraint>
+
+             <constraint id="5">
+                 <importance>1000</importance>
+                 <controlField>income_class_5</controlField>
+                 <field>IncomeClass</field>
+                 <type>equality</type>
+                 <value>5</value>
+             </constraint>
+
+             <constraint id="6">
+                 <importance>1000</importance>
+                 <controlField>income_class_6</controlField>
+                 <field>IncomeClass</field>
+                 <type>equality</type>
+                 <value>6</value>
+             </constraint>
+
+
+         </marginals>
+     </target>
+         <target>
+
+         define conditions for 4 persons per household controls for households
+         <marginals>
+             <id>3</id>
+             <description>Number of occupations</description>
+             <geographyType>maz</geographyType>
+             <controlType>count</controlType>
+             <table>perstable</table>
+             <constraint id="1">
+                 <importance>1000</importance>
+                 <controlField>G</controlField>
+                 <field>Occupation</field>
+                 <type>equality</type>
+                 <value>'G'</value>
+             </constraint>
+             <constraint id="2">
+                 <importance>1000</importance>
+                 <controlField>S</controlField>
+                 <field>Occupation</field>
+                 <type>equality</type>
+                 <value>'S'</value>
+             </constraint>
+             <constraint id="3">
+                 <importance>1000</importance>
+                 <controlField>M</controlField>
+                 <field>Occupation</field>
+                 <type>equality</type>
+                 <value>'M'</value>
+             </constraint>
+             <constraint id="4">
+                 <importance>1000</importance>
+                 <controlField>P</controlField>
+                 <field>Occupation</field>
+                 <type>equality</type>
+                 <value>'P'</value>
+             </constraint>
+
+
+
+
+
+         </marginals>
+     </target>
+
+ e_O,e_F,e_P,e_J,e_H
+
+    <target>
+
+       - Employment Status counts for persons
         <marginals>
             <id>2</id>
-            <description>Household Income controls per category</description>
-            <geographyType>maz</geographyType>
-            <controlType>simple</controlType>
-            <table>hhtable</table>
-            <constraint id="1">
-                <importance>1000</importance>
-                <controlField>income_class_1</controlField>
-                <field>IncomeClass</field>
-                <type>equality</type>
-                <value>1</value>
-            </constraint>
-            <constraint id="2">
-                <importance>1000</importance>
-                <controlField>income_class_2</controlField>
-                <field>IncomeClass</field>
-                <type>equality</type>
-                <value>2</value>
-            </constraint>
-            <constraint id="3">
-                <importance>1000</importance>
-                <controlField>income_class_3</controlField>
-                <field>IncomeClass</field>
-                <type>equality</type>
-                <value>3</value>
-            </constraint>
-
-            <constraint id="4">
-                <importance>1000</importance>
-                <controlField>income_class_4</controlField>
-                <field>IncomeClass</field>
-                <type>equality</type>
-                <value>4</value>
-            </constraint>
-
-            <constraint id="5">
-                <importance>1000</importance>
-                <controlField>income_class_5</controlField>
-                <field>IncomeClass</field>
-                <type>equality</type>
-                <value>5</value>
-            </constraint>
-
-            <constraint id="6">
-                <importance>1000</importance>
-                <controlField>income_class_6</controlField>
-                <field>IncomeClass</field>
-                <type>equality</type>
-                <value>6</value>
-            </constraint>
-
-
-        </marginals>
-    </target>
-        <target>
-
-        define conditions for 4 persons per household controls for households
-        <marginals>
-            <id>3</id>
-            <description>Number of occupations</description>
-            <geographyType>maz</geographyType>
-            <controlType>count</controlType>
-            <table>perstable</table>
-            <constraint id="1">
-                <importance>1000</importance>
-                <controlField>G</controlField>
-                <field>Occupation</field>
-                <type>equality</type>
-                <value>'G'</value>
-            </constraint>
-            <constraint id="2">
-                <importance>1000</importance>
-                <controlField>S</controlField>
-                <field>Occupation</field>
-                <type>equality</type>
-                <value>'S'</value>
-            </constraint>
-            <constraint id="3">
-                <importance>1000</importance>
-                <controlField>M</controlField>
-                <field>Occupation</field>
-                <type>equality</type>
-                <value>'M'</value>
-            </constraint>
-            <constraint id="4">
-                <importance>1000</importance>
-                <controlField>P</controlField>
-                <field>Occupation</field>
-                <type>equality</type>
-                <value>'P'</value>
-            </constraint>
-
-
-
-
-
-        </marginals>
-    </target>
-
-e_O,e_F,e_P,e_J,e_H
-
-            <target>
-
-     define conditions for 4 persons per household controls for households
-        <marginals>
-            <id>4</id>
             <description>Employment Statuses</description>
-            <geographyType>meta</geographyType>
+            <geographyType>maz</geographyType>
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
@@ -273,8 +273,9 @@ e_O,e_F,e_P,e_J,e_H
                 <value>'H'</value>
             </constraint>
         </marginals>
-    </target>
+    </target>-->
 
+    <!--
  <target>
         <marginals>
             <id>2</id>
@@ -299,6 +300,53 @@ e_O,e_F,e_P,e_J,e_H
 
         </marginals>
     </target>
+
+             <target>
+
+         <marginals>
+             <id>2</id>
+             <description>Occupation totals for persons</description>
+             <geographyType>meta</geographyType>
+             <controlType>count</controlType>
+             <table>perstable</table>
+             <constraint id="1">
+                 <importance>1000</importance>
+                 <controlField>G</controlField>
+                 <field>Occupation</field>
+                 <type>equality</type>
+                 <value>'G'</value>
+             </constraint>
+             <constraint id="2">
+                 <importance>10000</importance>
+                 <controlField>S</controlField>
+                 <field>Occupation</field>
+                 <type>equality</type>
+                 <value>'S'</value>
+             </constraint>
+             <constraint id="3">
+                 <importance>1000</importance>
+                 <controlField>M</controlField>
+                 <field>Occupation</field>
+                 <type>equality</type>
+                 <value>'M'</value>
+             </constraint>
+             <constraint id="4">
+                 <importance>1000</importance>
+                 <controlField>P</controlField>
+                 <field>Occupation</field>
+                 <type>equality</type>
+                 <value>'P'</value>
+             </constraint>
+             <constraint id="5">
+                 <importance>1000</importance>
+                 <controlField>O</controlField>
+                 <field>Occupation</field>
+                 <type>equality</type>
+                 <value>'O'</value>
+             </constraint>
+
+         </marginals>
+     </target>
 -->
 
     <target>
@@ -310,7 +358,7 @@ e_O,e_F,e_P,e_J,e_H
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>100000</importance>
+                <importance>10000</importance>
                 <field>weight</field>
                 <controlField>totpop</controlField>
                 <type>equality</type>

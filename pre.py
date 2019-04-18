@@ -41,7 +41,7 @@ households_base.sort_values(by=['HouseholdZone'], ascending=True).reset_index(in
 
 
 households_base.loc[households_base.HouseholdZone <= 624, 'puma'] = 1
-households_base.loc[households_base.HouseholdZone >= 625, 'puma'] = 2
+households_base.loc[households_base.HouseholdZone > 624, 'puma'] = 2
 
 households_base = households_base[['HouseholdId', 'puma', 'DwellingType', 'NumberOfPersons', 'Vehicles',
                                    'IncomeClass', 'weighth', 'HouseholdZone']]
@@ -66,7 +66,7 @@ persons_households = pd.merge(left=persons_base, right=households_base, left_on=
                               how="left")
 
 persons_households.loc[persons_households.HouseholdZone <= 624, 'puma'] = 1
-persons_households.loc[persons_households.HouseholdZone > 625, 'puma'] = 2
+persons_households.loc[persons_households.HouseholdZone > 624, 'puma'] = 2
 
 # persons_households= persons_households.drop_duplicates()
 # persons_households.sort_values(by=['HouseholdZone', 'HouseholdId'], ascending=True, inplace=True)

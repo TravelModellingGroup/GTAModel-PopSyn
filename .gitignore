@@ -1,5 +1,6 @@
 private/*
 output/*
+previous_output/*
 venv/*
 .idea/*
 input/*

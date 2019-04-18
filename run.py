@@ -10,6 +10,7 @@ from logzero import logger
 import logzero
 import xml.etree.ElementTree
 
+
 # Set a logfile (all future log messages are also saved there)
 logzero.logfile("output/run.log")
 
@@ -82,7 +83,9 @@ settings_root.find('.database/user').text = config['DatabaseUser']
 settings_root.find('.database/password').text = config['DatabasePassword']
 settings_root.find('.database/dbName').text = config['DatabaseName']
 
-et.write(open('input/settings_modified.xml', 'w'))
+
+et.write("input/settings_modified.xml")
+# et.write('')
 
 classpath_root = 'runtime/config'
 classpaths = [f'{classpath_root}', 'runtime/*', 'runtime/lib/*', 'runtime/lib/JPFF-3.2.2/JPPF-3.2.2-admin-ui/lib/*']

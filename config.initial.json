@@ -1,5 +1,4 @@
 {
-
   "DatabaseName": "",
   "DatabasePassword": "",
   "DatabaseUser": "",
@@ -10,5 +9,21 @@
   "TazLevelControls": "",
   "MetaLevelControls": "",
   "Java64Path": "C:\\Path\\To\\Jre",
-  "PopSyn3SettingsFile": "runtime\\config\\settings.xml"
+  "PopSyn3SettingsFile": "runtime\\config\\settings.xml",
+  "CategoryMapping": {
+    "Persons": [
+      {
+        "FieldName": "",
+        "FieldValue": "",
+        "MappedValue": 0
+      }
+    ],
+    "Households": [
+      {
+        "FieldName": "",
+        "FieldValue": "",
+        "MappedValue": 0
+      }
+    ]
+  }
 }
