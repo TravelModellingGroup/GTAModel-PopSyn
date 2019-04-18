@@ -9,6 +9,13 @@ import subprocess
 import logzero
 from logzero import logger
 import logzero
+import os
+
+try:
+    os.makedirs('output/HouseholdData/')
+    os.makedirs('output/ZonalResidence/')
+except OSError:
+    pass
 
 # Set a logfile (all future log messages are also saved there)
 logzero.logfile("output/post-process.log")
@@ -52,21 +59,23 @@ with engine.connect() as db_connection:
     logger.info("Synthesized populion data transformed.")
 
     gta_households = pandas.read_sql_table('gta_households', db_connection)
-    gta_households.to_csv('output/gtamodel_households.csv', index=False)
+    gta_households.to_csv('output/HouseholdData/Households.csv', index=False)
 
-    logger.info('Synthesized persons written to file: output/gtamodel_households.csv')
+    logger.info('Synthesized persons written to file: output/HouseholdData/Households.csv')
 
     gta_persons = pandas.read_sql_table('gta_persons', db_connection)
-    gta_persons.to_csv('output/gtamodel_persons.csv', index=False)
+    gta_persons.to_csv('output/HouseholdData/Persons.csv', index=False)
 
     logger.info('Synthesized persons written to file: output/gtamodel_persons.csv')
 
     gta_zonal_residence = gta_households[['HouseholdZone', 'ExpansionFactor']] \
         .groupby('HouseholdZone').agg({'ExpansionFactor': sum}).reset_index().rename(
         columns={'HouseholdZone': 'Zone', 'ExpansionFactor': 'ExpandedHouseholds'}).to_csv(
-        'output/gtamodel_zonal_residence.csv',index=False)
+        'output/HouseholdData/HouseholdTotals.csv',index=False)
 
-    logger.info("zonal residence written to file: output/gtamodel_zonal_residence.csv")
+    logger.info("zonal residence written to file: output/HouseholdData/HouseholdTotals.csv")
+
+    del gta_zonal_residence
 
     gta_households = gta_households[['HouseholdId', 'HouseholdZone']]
     gta_persons = gta_persons[['HouseholdId', 'Occupation',
@@ -81,30 +90,30 @@ with engine.connect() as db_connection:
 
     gta_ph_grouped.loc[(gta_ph_grouped.Occupation == 'G') &
                        (gta_ph_grouped.EmploymentStatus == 'F')][['Zone', 'Persons']] \
-        .to_csv("output/GF.csv", index=False)
+        .to_csv("output/ZonalResidence/GF.csv", index=False)
     gta_ph_grouped.loc[(gta_ph_grouped.Occupation == 'G') &
                        (gta_ph_grouped.EmploymentStatus == 'P')][['Zone', 'Persons']] \
-        .to_csv("output/GP.csv", index=False)
+        .to_csv("output/ZonalResidence/GP.csv", index=False)
     gta_ph_grouped.loc[(gta_ph_grouped.Occupation == 'M') &
                        (gta_ph_grouped.EmploymentStatus == 'P')][['Zone', 'Persons']] \
-        .to_csv("output/MP.csv", index=False)
+        .to_csv("output/ZonalResidence/MP.csv", index=False)
     gta_ph_grouped.loc[(gta_ph_grouped.Occupation == 'M') &
                        (gta_ph_grouped.EmploymentStatus == 'F')][['Zone', 'Persons']] \
-        .to_csv("output/MF.csv", index=False)
+        .to_csv("output/ZonalResidence/MF.csv", index=False)
     gta_ph_grouped.loc[(gta_ph_grouped.Occupation == 'P') &
                        (gta_ph_grouped.EmploymentStatus == 'P')][['Zone', 'Persons']] \
-        .to_csv("output/PP.csv", index=False)
+        .to_csv("output/ZonalResidence/PP.csv", index=False)
     gta_ph_grouped.loc[(gta_ph_grouped.Occupation == 'P') &
                        (gta_ph_grouped.EmploymentStatus == 'F')][['Zone', 'Persons']] \
-        .to_csv("output/PF.csv", index=False)
+        .to_csv("output/ZonalResidence/PF.csv", index=False)
     gta_ph_grouped.loc[(gta_ph_grouped.Occupation == 'S') &
                        (gta_ph_grouped.EmploymentStatus == 'F')][['Zone', 'Persons']] \
-        .to_csv("output/SF.csv", index=False)
+        .to_csv("output/ZonalResidence/SF.csv", index=False)
     gta_ph_grouped.loc[(gta_ph_grouped.Occupation == 'S') &
                        (gta_ph_grouped.EmploymentStatus == 'P')][['Zone', 'Persons']] \
-        .to_csv("output/SP.csv", index=False)
+        .to_csv("output/ZonalResidence/SP.csv", index=False)
 
-    logger.info('Employment and occuption vectors output')
+    logger.info('Employment and occupation vectors output')
 
 
 logger.info("GTAModel popsyn post-processing completed.")
