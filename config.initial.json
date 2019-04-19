@@ -12,19 +12,16 @@
   "PopSyn3SettingsFile": "runtime\\config\\settings.xml",
   "OutputFolder": "",
   "CategoryMapping": {
-    "Persons": [
-      {
-        "FieldName": "",
-        "FieldValue": "",
-        "MappedValue": 0
+    "Persons": {
+
+      "AttributeName": {
+        "InitialValue": 0
       }
-    ],
-    "Households": [
-      {
-        "FieldName": "",
-        "FieldValue": "",
-        "MappedValue": 0
+    },
+    "Households": {
+      "AttributeName": {
+        "InitialValue": 0
       }
-    ]
+    }
   }
 }

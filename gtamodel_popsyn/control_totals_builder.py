@@ -2,7 +2,7 @@ import pandas as pd
 import json
 
 
-class ControlTotalsBuilder():
+class ControlTotalsBuilder(object):
     """
     ControlTotalsBuilder analyzes the input household and persons data and generates control totals
     for the specified attributes across all levels of geography.

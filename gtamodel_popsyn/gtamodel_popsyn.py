@@ -1,7 +1,7 @@
 import pandas as pd
 import json
 from gtamodel_popsyn.control_totals_builder import ControlTotalsBuilder
-from gtamodel_popsyn.seed_data_processor import SeedDataProcessor
+from gtamodel_popsyn.input_processor import SeedDataProcessor
 
 
 class GTAModelPopSyn():
