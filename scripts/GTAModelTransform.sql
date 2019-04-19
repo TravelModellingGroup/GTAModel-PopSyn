@@ -34,9 +34,9 @@ Vehicles TINYINT,
 IncomeClass TINYINT) AS SELECT tempId as HouseholdId, maz as HouseholdZone, finalweight as ExpansionFactor, DwellingType,NumberOfPersons,Vehicles,IncomeClass from synpop_hh
 order by tempId asc;
 
-drop table if exists GTA_PERSONS_HOUSEHOLDS;
+/*drop table if exists GTA_PERSONS_HOUSEHOLDS;
 
-/*CREATE TABLE GTA_PERSONS_HOUSEHOLDS(
+CREATE TABLE GTA_PERSONS_HOUSEHOLDS(
 HouseholdId INT(11),
 HouseholdZone SMALLINT,
 ExpansionFactorH SMALLINT,

@@ -123,60 +123,11 @@
         </marginals>
     </target>
 
+    <!--  <target>
 
-             <target>
-
+         define conditions for 4 persons per household controls for households
          <marginals>
              <id>2</id>
-             <description>Occupation Counts</description>
-             <geographyType>maz</geographyType>
-             <controlType>count</controlType>
-             <table>perstable</table>
-             <constraint id="1">
-                 <importance>10000</importance>
-                 <controlField>G</controlField>
-                 <field>Occupation</field>
-                 <type>equality</type>
-                 <value>1</value>
-             </constraint>
-             <constraint id="2">
-                 <importance>10000</importance>
-                 <controlField>S</controlField>
-                 <field>Occupation</field>
-                 <type>equality</type>
-                 <value>2</value>
-             </constraint>
-             <constraint id="3">
-                 <importance>10000</importance>
-                 <controlField>M</controlField>
-                 <field>Occupation</field>
-                 <type>equality</type>
-                 <value>3</value>
-             </constraint>
-             <constraint id="4">
-                 <importance>10000</importance>
-                 <controlField>P</controlField>
-                 <field>Occupation</field>
-                 <type>equality</type>
-                 <value>4</value>
-             </constraint>
-
-             <constraint id="5">
-                 <importance>10000</importance>
-                 <controlField>O</controlField>
-                 <field>Occupation</field>
-                 <type>equality</type>
-                 <value>5</value>
-             </constraint>
-
-
-         </marginals>
-     </target>
-
-    <target>
-
-         <marginals>
-             <id>3</id>
              <description>Household Income controls per category</description>
              <geographyType>maz</geographyType>
              <controlType>simple</controlType>
@@ -231,48 +182,171 @@
          </marginals>
      </target>
 
+
+ e_O,e_F,e_P,e_J,e_H
+
     <target>
 
-        <!-- O F P J H -->
+       - Employment Status counts for persons
+        <marginals>
+            <id>2</id>
+            <description>Employment Statuses</description>
+            <geographyType>maz</geographyType>
+            <controlType>count</controlType>
+            <table>perstable</table>
+            <constraint id="1">
+                <importance>10000</importance>
+                <controlField>E_O</controlField>
+                <field>EmploymentStatus</field>
+                <type>equality</type>
+                <value>'O'</value>
+            </constraint>
+            <constraint id="2">
+                <importance>10000</importance>
+                <controlField>E_F</controlField>
+                <field>EmploymentStatus</field>
+                <type>equality</type>
+                <value>'F'</value>
+            </constraint>
+            <constraint id="3">
+                <importance>10000</importance>
+                <controlField>E_P</controlField>
+                <field>EmploymentStatus</field>
+                <type>equality</type>
+                <value>'P'</value>
+            </constraint>
+            <constraint id="4">
+                <importance>10000</importance>
+                <controlField>E_J</controlField>
+                <field>EmploymentStatus</field>
+                <type>equality</type>
+                <value>'J'</value>
+            </constraint>
+            <constraint id="5">
+                <importance>1000</importance>
+                <controlField>E_H</controlField>
+                <field>EmploymentStatus</field>
+                <type>equality</type>
+                <value>'H'</value>
+            </constraint>
+        </marginals>
+    </target>-->
+
+    <!--
+ <target>
+        <marginals>
+            <id>2</id>
+            <description>Sex Totals</description>
+            <geographyType>maz</geographyType>
+            <controlType>count</controlType>
+            <table>perstable</table>
+            <constraint id="1">
+                <importance>10000</importance>
+                <controlField>male</controlField>
+                <field>Sex</field>
+                <type>equality</type>
+                <value>'M'</value>
+            </constraint>
+            <constraint id="2">
+                <importance>10000</importance>
+                <controlField>female</controlField>
+                <field>Sex</field>
+                <type>equality</type>
+                <value>'F'</value>
+            </constraint>
+
+        </marginals>
+    </target>
+
+             <target>
+
          <marginals>
-             <id>4</id>
-             <description>EmploymentStatus Counts</description>
+             <id>2</id>
+             <description>Occupation totals for persons</description>
              <geographyType>meta</geographyType>
              <controlType>count</controlType>
              <table>perstable</table>
              <constraint id="1">
+                 <importance>1000</importance>
+                 <controlField>G</controlField>
+                 <field>Occupation</field>
+                 <type>equality</type>
+                 <value>'G'</value>
+             </constraint>
+             <constraint id="2">
                  <importance>10000</importance>
-                 <controlField>E_O</controlField>
-                 <field>EmploymentStatus</field>
+                 <controlField>S</controlField>
+                 <field>Occupation</field>
+                 <type>equality</type>
+                 <value>'S'</value>
+             </constraint>
+             <constraint id="3">
+                 <importance>1000</importance>
+                 <controlField>M</controlField>
+                 <field>Occupation</field>
+                 <type>equality</type>
+                 <value>'M'</value>
+             </constraint>
+             <constraint id="4">
+                 <importance>1000</importance>
+                 <controlField>P</controlField>
+                 <field>Occupation</field>
+                 <type>equality</type>
+                 <value>'P'</value>
+             </constraint>
+             <constraint id="5">
+                 <importance>1000</importance>
+                 <controlField>O</controlField>
+                 <field>Occupation</field>
+                 <type>equality</type>
+                 <value>'O'</value>
+             </constraint>
+
+         </marginals>
+     </target>
+-->
+
+             <target>
+
+         <marginals>
+             <id>2</id>
+             <description>Occupation Counts</description>
+             <geographyType>maz</geographyType>
+             <controlType>count</controlType>
+             <table>perstable</table>
+             <constraint id="1">
+                 <importance>10000</importance>
+                 <controlField>G</controlField>
+                 <field>Occupation</field>
                  <type>equality</type>
                  <value>1</value>
              </constraint>
              <constraint id="2">
                  <importance>10000</importance>
-                 <controlField>E_F</controlField>
-                 <field>EmploymentStatus</field>
+                 <controlField>S</controlField>
+                 <field>Occupation</field>
                  <type>equality</type>
                  <value>2</value>
              </constraint>
              <constraint id="3">
                  <importance>10000</importance>
-                 <controlField>E_P</controlField>
-                 <field>EmploymentStatus</field>
+                 <controlField>M</controlField>
+                 <field>Occupation</field>
                  <type>equality</type>
                  <value>3</value>
              </constraint>
              <constraint id="4">
                  <importance>10000</importance>
-                 <controlField>E_J</controlField>
-                 <field>EmploymentStatus</field>
+                 <controlField>P</controlField>
+                 <field>Occupation</field>
                  <type>equality</type>
                  <value>4</value>
              </constraint>
 
              <constraint id="5">
                  <importance>10000</importance>
-                 <controlField>E_H</controlField>
-                 <field>EmploymentStatus</field>
+                 <controlField>O</controlField>
+                 <field>Occupation</field>
                  <type>equality</type>
                  <value>5</value>
              </constraint>
@@ -281,11 +355,10 @@
          </marginals>
      </target>
 
-    <!-- control total target for total population of entire region -->
     <target>
 
         <marginals>
-            <id>5</id>
+            <id>3</id>
             <description>population</description>
             <geographyType>meta</geographyType>
             <controlType>count</controlType>

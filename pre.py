@@ -15,11 +15,11 @@ persons_base = pd.read_csv("private/data/EstimationPersons.csv")
 
 zones = pd.read_csv("data/Zones.csv")[['Zone#', 'PD']]
 
+households_base = pd.merge(households_base, zones, left_on="HouseholdZone", right_on="Zone#")[
+    ['HouseholdId', 'DwellingType', 'NumberOfPersons', 'Vehicles',
+     'IncomeClass', 'ExpansionFactor', 'HouseholdZone', 'PD']]
 
-households_base = pd.merge(households_base,zones,left_on="HouseholdZone", right_on="Zone#")[['HouseholdId', 'DwellingType', 'NumberOfPersons', 'Vehicles',
-                                   'IncomeClass',  'ExpansionFactor','HouseholdZone','PD']]
-
-#def map_zone(x):
+# def map_zone(x):
 #    if x['Zone#'] not in zone_map:
 #        zone_map[x['Zone#']] = x['puma']
 #    return x
@@ -41,11 +41,11 @@ households_base.sort_values(by=['HouseholdZone'], ascending=True).reset_index(in
 # > 625 will be PUMA 1
 
 
-households_base.loc[households_base.HouseholdZone <= 624, 'puma'] = 1
-households_base.loc[households_base.HouseholdZone > 624, 'puma'] = 2
+households_base.loc[households_base.PD <= 16, 'puma'] = 1
+households_base.loc[households_base.PD > 16, 'puma'] = 2
 
 households_base = households_base[['HouseholdId', 'puma', 'DwellingType', 'NumberOfPersons', 'Vehicles',
-                                   'IncomeClass', 'weighth', 'HouseholdZone','PD']]
+                                   'IncomeClass', 'weighth', 'HouseholdZone', 'PD']]
 
 # aassign a valid income value to '7' to 1-6
 
@@ -66,25 +66,22 @@ households_base.IncomeClass = households_base.IncomeClass.apply(lambda x: np.ran
 persons_households = pd.merge(left=persons_base, right=households_base, left_on="HouseholdId", right_on="HouseholdId",
                               how="left")
 
-persons_households.loc[persons_households.HouseholdZone <= 624, 'puma'] = 1
-persons_households.loc[persons_households.HouseholdZone > 624, 'puma'] = 2
+persons_households.loc[persons_households.PD <= 16, 'puma'] = 1
+persons_households.loc[persons_households.PD > 16, 'puma'] = 2
 
 # persons_households= persons_households.drop_duplicates()
 # persons_households.sort_values(by=['HouseholdZone', 'HouseholdId'], ascending=True, inplace=True)
-persons_households.sort_values(by=['HouseholdZone','HouseholdId'], ascending=True).reset_index(inplace=True)
+persons_households.sort_values(by=['HouseholdZone', 'HouseholdId'], ascending=True).reset_index(inplace=True)
 persons_households.to_csv("input/households_persons_merge.csv")
-
-print(persons_base.shape)
-
-print(persons_households.shape)
 
 # drop and re order columns
 
 # create MAZ, TAZ, and META totals
 
 gta_maz = pd.DataFrame(columns=['region',
-                                'puma','PD', 'taz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P', 'license_Y'
-    , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G', 'S', 'M', 'O', 'age0_14', 'age15_29', 'age30_44', 'age45_64'
+                                'puma', 'PD', 'taz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P', 'license_Y'
+    , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G', 'S', 'M', 'O', 'age0_14', 'age15_29', 'age30_44',
+                                'age45_64'
     , 'age65p', 'hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p', 'numv1', 'numv2', 'numv3p',
                                 'income_class_1',
                                 'income_class_2',
@@ -122,8 +119,11 @@ gta_maz['totpop'] = hh_group.weightp.sum().astype(int).to_list()
 
 gta_maz.to_csv("input/gtamodel_taz.csv", index=False)
 
-gta_maz['PD'] = households_base.drop_duplicates('HouseholdZone').sort_values(['HouseholdZone'])[['PD']].reset_index(drop=True)
-gta_maz['taz'] = hh_group.groups.keys()
+gta_maz['PD'] = households_base.drop_duplicates('HouseholdZone').sort_values(['HouseholdZone'])[['PD']].reset_index(
+    drop=True)
+gta_maz['taz'] = households_base.drop_duplicates('HouseholdZone').sort_values(['HouseholdZone'])[['PD']].reset_index(
+    drop=True)
+gta_maz['maz'] = hh_group.groups.keys()
 gta_maz['male'] = hh_group.apply(lambda x: sum_column(x, 'Sex', 'M', 'weightp')).astype(int).to_list()
 gta_maz['female'] = hh_group.apply(lambda x: sum_column(x, 'Sex', 'F', 'weightp')).astype(int).to_list()
 gta_maz['income_class_1'] = hh2_group.apply(lambda x: sum_column(x, 'IncomeClass', 1, 'weighth')).astype(int).to_list()
@@ -161,7 +161,6 @@ gta_maz['S'] = hh_group.apply(lambda x: sum_column(x, 'Occupation', 'S', 'weight
 gta_maz['M'] = hh_group.apply(lambda x: sum_column(x, 'Occupation', 'M', 'weightp')).astype(int).to_list()
 gta_maz['O'] = hh_group.apply(lambda x: sum_column(x, 'Occupation', 'O', 'weightp')).astype(int).to_list()
 
-
 gta_maz['license_Y'] = hh_group.apply(lambda x: sum_column(x, 'License', 'Y', 'weightp')).astype(int).to_list()
 gta_maz['license_N'] = hh_group.apply(lambda x: sum_column(x, 'License', 'N', 'weightp')).astype(int).to_list()
 
@@ -174,30 +173,64 @@ gta_maz['totpop'] = hh_group.weightp.sum().astype(int).to_list()
 gta_maz['totalhh'] = hh2_group.weighth.sum().astype(int).to_list()
 
 # gta_maz['puma'] = gta_maz['taz'].apply(lambda x: zone_map[x])
-gta_maz.loc[gta_maz.taz <= 624, 'puma'] = 1
-gta_maz.loc[gta_maz.taz > 624, 'puma'] = 2
+gta_maz.loc[gta_maz.PD <= 16, 'puma'] = 1
+gta_maz.loc[gta_maz.PD > 16, 'puma'] = 2
 
 # gta_maz['puma'] = gta_maz['taz']
 gta_maz['region'] = 1
 
-gta_maz.to_csv("input/gtamodel_taz.csv", index=False)
+gta_maz = gta_maz.sort_values(['puma', 'taz', 'maz'])
 
-gta_maz['maz'] = gta_maz['taz']
+# gta_maz['maz'] = gta_maz['taz']
 
-gta_maz = gta_maz[['region',
-                   'puma', 'PD', 'taz', 'maz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P', 'license_Y'
-    , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G', 'S', 'M', 'O', 'age0_14', 'age15_29', 'age30_44', 'age45_64'
+gta_maz[['region',
+         'puma', 'PD', 'taz', 'maz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P', 'license_Y'
+    , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G', 'S', 'M', 'O', 'age0_14', 'age15_29', 'age30_44',
+         'age45_64'
     , 'age65p', 'hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p', 'numv1', 'numv2', 'numv3p',
-                   'income_class_1',
-                   'income_class_2',
-                   'income_class_3',
-                   'income_class_4',
-                   'income_class_5',
-                   'income_class_6',
-                   'male',
-                   'female']]
+         'income_class_1',
+         'income_class_2',
+         'income_class_3',
+         'income_class_4',
+         'income_class_5',
+         'income_class_6',
+         'male',
+         'female']].to_csv("input/gtamodel_maz.csv", index=False)
 
-gta_maz.to_csv("input/gtamodel_maz.csv", index=False)
+gta_taz = gta_maz.groupby('taz')[['totalhh', 'totpop', 'S_O', 'S_S', 'S_P', 'license_Y'
+    , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G', 'S', 'M', 'O', 'age0_14', 'age15_29', 'age30_44',
+                                  'age45_64'
+    , 'age65p', 'hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p', 'numv1', 'numv2', 'numv3p',
+                                  'income_class_1',
+                                  'income_class_2',
+                                  'income_class_3',
+                                  'income_class_4',
+                                  'income_class_5',
+                                  'income_class_6',
+                                  'male',
+                                  'female']].sum().reset_index()
+
+gta_taz['region'] = 1
+gta_taz['PD'] = gta_taz['taz']
+
+gta_taz['puma'] = 0
+gta_taz.loc[gta_taz.PD <= 16, 'puma'] = 1
+gta_taz.loc[gta_taz.PD > 16, 'puma'] = 2
+
+gta_taz[['region',
+         'puma', 'PD', 'taz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P', 'license_Y'
+    , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G', 'S', 'M', 'O', 'age0_14', 'age15_29', 'age30_44',
+         'age45_64'
+    , 'age65p', 'hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p', 'numv1', 'numv2', 'numv3p',
+         'income_class_1',
+         'income_class_2',
+         'income_class_3',
+         'income_class_4',
+         'income_class_5',
+         'income_class_6',
+         'male',
+         'female']].sort_values(['puma', 'taz']).to_csv("input/gtamodel_taz.csv", index=False)
+
 # generate taz version
 
 # creta meta totals\
@@ -212,7 +245,6 @@ gta_meta = pd.DataFrame(columns=['region', 'totalhh', 'totpop',
                                  'income_class_4',
                                  'income_class_5',
                                  'income_class_6'
-
                                  ]);
 
 gta_meta.loc[0] = [1,
@@ -264,18 +296,24 @@ persons.rename(columns={'weightp': 'weight'}, inplace=True)
 
 persons.sort_values(by=['HouseholdId'], ascending=True).reset_index(inplace=True)
 
-'''
-persons.loc[persons.Occupation == 'G','Occupation'] = 1
-persons.loc[persons.Occupation == 'S','Occupation'] = 2
-persons.loc[persons.Occupation == 'M','Occupation'] = 3
-persons.loc[persons.Occupation == 'P','Occupation'] = 4
+persons.loc[persons.Occupation == 'G', 'Occupation'] = 1
+persons.loc[persons.Occupation == 'S', 'Occupation'] = 2
+persons.loc[persons.Occupation == 'M', 'Occupation'] = 3
+persons.loc[persons.Occupation == 'P', 'Occupation'] = 4
+persons.loc[persons.Occupation == 'O', 'Occupation'] = 5
 
-'''
+# O F P J H
+persons.loc[persons.EmploymentStatus == 'E_O', 'EmploymentStatus'] = 1
+persons.loc[persons.EmploymentStatus == 'E_F', 'EmploymentStatus'] = 2
+persons.loc[persons.EmploymentStatus == 'E_P', 'EmploymentStatus'] = 3
+persons.loc[persons.EmploymentStatus == 'E_J', 'EmploymentStatus'] = 4
+persons.loc[persons.EmploymentStatus == 'E_H', 'EmploymentStatus'] = 5
+
 persons.to_csv("private/input/persons.csv", index=False)
 
 logger.info(f'Persons data has been written to file: private/input/persons.csv')
 
-households = persons_households[['HouseholdId', 'puma','PD', 'DwellingType', 'NumberOfPersons', 'Vehicles',
+households = persons_households[['HouseholdId', 'puma', 'PD', 'DwellingType', 'NumberOfPersons', 'Vehicles',
                                  'IncomeClass', 'weighth']].drop_duplicates(['HouseholdId'])
 
 households.rename(columns={'weighth': 'weight'}, inplace=True)

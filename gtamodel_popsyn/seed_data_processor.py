@@ -7,5 +7,5 @@ class SeedDataProcessor():
 
     def __init__(self, config):
 
-        self.__config = config
+        self._config = config
         return

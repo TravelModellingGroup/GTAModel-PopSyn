@@ -13,7 +13,7 @@ class ControlTotalsBuilder():
         :param config_file:
         """
 
-        self.__config = config
+        self._config = config
 
     def build(self):
         """
@@ -23,10 +23,10 @@ class ControlTotalsBuilder():
 
         return
 
-    def __process_persons(self):
+    def _process_persons(self):
         return
 
-    def __process_households(self):
+    def _process_households(self):
         return
 
     def write_control_files(self):
