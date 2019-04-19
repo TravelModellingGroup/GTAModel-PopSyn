@@ -96,6 +96,7 @@ logger.debug(classpaths)
 
 logger.info('Popsyn process started - calling PopSyn3.')
 
+
 subprocess.run([f'{config["Java64Path"]}/bin/java', "-showversion", '-server', '-Xms8000m', '-Xmx15000m',
                 '-XX:ErrorFile=output/java_error%p.log',
                 '-cp', ';'.join(classpaths), '-Djppf.config=jppf-clientLocal.properties',

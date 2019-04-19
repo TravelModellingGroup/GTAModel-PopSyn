@@ -181,7 +181,50 @@
 
          </marginals>
      </target>
+         <target>
 
+         define conditions for 4 persons per household controls for households
+         <marginals>
+             <id>3</id>
+             <description>Number of occupations</description>
+             <geographyType>maz</geographyType>
+             <controlType>count</controlType>
+             <table>perstable</table>
+             <constraint id="1">
+                 <importance>1000</importance>
+                 <controlField>G</controlField>
+                 <field>Occupation</field>
+                 <type>equality</type>
+                 <value>'G'</value>
+             </constraint>
+             <constraint id="2">
+                 <importance>1000</importance>
+                 <controlField>S</controlField>
+                 <field>Occupation</field>
+                 <type>equality</type>
+                 <value>'S'</value>
+             </constraint>
+             <constraint id="3">
+                 <importance>1000</importance>
+                 <controlField>M</controlField>
+                 <field>Occupation</field>
+                 <type>equality</type>
+                 <value>'M'</value>
+             </constraint>
+             <constraint id="4">
+                 <importance>1000</importance>
+                 <controlField>P</controlField>
+                 <field>Occupation</field>
+                 <type>equality</type>
+                 <value>'P'</value>
+             </constraint>
+
+
+
+
+
+         </marginals>
+     </target>
 
  e_O,e_F,e_P,e_J,e_H
 
@@ -306,59 +349,10 @@
      </target>
 -->
 
-             <target>
-
-         <marginals>
-             <id>2</id>
-             <description>Occupation Counts</description>
-             <geographyType>maz</geographyType>
-             <controlType>count</controlType>
-             <table>perstable</table>
-             <constraint id="1">
-                 <importance>10000</importance>
-                 <controlField>G</controlField>
-                 <field>Occupation</field>
-                 <type>equality</type>
-                 <value>'G'</value>
-             </constraint>
-             <constraint id="2">
-                 <importance>10000</importance>
-                 <controlField>S</controlField>
-                 <field>Occupation</field>
-                 <type>equality</type>
-                 <value>'S'</value>
-             </constraint>
-             <constraint id="3">
-                 <importance>10000</importance>
-                 <controlField>M</controlField>
-                 <field>Occupation</field>
-                 <type>equality</type>
-                 <value>'M'</value>
-             </constraint>
-             <constraint id="4">
-                 <importance>10000</importance>
-                 <controlField>P</controlField>
-                 <field>Occupation</field>
-                 <type>equality</type>
-                 <value>'P'</value>
-             </constraint>
-
-             <constraint id="5">
-                 <importance>10000</importance>
-                 <controlField>O</controlField>
-                 <field>Occupation</field>
-                 <type>equality</type>
-                 <value>'O'</value>
-             </constraint>
-
-
-         </marginals>
-     </target>
-
     <target>
 
         <marginals>
-            <id>3</id>
+            <id>2</id>
             <description>population</description>
             <geographyType>meta</geographyType>
             <controlType>count</controlType>

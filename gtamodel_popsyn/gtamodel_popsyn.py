@@ -1,0 +1,42 @@
+import pandas as pd
+import json
+from gtamodel_popsyn.control_totals_builder import ControlTotalsBuilder
+from gtamodel_popsyn.seed_data_processor import SeedDataProcessor
+
+
+class GTAModelPopSyn():
+
+    def __init__(self,config_file_path='config.json'):
+        """
+        Initializes GTAModelPopSyn class responsible for building control totals and
+        processing the input seed data.
+        :param config_file_path: The path to the input configuration.
+        """
+
+        self.__config = None
+        self.__seed_data_processor = None
+        self.__control_totals_builder = None
+
+        try:
+            with open(config_file_path) as config_file:
+                self.config = json.load(config_file)
+
+        except FileNotFoundError:
+            raise FileNotFoundError
+
+        return
+
+    def __init_input_data(self):
+
+        return
+
+    def __init__seed_data_processor(self):
+        self.__seed_data_processor = SeedDataProcessor(self.__config)
+
+    def __init__control_totals_builder(self):
+        self.__control_totals_builder = ControlTotalsBuilder(self.__config)
+        return
+
+    def build_control_totals(self):
+
+        return

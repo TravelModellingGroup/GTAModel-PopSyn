@@ -264,6 +264,13 @@ persons.rename(columns={'weightp': 'weight'}, inplace=True)
 
 persons.sort_values(by=['HouseholdId'], ascending=True).reset_index(inplace=True)
 
+'''
+persons.loc[persons.Occupation == 'G','Occupation'] = 1
+persons.loc[persons.Occupation == 'S','Occupation'] = 2
+persons.loc[persons.Occupation == 'M','Occupation'] = 3
+persons.loc[persons.Occupation == 'P','Occupation'] = 4
+
+'''
 persons.to_csv("private/input/persons.csv", index=False)
 
 logger.info(f'Persons data has been written to file: private/input/persons.csv')

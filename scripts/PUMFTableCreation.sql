@@ -31,7 +31,7 @@ CREATE TABLE pumf_person(
 	Sex VARCHAR(1) NULL,
 	License VARCHAR(1) NULL,
 	EmploymentStatus VARCHAR(1) NULL,
-	Occupation VARCHAR(1) NULL,
+	Occupation INT NULL,
 	StudentStatus VARCHAR(1) NULL,
 	EmploymentZone INT NULL,
 	weight INT NULL,
