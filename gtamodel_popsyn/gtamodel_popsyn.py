@@ -4,7 +4,7 @@ from gtamodel_popsyn.control_totals_builder import ControlTotalsBuilder
 from gtamodel_popsyn.input_processor import SeedDataProcessor
 
 
-class GTAModelPopSyn():
+class GTAModelPopSyn(object):
 
     def __init__(self,config_file_path='config.json'):
         """
@@ -40,3 +40,10 @@ class GTAModelPopSyn():
     def build_control_totals(self):
 
         return
+
+    def run(self):
+        """
+
+
+        :return:
+        """

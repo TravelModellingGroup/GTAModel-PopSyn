@@ -6,6 +6,7 @@ import json
 
 # parse input arguments
 from gtamodel_popsyn.input_processor import InputProcessor
+from gtamodel_popsyn.gtamodel_popsyn import GTAModelPopSyn
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-c', '--config', action='store', required=False, default='config.json',
@@ -31,6 +32,11 @@ except:
     logger.error('Unable to load configuration file.')
     logger.info("GTAModel PopSyn will now terminate.")
     sys.exit(1)
+
+
+gtamodel_popsyn = GTAModelPopSyn('')
+
+gtamodel_popsyn.run()
 
 logger.info(f'Configuration file loaded: {args.config}')
 logger.info(f'Processing input data...')
