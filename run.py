@@ -43,10 +43,10 @@ with warnings.catch_warnings():
             pumf_table_creation_sql = pumf_table_creation_file.read()
             execute_multi_sql(db_connection, pumf_table_creation_sql)
 
-        households_data = pandas.read_csv(config["HouseholdsSeedFile"])
+        households_data = pandas.read_csv(config["ProcessedHouseholdsSeedFile"])
         households_data.to_sql('pumf_hh', db_connection, if_exists='append', index=False)
 
-        persons_data = pandas.read_csv(config["PersonsSeedFile"])
+        persons_data = pandas.read_csv(config["ProcessedPersonsSeedFile"])
         persons_data.to_sql('pumf_person', db_connection, if_exists='append', index=False)
 
         with open('scripts/PUMFTableProcessing.sql') as pumf_table_processing_file:

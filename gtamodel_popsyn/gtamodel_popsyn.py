@@ -1,7 +1,7 @@
 import pandas as pd
 import json
 from gtamodel_popsyn.control_totals_builder import ControlTotalsBuilder
-from gtamodel_popsyn.input_processor import SeedDataProcessor
+from gtamodel_popsyn.input_processor import InputProcessor
 
 
 class GTAModelPopSyn(object):
@@ -13,16 +13,6 @@ class GTAModelPopSyn(object):
         :param config_file_path: The path to the input configuration.
         """
 
-        self._config = None
-        self._seed_data_processor = None
-        self._control_totals_builder = None
-
-        try:
-            with open(config_file_path) as config_file:
-                self.config = json.load(config_file)
-
-        except FileNotFoundError:
-            raise FileNotFoundError
 
         return
 

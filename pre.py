@@ -117,7 +117,7 @@ hh2_group = households_base.copy().groupby(['HouseholdZone'])
 gta_maz['totalhh'] = hh2_group.weighth.sum().astype(int).to_list()
 gta_maz['totpop'] = hh_group.weightp.sum().astype(int).to_list()
 
-gta_maz.to_csv("input/gtamodel_taz.csv", index=False)
+# gta_maz.to_csv("input/gtamodel_taz.csv", index=False)
 
 gta_maz['PD'] = households_base.drop_duplicates('HouseholdZone').sort_values(['HouseholdZone'])[['PD']].reset_index(
     drop=True)
@@ -184,7 +184,7 @@ gta_maz = gta_maz.sort_values(['puma', 'taz', 'maz'])
 # gta_maz['maz'] = gta_maz['taz']
 
 gta_maz[['region',
-         'puma', 'PD', 'taz', 'maz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P', 'license_Y'
+         'puma', 'taz', 'maz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P', 'license_Y'
     , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G', 'S', 'M', 'O', 'age0_14', 'age15_29', 'age30_44',
          'age45_64'
     , 'age65p', 'hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p', 'numv1', 'numv2', 'numv3p',

@@ -33,7 +33,8 @@ class InputProcessor(object):
         self._read_persons_households()
 
         # perform control total processing here
-        self._control_totals_builder.build()
+        self._control_totals_builder.build_control_totals(self._households_base,
+                                                          self._persons_households)
 
         # perform any post process modifications and write results to file
         self._post_process_persons_households()
@@ -48,17 +49,24 @@ class InputProcessor(object):
         """
 
         # read zone information
-        self._zones = pd.read_csv("data/Zones.csv")[['Zone#', 'PD']]
+        self._zones = pd.read_csv("data/Zones.csv",
+                                  dtype={'Zone#': int, 'PD': int})[['Zone#', 'PD']]
+
+        # self._zones = self._zones[self._zones.PD > 0]
 
         # read in csv data
         self._persons_base = pd.read_csv(f"{self._config['PersonsSeedFile']}")
-        self._households_base = pd.read_csv(f"{self._config['HouseholdsSeedFile']}")
+        self._households_base = pd.read_csv(f"{self._config['HouseholdsSeedFile']}",
+                                            dtype={'HouseholdZone': int})
 
         self._households_base = pd.merge(self._households_base, self._zones,
                                          left_on="HouseholdZone", right_on="Zone#")[
             ['HouseholdId', 'DwellingType', 'NumberOfPersons', 'Vehicles',
              'IncomeClass', 'ExpansionFactor', 'HouseholdZone', 'PD']] \
             .sort_values(by=['HouseholdZone'], ascending=True).reset_index()
+
+        # assign appropriate puma values
+        self._assign_puma_values()
 
         self._preprocess_households()
         self._preprocess_persons()
@@ -68,28 +76,36 @@ class InputProcessor(object):
                                             left_on="HouseholdId",
                                             right_on="HouseholdId",
                                             how="left")
-        # filter unused zones
+
+        self._filter_records()
+
+        return
+
+    def _filter_records(self):
+        """
+        Filters household and persons records from invalid zones and PDs
+        :return:
+        """
+        self._households_base = self._households_base[self._households_base.PD > 0]
+        self._persons_households = self._persons_households[self._persons_households.PD > 0]
         self._persons_households = self._persons_households[
             self._persons_households['HouseholdZone'].isin(InputProcessor._ZONE_RANGE)]
 
-        # assign appropriate puma values
-        self._assign_puma_values()
-
-        # sort dataframe
-        self._persons_households.sort_values(by=['PD', 'HouseholdZone', 'HouseholdId'],
+        self._households_base = self._households_base[
+            self._households_base['HouseholdZone'].isin(InputProcessor._ZONE_RANGE)]
+        self._persons_households.sort_values(by=['HouseholdZone', 'PD'],
                                              ascending=True).reset_index(inplace=True)
-
         return
+
 
     def _assign_puma_values(self):
         """
         Assigns the associated puma assignment from PD values from predefined setting
         :return:
         """
-        self._persons_households['puma'] = 0
+        self._households_base['puma'] = 0
         for index, pd_range in enumerate(InputProcessor._PUMA_PD_RANGES):
-            self._persons_households.loc[self._persons_households['PD'].isin(pd_range), 'puma'] \
-                = index + 1
+            self._households_base.loc[self._households_base['PD'].isin(pd_range), 'puma'] = index + 1
 
     def _preprocess_persons(self):
         """
@@ -104,6 +120,10 @@ class InputProcessor(object):
         """
         Process any household specific attributes before the control generation stage.
         """
+        self._households_base.PD = self._households_base.PD.astype(int)
+        self._households_base.puma = self._households_base.puma.astype(int)
+        self._households_base.HouseholdZone = self._households_base.HouseholdZone.astype(int)
+        self._households_base.IncomeClass = self._households_base.IncomeClass.astype(int)
         self._households_base.rename(columns={'ExpansionFactor': 'weighth'}, inplace=True)
         self._households_base.IncomeClass = \
             self._households_base.IncomeClass.apply(lambda x: np.random.randint(1, 7) if 7 else x)
@@ -125,13 +145,13 @@ class InputProcessor(object):
         Performs any post process modifications to household records and writes the results to file.
         :return:
         """
-        households = self._persons_households[['HouseholdId', 'puma', 'PD', 'DwellingType',
+        households = self._persons_households[['HouseholdId', 'puma', 'DwellingType',
                                                'NumberOfPersons', 'Vehicles',
                                                'IncomeClass', 'weighth']].copy() \
             .drop_duplicates(['HouseholdId'])
         households.rename(columns={'weighth': 'weight'}, inplace=True)
         households.sort_values(by=['HouseholdId'], ascending=True).reset_index(inplace=True)
-        households.to_csv("private/input/households.csv", index=False)
+        households.to_csv(f"{self._config['ProcessedHouseholdsSeedFile']}", index=False)
 
     def _postprocess_persons(self):
         """
@@ -153,4 +173,4 @@ class InputProcessor(object):
 
         persons.sort_values(by=['HouseholdId'], ascending=True).reset_index(inplace=True)
 
-        persons.to_csv("private/input/persons.csv", index=False)
+        persons.to_csv(f"{self._config['ProcessedPersonsSeedFile']}", index=False)
