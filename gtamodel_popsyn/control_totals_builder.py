@@ -53,6 +53,11 @@ class ControlTotalsBuilder(object):
         self._controls['puma'] = households.groupby('HouseholdZone',as_index=False)['puma'].apply(lambda x: list(x)[0])
         self._controls['taz'] = households.groupby('HouseholdZone',as_index=False)['PD'].apply(lambda x: list(x)[0])
 
+        import sys
+        print(self._controls.groupby('taz')['puma'].apply(lambda x: list(x)[0]))
+        print(self._controls.groupby('taz')['puma'].apply(lambda x: list(x)[0]).unique())
+        # sys.exit(0)
+
         self._controls['maz'] = hh_group.groups.keys()
         self._controls['male'] = hh_group.apply(lambda x: self._sum_column(x, 'Sex', 'M', 'weightp')).astype(
             int).to_list()
@@ -199,7 +204,10 @@ class ControlTotalsBuilder(object):
                                                       'male',
                                                       'female']].sum().reset_index()
         controls_taz['region'] = 1
-        controls_taz['puma'] = self._controls.groupby('taz')['puma'].apply(lambda x: list(x)[0])
+        controls_taz['puma'] = self._controls.groupby('taz',as_index=False)['puma'].apply(lambda x: list(x)[0])
+
+        print(controls_taz['puma'])
+        print(controls_taz['puma'].unique())
 
         controls_taz[['region',
                  'puma', 'taz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P', 'license_Y'
