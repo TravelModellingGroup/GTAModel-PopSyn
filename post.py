@@ -56,7 +56,7 @@ with engine.connect() as db_connection:
         gta_model_transform_sql = gta_model_transform_file.read()
         execute_multi_sql(db_connection, gta_model_transform_sql)
 
-    logger.info("Synthesized populion data transformed.")
+    logger.info("Synthesized population data transformed.")
 
     gta_households = pandas.read_sql_table('gta_households', db_connection)
     gta_households.to_csv('output/HouseholdData/Households.csv', index=False)
@@ -64,7 +64,18 @@ with engine.connect() as db_connection:
     logger.info('Synthesized persons written to file: output/HouseholdData/Households.csv')
 
     gta_persons = pandas.read_sql_table('gta_persons', db_connection)
+
+    for mapping in config['CategoryMapping']['Persons'].items():
+        inverted_map = {value: key for key, value in mapping[1].items()}
+
+        # convert the mapping back to an integer
+        gta_persons[mapping[0]] = pandas.to_numeric(gta_persons[mapping[0]])
+        gta_persons[mapping[0]] = gta_persons[mapping[0]].map(inverted_map)
+
+    print(gta_persons.Occupation.unique())
+
     gta_persons.to_csv('output/HouseholdData/Persons.csv', index=False)
+
 
     logger.info('Synthesized persons written to file: output/gtamodel_persons.csv')
 
@@ -81,12 +92,15 @@ with engine.connect() as db_connection:
     gta_persons = gta_persons[['HouseholdId', 'Occupation',
                                'ExpansionFactor', 'EmploymentZone', 'EmploymentStatus']]
 
+
     gta_ph = pandas.merge(left=gta_persons, right=gta_households, left_on='HouseholdId', right_on='HouseholdId')
     gta_ph = gta_ph.loc[gta_ph.EmploymentZone == 0]
     gta_ph = gta_ph[['HouseholdZone', 'EmploymentStatus', 'Occupation', 'ExpansionFactor']]
     gta_ph_grouped = gta_ph.groupby(['HouseholdZone', 'EmploymentStatus', 'Occupation']).agg(
         {'ExpansionFactor': sum}).reset_index()
     gta_ph_grouped.rename(columns={'HouseholdZone': 'Zone', 'ExpansionFactor': 'Persons'}, inplace=True)
+
+
 
     gta_ph_grouped.loc[(gta_ph_grouped.Occupation == 'G') &
                        (gta_ph_grouped.EmploymentStatus == 'F')][['Zone', 'Persons']] \

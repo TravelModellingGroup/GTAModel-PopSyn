@@ -13,10 +13,10 @@ Numbers;
 CREATE TABLE pumf_hh(
 	HouseholdId INT NOT NULL,
 	puma INT NULL,
-	DwellingType INT NULL,
-	NumberOfPersons SMALLINT NULL,
-	Vehicles INT NULL,
-	IncomeClass INT NULL,
+	DwellingType TINYINT NULL,
+	NumberOfPersons TINYINT NULL,
+	Vehicles TINYINT NULL,
+	IncomeClass TINYINT NULL,
 	weight INT NULL,
 	PRIMARY KEY(HouseholdId)
 );
@@ -25,7 +25,7 @@ CREATE TABLE pumf_hh(
 CREATE TABLE pumf_person(
 	HouseholdId INT NOT NULL,
 	puma INT NULL,
-	PersonNumber INT NOT NULL,
+	PersonNumber TINYINT NOT NULL,
 	Age INT NULL,
 	Sex VARCHAR(1) NULL,
 	License VARCHAR(1) NULL,

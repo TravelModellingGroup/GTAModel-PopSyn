@@ -53,16 +53,19 @@ class ControlTotalsBuilder(object):
         self._controls['puma'] = households.groupby('HouseholdZone',as_index=False)['puma'].apply(lambda x: list(x)[0])
         self._controls['taz'] = households.groupby('HouseholdZone',as_index=False)['PD'].apply(lambda x: list(x)[0])
 
-        import sys
-        print(self._controls.groupby('taz')['puma'].apply(lambda x: list(x)[0]))
-        print(self._controls.groupby('taz')['puma'].apply(lambda x: list(x)[0]).unique())
-        # sys.exit(0)
 
         self._controls['maz'] = hh_group.groups.keys()
         self._controls['male'] = hh_group.apply(lambda x: self._sum_column(x, 'Sex', 'M', 'weightp')).astype(
             int).to_list()
         self._controls['female'] = hh_group.apply(lambda x: self._sum_column(x, 'Sex', 'F', 'weightp')).astype(
             int).to_list()
+
+
+        # households.groupby(['HouseholdZone']).apply(lambda x: x.groupby('NumberOfPersons')['ExpansionFactor'].apply(sum)).unstack()
+
+        # ph.groupby(['HouseholdZone']).apply(lambda x: x.drop_duplicates('HouseholdId').groupby(['NumberOfPersons'])['ExpansionFactor_y'].apply(sum)).unstack()
+
+        # ph.groupby(['HouseholdZone']).apply(lambda x: x.groupby(['Sex'])['ExpansionFactor_x'].apply(sum)).unstack()
 
         self._controls['income_class_1'] = hh2_group.apply(
             lambda x: self._sum_column(x, 'IncomeClass', 1, 'weighth')).astype(
@@ -183,7 +186,8 @@ class ControlTotalsBuilder(object):
                         'income_class_5',
                         'income_class_6',
                         'male',
-                        'female']].to_csv(f"{self._config['MazLevelControls']}", index=False)
+                        'female']].sort_values(['puma','taz','maz']).\
+            to_csv(f"{self._config['MazLevelControls']}", index=False)
 
     def _write_taz_control_totals_file(self):
         """
@@ -206,9 +210,6 @@ class ControlTotalsBuilder(object):
         controls_taz['region'] = 1
         controls_taz['puma'] = self._controls.groupby('taz',as_index=False)['puma'].apply(lambda x: list(x)[0])
 
-        print(controls_taz['puma'])
-        print(controls_taz['puma'].unique())
-
         controls_taz[['region',
                  'puma', 'taz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P', 'license_Y'
             , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G', 'S', 'M', 'O', 'age0_14', 'age15_29',
@@ -222,7 +223,7 @@ class ControlTotalsBuilder(object):
                  'income_class_5',
                  'income_class_6',
                  'male',
-                 'female']].sort_values(['taz','puma'])\
+                 'female']].sort_values(['puma','taz'])\
             .to_csv(f"{self._config['TazLevelControls']}", index=False)
 
     def _write_meta_control_totals_file(self):
