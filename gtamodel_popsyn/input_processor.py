@@ -89,10 +89,10 @@ class InputProcessor(object):
         self._households_base = self._households_base[self._households_base.PD > 0]
         self._persons_households = self._persons_households[self._persons_households.PD > 0]
         self._persons_households = self._persons_households[
-            self._persons_households['HouseholdZone'].isin(InputProcessor._ZONE_RANGE)]
+        self._persons_households['HouseholdZone'].isin(InputProcessor._ZONE_RANGE)]
 
         self._households_base = self._households_base[
-            self._households_base['HouseholdZone'].isin(InputProcessor._ZONE_RANGE)]
+        self._households_base['HouseholdZone'].isin(InputProcessor._ZONE_RANGE)]
         self._persons_households.sort_values(by=['HouseholdZone', 'PD'],
                                              ascending=True).reset_index(inplace=True)
         return
@@ -112,9 +112,10 @@ class InputProcessor(object):
         Process any person specific attributes before the control generation stage.
         """
         # clear certain employment zones for records
-        self._persons_base.loc[self._persons_base.EmploymentZone < 6000,
-                               'EmploymentZone'] = 0
+        # self._persons_base.loc[self._persons_base.EmploymentZone < 6000,
+        #                        'EmploymentZone'] = 0
         self._persons_base.rename(columns={'ExpansionFactor': 'weightp'}, inplace=True)
+        self._persons_base.EmploymentZone = self._persons_base.EmploymentZone.astype(int)
 
     def _preprocess_households(self):
         """

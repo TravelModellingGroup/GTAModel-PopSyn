@@ -96,12 +96,25 @@ with engine.connect() as db_connection:
     gta_ph = pandas.merge(left=gta_persons, right=gta_households, left_on='HouseholdId', right_on='HouseholdId')
     gta_ph = gta_ph.loc[gta_ph.EmploymentZone == 0]
     gta_ph = gta_ph[['HouseholdZone', 'EmploymentStatus', 'Occupation', 'ExpansionFactor']]
-    gta_ph_grouped = gta_ph.groupby(['HouseholdZone', 'EmploymentStatus', 'Occupation']).agg(
-        {'ExpansionFactor': sum}).reset_index()
-    gta_ph_grouped.rename(columns={'HouseholdZone': 'Zone', 'ExpansionFactor': 'Persons'}, inplace=True)
+    gta_ph = gta_ph.rename(columns={'HouseholdZone': 'Zone', 'ExpansionFactor': 'Persons'})
+
+    #gta_ph_grouped = gta_ph.groupby(['HouseholdZone', 'EmploymentStatus', 'Occupation']).agg(
+    #    {'ExpansionFactor': sum}).reset_index()
 
 
 
+    gta_ph_grouped  = gta_ph.groupby(['Zone', 'Occupation', 'EmploymentStatus'])['Persons'].apply(sum)
+
+    gta_ph_grouped[:,'G','F'].reset_index().to_csv("output/ZonalResidence/GF.csv", index=False)
+    gta_ph_grouped[:, 'G', 'P'].reset_index().to_csv("output/ZonalResidence/GP.csv", index=False)
+    gta_ph_grouped[:, 'M', 'F'].reset_index().to_csv("output/ZonalResidence/MF.csv", index=False)
+    gta_ph_grouped[:, 'M', 'P'].reset_index().to_csv("output/ZonalResidence/MP.csv", index=False)
+    gta_ph_grouped[:, 'P', 'F'].reset_index().to_csv("output/ZonalResidence/PF.csv", index=False)
+    gta_ph_grouped[:, 'P', 'P'].reset_index().to_csv("output/ZonalResidence/PP.csv", index=False)
+    gta_ph_grouped[:, 'S', 'F'].reset_index().to_csv("output/ZonalResidence/SF.csv", index=False)
+    gta_ph_grouped[:, 'S', 'P'].reset_index().to_csv("output/ZonalResidence/SP.csv", index=False)
+
+    """
     gta_ph_grouped.loc[(gta_ph_grouped.Occupation == 'G') &
                        (gta_ph_grouped.EmploymentStatus == 'F')][['Zone', 'Persons']] \
         .to_csv("output/ZonalResidence/GF.csv", index=False)
@@ -126,7 +139,7 @@ with engine.connect() as db_connection:
     gta_ph_grouped.loc[(gta_ph_grouped.Occupation == 'S') &
                        (gta_ph_grouped.EmploymentStatus == 'P')][['Zone', 'Persons']] \
         .to_csv("output/ZonalResidence/SP.csv", index=False)
-
+    """
     logger.info('Employment and occupation vectors output')
 
 

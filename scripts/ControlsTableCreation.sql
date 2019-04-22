@@ -58,6 +58,9 @@ CREATE TABLE control_totals_maz
     income_class_6 INT NULL,
     male           INT NULL,
     female         INT NULL,
+    employment_zone_internal INT NULL,
+    employment_zone_external INT NULL,
+    employment_zone_roaming INT NULL,
     PRIMARY KEY (maz)
 );
 
@@ -104,6 +107,9 @@ CREATE TABLE control_totals_taz
     income_class_6 INT NULL,
     male           INT NULL,
     female         INT NULL,
+    employment_zone_internal INT NULL,
+    employment_zone_external INT NULL,
+    employment_zone_roaming INT NULL,
     PRIMARY KEY (taz)
 );
 
@@ -129,5 +135,8 @@ CREATE TABLE control_totals_meta
     income_class_4 INT NULL,
     income_class_5 INT NULL,
     income_class_6 INT NULL,
+    employment_zone_internal INT NULL,
+    employment_zone_external INT NULL,
+    employment_zone_roaming INT NULL,
     PRIMARY KEY (region)
 );

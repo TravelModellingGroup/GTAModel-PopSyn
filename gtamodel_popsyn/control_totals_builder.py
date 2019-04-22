@@ -37,7 +37,10 @@ class ControlTotalsBuilder(object):
                                                'income_class_5',
                                                'income_class_6',
                                                'male',
-                                               'female'])
+                                               'female'
+                                               'employment_zone_internal',
+                                               'employment_zone_external',
+                                               'employment_zone_roaming'])
 
     def build_control_totals(self, households, persons_households):
         """
@@ -50,9 +53,8 @@ class ControlTotalsBuilder(object):
         self._controls['totalhh'] = hh2_group.weighth.sum().astype(int).to_list()
         self._controls['totpop'] = hh_group.weightp.sum().astype(int).to_list()
 
-        self._controls['puma'] = households.groupby('HouseholdZone',as_index=False)['puma'].apply(lambda x: list(x)[0])
-        self._controls['taz'] = households.groupby('HouseholdZone',as_index=False)['PD'].apply(lambda x: list(x)[0])
-
+        self._controls['puma'] = households.groupby('HouseholdZone', as_index=False)['puma'].apply(lambda x: list(x)[0])
+        self._controls['taz'] = households.groupby('HouseholdZone', as_index=False)['PD'].apply(lambda x: list(x)[0])
 
         self._controls['maz'] = hh_group.groups.keys()
         self._controls['male'] = hh_group.apply(lambda x: self._sum_column(x, 'Sex', 'M', 'weightp')).astype(
@@ -60,6 +62,18 @@ class ControlTotalsBuilder(object):
         self._controls['female'] = hh_group.apply(lambda x: self._sum_column(x, 'Sex', 'F', 'weightp')).astype(
             int).to_list()
 
+        self._controls['employment_zone_internal'] = \
+            hh_group.apply(lambda x: x[x.EmploymentZone < 6000]['weightp'].sum()).astype(
+                int).astype(
+                int).astype(int).to_list()
+        self._controls['employment_zone_roaming'] = \
+            hh_group.apply(lambda x: x[x.EmploymentZone == 8888]['weightp'].sum()).astype(
+                int).astype(int).to_list()
+        self._controls['employment_zone_external'] = \
+            hh_group.apply(
+                lambda x: x[(x.EmploymentZone >= 6000) & (x.EmploymentZone != 8000)]['weightp'].sum()).astype(
+                int).astype(
+                int).astype(int).to_list()
 
         # households.groupby(['HouseholdZone']).apply(lambda x: x.groupby('NumberOfPersons')['ExpansionFactor'].apply(sum)).unstack()
 
@@ -186,7 +200,11 @@ class ControlTotalsBuilder(object):
                         'income_class_5',
                         'income_class_6',
                         'male',
-                        'female']].sort_values(['puma','taz','maz']).\
+                        'female',
+                        'employment_zone_internal',
+                        'employment_zone_external',
+                        'employment_zone_roaming'
+                        ]].sort_values(['puma', 'taz', 'maz']). \
             to_csv(f"{self._config['MazLevelControls']}", index=False)
 
     def _write_taz_control_totals_file(self):
@@ -206,24 +224,31 @@ class ControlTotalsBuilder(object):
                                                       'income_class_5',
                                                       'income_class_6',
                                                       'male',
-                                                      'female']].sum().reset_index()
+                                                      'female',
+                                                      'employment_zone_internal',
+                                                      'employment_zone_external',
+                                                      'employment_zone_roaming'
+                                                      ]].sum().reset_index()
         controls_taz['region'] = 1
-        controls_taz['puma'] = self._controls.groupby('taz',as_index=False)['puma'].apply(lambda x: list(x)[0])
+        controls_taz['puma'] = self._controls.groupby('taz', as_index=False)['puma'].apply(lambda x: list(x)[0])
 
         controls_taz[['region',
-                 'puma', 'taz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P', 'license_Y'
+                      'puma', 'taz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P', 'license_Y'
             , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G', 'S', 'M', 'O', 'age0_14', 'age15_29',
-                 'age30_44',
-                 'age45_64'
+                      'age30_44',
+                      'age45_64'
             , 'age65p', 'hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p', 'numv1', 'numv2', 'numv3p',
-                 'income_class_1',
-                 'income_class_2',
-                 'income_class_3',
-                 'income_class_4',
-                 'income_class_5',
-                 'income_class_6',
-                 'male',
-                 'female']].sort_values(['puma','taz'])\
+                      'income_class_1',
+                      'income_class_2',
+                      'income_class_3',
+                      'income_class_4',
+                      'income_class_5',
+                      'income_class_6',
+                      'male',
+                      'female', 'employment_zone_internal',
+                      'employment_zone_external',
+                      'employment_zone_roaming'
+                      ]].sort_values(['puma', 'taz']) \
             .to_csv(f"{self._config['TazLevelControls']}", index=False)
 
     def _write_meta_control_totals_file(self):
@@ -233,13 +258,16 @@ class ControlTotalsBuilder(object):
         :return:
         """
         controls_meta = self._controls.groupby('region')[['totalhh', 'totpop',
-                                         'P', 'G', 'S', 'M', 'O',
-                                         'E_O', 'E_F', 'E_P', 'E_J', 'E_H',
-                                         'income_class_1',
-                                         'income_class_2',
-                                         'income_class_3',
-                                         'income_class_4',
-                                         'income_class_5',
-                                         'income_class_6']].sum().reset_index()
+                                                          'P', 'G', 'S', 'M', 'O',
+                                                          'E_O', 'E_F', 'E_P', 'E_J', 'E_H',
+                                                          'income_class_1',
+                                                          'income_class_2',
+                                                          'income_class_3',
+                                                          'income_class_4',
+                                                          'income_class_5',
+                                                          'income_class_6',
+                                                          'employment_zone_internal',
+                                                          'employment_zone_external',
+                                                          'employment_zone_roaming'
+                                                          ]].sum().reset_index()
         controls_meta.to_csv(f"{self._config['MetaLevelControls']}", index=False)
-
