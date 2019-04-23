@@ -124,11 +124,71 @@
         </marginals>
     </target>
 
+    <target>
+    <marginals>
+            <id>2</id>
+        	<description>Number of persons by age Category</description>
+            <geographyType>maz</geographyType>
+            <controlType>count</controlType>
+            <table>perstable</table>
+           <constraint id="1">
+            	<importance>1000</importance>
+            	<field>Age</field>
+            	<controlField>age0_14</controlField>
+            	<type>interval</type>
+            	<lo_value>0</lo_value>
+            	<lo_type>closed</lo_type>
+            	<hi_value>14</hi_value>
+            	<hi_type>closed</hi_type>
+    		</constraint>
+           <constraint id="2">
+            	<importance>1000</importance>
+            	<field>Age</field>
+            	<controlField>age15_29</controlField>
+            	<type>interval</type>
+            	<lo_value>15</lo_value>
+            	<lo_type>closed</lo_type>
+            	<hi_value>29</hi_value>
+            	<hi_type>closed</hi_type>
+    		</constraint>
+           <constraint id="3">
+            	<importance>1000</importance>
+            	<field>Age</field>
+            	<controlField>age30_44</controlField>
+            	<type>interval</type>
+            	<lo_value>30</lo_value>
+            	<lo_type>closed</lo_type>
+            	<hi_value>44</hi_value>
+            	<hi_type>closed</hi_type>
+    		</constraint>
+			<constraint id="4">
+            	<importance>1000</importance>
+            	<field>Age</field>
+            	<controlField>age45_64</controlField>
+            	<type>interval</type>
+            	<lo_value>45</lo_value>
+            	<lo_type>closed</lo_type>
+            	<hi_value>64</hi_value>
+            	<hi_type>closed</hi_type>
+    		</constraint>
+            <constraint id="5">
+            	<importance>1000</importance>
+            	<field>Age</field>
+            	<controlField>age65p</controlField>
+            	<type>interval</type>
+            	<lo_value>65</lo_value>
+            	<lo_type>closed</lo_type>
+            	<hi_value>999999999</hi_value>
+            	<hi_type>open</hi_type>
+    		</constraint>
+        </marginals>
+
+    </target>
 
     <target>
 
         <marginals>
-            <id>2</id>
+            <id>3</id>
             <description>Occupation Counts</description>
             <geographyType>taz</geographyType>
             <controlType>count</controlType>
@@ -178,7 +238,7 @@
 
         <!-- O F P J H -->
         <marginals>
-            <id>3</id>
+            <id>4</id>
             <description>EmploymentStatus Counts</description>
             <geographyType>taz</geographyType>
             <controlType>count</controlType>
@@ -228,7 +288,7 @@
 
         <!-- O F P J H -->
         <marginals>
-            <id>4</id>
+            <id>5</id>
             <description>Employment Zone</description>
             <geographyType>taz</geographyType>
             <controlType>count</controlType>
@@ -268,7 +328,7 @@
     <target>
 
         <marginals>
-            <id>5</id>
+            <id>6</id>
             <description>Household Income controls per category</description>
             <geographyType>meta</geographyType>
             <controlType>simple</controlType>
@@ -328,7 +388,7 @@
     <target>
 
         <marginals>
-            <id>6</id>
+            <id>7</id>
             <description>population</description>
             <geographyType>meta</geographyType>
             <controlType>count</controlType>
