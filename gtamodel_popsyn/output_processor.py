@@ -126,5 +126,4 @@ class OutputProcessor(object):
         return
 
     def __del__(self):
-        if self._db_connection.open:
-            self._db_connection.close()
+        return

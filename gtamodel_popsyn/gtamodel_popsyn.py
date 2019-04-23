@@ -2,6 +2,7 @@ import pandas as pd
 import json
 from gtamodel_popsyn.control_totals_builder import ControlTotalsBuilder
 from gtamodel_popsyn.input_processor import InputProcessor
+from gtamodel_popsyn.output_processor import OutputProcessor
 from gtamodel_popsyn.summary_report import SummaryReport
 from logzero import logger, setup_logger
 import logzero
@@ -18,14 +19,11 @@ class GTAModelPopSyn(object):
         self._summary_report = SummaryReport(config)
         self._control_totals_builder = ControlTotalsBuilder(self._config)
         self._input_processor = InputProcessor(self._config)
-        self._logger = setup_logger(logfile=f'{config["OutputFolder"]}/gtamodel_popsyn.log')
-
-        logger.info(f'GTAModel PopSyn')
+        self._output_processor = OutputProcessor(self._config)
+        self._logger = setup_logger(name='gtamodel')
         return
 
-
-
-    def run_summary_report(self):
+    def generate_summary_report(self):
         """
         Runs the summary report tool that generates validation data for the
         the synthesized population.
@@ -35,6 +33,11 @@ class GTAModelPopSyn(object):
         logger.info('Generating summary report.')
         self._summary_report.generate()
         logger.info('Summary report has been generated.')
+
+    def generate_outputs(self):
+        self._logger.info('Generating population synthesis outputs.')
+        self._output_processor.generate_outputs()
+        self._logger.info('Output generation has completed processing')
 
     def run(self):
         self.generate_inputs()
