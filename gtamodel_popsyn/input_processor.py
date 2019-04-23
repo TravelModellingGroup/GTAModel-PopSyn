@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import gtamodel_popsyn.control_totals_builder as gtactb
-
+import gtamodel_popsyn.constants as constants
 
 class InputProcessor(object):
     """
@@ -9,17 +9,17 @@ class InputProcessor(object):
     mappings in the seed population records.
     """
 
-    # PD -> Puma mappings
-    _PUMA_PD_RANGES = [range(1, 17), range(17, 10000)]
-    _ZONE_RANGE = range(1, 6000)
-
     def __init__(self, config):
+        """
+        :param config: configuration input
+        """
         self._config = config
         self._persons_households = pd.DataFrame()
         self._households_base = pd.DataFrame()
         self._persons_base = pd.DataFrame()
         self._zones = pd.DataFrame()
         self._control_totals_builder = gtactb.ControlTotalsBuilder(config)
+
         return
 
     def generate(self):
@@ -89,10 +89,10 @@ class InputProcessor(object):
         self._households_base = self._households_base[self._households_base.PD > 0]
         self._persons_households = self._persons_households[self._persons_households.PD > 0]
         self._persons_households = self._persons_households[
-        self._persons_households['HouseholdZone'].isin(InputProcessor._ZONE_RANGE)]
+        self._persons_households['HouseholdZone'].isin(constants.ZONE_RANGE)]
 
         self._households_base = self._households_base[
-        self._households_base['HouseholdZone'].isin(InputProcessor._ZONE_RANGE)]
+        self._households_base['HouseholdZone'].isin(constants.ZONE_RANGE)]
         self._persons_households.sort_values(by=['HouseholdZone', 'PD'],
                                              ascending=True).reset_index(inplace=True)
         return
@@ -104,7 +104,7 @@ class InputProcessor(object):
         :return:
         """
         self._households_base['puma'] = 0
-        for index, pd_range in enumerate(InputProcessor._PUMA_PD_RANGES):
+        for index, pd_range in enumerate(constants.PUMA_PD_RANGES):
             self._households_base.loc[self._households_base['PD'].isin(pd_range), 'puma'] = index + 1
 
     def _preprocess_persons(self):
@@ -115,7 +115,9 @@ class InputProcessor(object):
         # self._persons_base.loc[self._persons_base.EmploymentZone < 6000,
         #                        'EmploymentZone'] = 0
         self._persons_base.rename(columns={'ExpansionFactor': 'weightp'}, inplace=True)
+
         self._persons_base.EmploymentZone = self._persons_base.EmploymentZone.astype(int)
+
 
     def _preprocess_households(self):
         """
@@ -124,6 +126,7 @@ class InputProcessor(object):
         self._households_base.PD = self._households_base.PD.astype(int)
         self._households_base.puma = self._households_base.puma.astype(int)
         self._households_base.HouseholdZone = self._households_base.HouseholdZone.astype(int)
+
         self._households_base.IncomeClass = self._households_base.IncomeClass.astype(int)
         self._households_base.rename(columns={'ExpansionFactor': 'weighth'}, inplace=True)
         self._households_base.IncomeClass = \
@@ -171,6 +174,19 @@ class InputProcessor(object):
         # map any persons attributes to the values specified in the configuration
         for mapping in self._config['CategoryMapping']['Persons'].items():
             persons[mapping[0]] = persons[mapping[0]].map(mapping[1])
+
+        def map_occ_emp_zone(row):
+            """
+            Create a pseudo attribute binding Occupation EmploymentStatus
+            and EmploymentZone categories
+            :param row:
+            :return:
+            """
+            zone = 1 if row['EmploymentZone'] in constants.ZONE_RANGE else ( 3 if row['EmploymentZone'] == constants.ROAMING_ZONE_ID else 2)
+            row['Occ_Emp_Zone'] = row['Occupation'] + row['EmploymentStatus'] + zone
+
+        # persons['Occ_Emp_Zone'] = 0
+        # persons.apply(lambda x: map_occ_emp_zone(x),axis=1)
 
         persons.sort_values(by=['HouseholdId'], ascending=True).reset_index(inplace=True)
 

@@ -14,6 +14,7 @@ import os
 try:
     os.makedirs('output/HouseholdData/')
     os.makedirs('output/ZonalResidence/')
+    os.makedirs('output/ZonalResidence/')
 except OSError:
     pass
 
@@ -72,8 +73,6 @@ with engine.connect() as db_connection:
         gta_persons[mapping[0]] = pandas.to_numeric(gta_persons[mapping[0]])
         gta_persons[mapping[0]] = gta_persons[mapping[0]].map(inverted_map)
 
-    print(gta_persons.Occupation.unique())
-
     gta_persons.to_csv('output/HouseholdData/Persons.csv', index=False)
 
 
@@ -93,18 +92,20 @@ with engine.connect() as db_connection:
                                'ExpansionFactor', 'EmploymentZone', 'EmploymentStatus']]
 
 
-    gta_ph = pandas.merge(left=gta_persons, right=gta_households, left_on='HouseholdId', right_on='HouseholdId')
-    gta_ph = gta_ph.loc[gta_ph.EmploymentZone == 0]
+    gta_ph = pandas.merge(left=gta_persons.copy(), right=gta_households, left_on='HouseholdId', right_on='HouseholdId')
+    gta_ph = gta_ph.loc[gta_ph.EmploymentZone < 6000]
     gta_ph = gta_ph[['HouseholdZone', 'EmploymentStatus', 'Occupation', 'ExpansionFactor']]
     gta_ph = gta_ph.rename(columns={'HouseholdZone': 'Zone', 'ExpansionFactor': 'Persons'})
+
+    zones = pandas.read_csv('data/Zones.csv')[['Zone#', 'PD']]
+    gta_ph = pandas.merge(gta_ph, zones, left_on="Zone", right_on="Zone#")
+
+
 
     #gta_ph_grouped = gta_ph.groupby(['HouseholdZone', 'EmploymentStatus', 'Occupation']).agg(
     #    {'ExpansionFactor': sum}).reset_index()
 
-
-
     gta_ph_grouped  = gta_ph.groupby(['Zone', 'Occupation', 'EmploymentStatus'])['Persons'].apply(sum)
-
     gta_ph_grouped[:,'G','F'].reset_index().to_csv("output/ZonalResidence/GF.csv", index=False)
     gta_ph_grouped[:, 'G', 'P'].reset_index().to_csv("output/ZonalResidence/GP.csv", index=False)
     gta_ph_grouped[:, 'M', 'F'].reset_index().to_csv("output/ZonalResidence/MF.csv", index=False)
@@ -113,6 +114,21 @@ with engine.connect() as db_connection:
     gta_ph_grouped[:, 'P', 'P'].reset_index().to_csv("output/ZonalResidence/PP.csv", index=False)
     gta_ph_grouped[:, 'S', 'F'].reset_index().to_csv("output/ZonalResidence/SF.csv", index=False)
     gta_ph_grouped[:, 'S', 'P'].reset_index().to_csv("output/ZonalResidence/SP.csv", index=False)
+
+    pd_grouped = gta_ph.groupby(['PD', 'Occupation', 'EmploymentStatus'])['Persons'].apply(sum)
+    pd_grouped[:,'G','F'].reset_index().to_csv("output/ZonalResidencePD/ZonalResidence/GF.csv", index=False)
+    pd_grouped[:, 'G', 'P'].reset_index().to_csv("output/ZonalResidencePD/ZonalResidence/GP.csv", index=False)
+    pd_grouped[:, 'M', 'F'].reset_index().to_csv("output/ZonalResidencePD/ZonalResidence/MF.csv", index=False)
+    pd_grouped[:, 'M', 'P'].reset_index().to_csv("output/ZonalResidencePD/ZonalResidence/MP.csv", index=False)
+    pd_grouped[:, 'P', 'F'].reset_index().to_csv("output/ZonalResidencePD/ZonalResidence/PF.csv", index=False)
+    pd_grouped[:, 'P', 'P'].reset_index().to_csv("output/ZonalResidencePD/ZonalResidence/PP.csv", index=False)
+    pd_grouped[:, 'S', 'F'].reset_index().to_csv("output/ZonalResidencePD/ZonalResidence/SF.csv", index=False)
+    pd_grouped[:, 'S', 'P'].reset_index().to_csv("output/ZonalResidencePD/ZonalResidence/SP.csv", index=False)
+
+    # set the employment zone to 0 for those not at 8888 or outside
+
+    gta_persons[(gta_persons['EmploymentZone'] < 6000) & (gta_persons['EmploymentZone'] != 8888)] = 0
+    gta_persons.to_csv('output/HouseholdData/Persons.csv', index=False)
 
     """
     gta_ph_grouped.loc[(gta_ph_grouped.Occupation == 'G') &

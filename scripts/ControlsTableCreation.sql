@@ -110,6 +110,15 @@ CREATE TABLE control_totals_taz
     employment_zone_internal INT NULL,
     employment_zone_external INT NULL,
     employment_zone_roaming INT NULL,
+    /*oez_pfe INT NULL,
+    oez_pfr INT NULL,
+    oez_pfi INT NULL,
+    oez_ppe INT NULL,
+    oez_ppr INT NULL,
+    oez_gpi INT NULL,
+    oez_gpe INT NULL,
+    oez_gpr INT NULL,
+    oez_gpi INT NULL,*/
     PRIMARY KEY (taz)
 );
 

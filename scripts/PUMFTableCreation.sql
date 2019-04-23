@@ -33,6 +33,7 @@ CREATE TABLE pumf_person(
 	Occupation TINYINT NULL,
 	StudentStatus VARCHAR(1) NULL,
 	EmploymentZone INT NULL,
+	# Occ_Emp_Zone INT NULL,
 	weight INT NULL,
 	CONSTRAINT PK PRIMARY KEY(PersonNumber, HouseholdId)
 );
