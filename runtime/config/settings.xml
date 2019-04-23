@@ -134,28 +134,28 @@
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>1000</importance>
+                <importance>2000</importance>
                 <controlField>G</controlField>
                 <field>Occupation</field>
                 <type>equality</type>
                 <value>1</value>
             </constraint>
             <constraint id="2">
-                <importance>1000</importance>
+                <importance>2000</importance>
                 <controlField>S</controlField>
                 <field>Occupation</field>
                 <type>equality</type>
                 <value>2</value>
             </constraint>
             <constraint id="3">
-                <importance>1000</importance>
+                <importance>2000</importance>
                 <controlField>M</controlField>
                 <field>Occupation</field>
                 <type>equality</type>
                 <value>3</value>
             </constraint>
             <constraint id="4">
-                <importance>1000</importance>
+                <importance>2000</importance>
                 <controlField>P</controlField>
                 <field>Occupation</field>
                 <type>equality</type>
@@ -163,7 +163,7 @@
             </constraint>
 
             <constraint id="5">
-                <importance>1000</importance>
+                <importance>2000</importance>
                 <controlField>O</controlField>
                 <field>Occupation</field>
                 <type>equality</type>
@@ -184,28 +184,28 @@
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>1000</importance>
+                <importance>2000</importance>
                 <controlField>E_O</controlField>
                 <field>EmploymentStatus</field>
                 <type>equality</type>
                 <value>1</value>
             </constraint>
             <constraint id="2">
-                <importance>1000</importance>
+                <importance>2000</importance>
                 <controlField>E_F</controlField>
                 <field>EmploymentStatus</field>
                 <type>equality</type>
                 <value>2</value>
             </constraint>
             <constraint id="3">
-                <importance>1000</importance>
+                <importance>2000</importance>
                 <controlField>E_P</controlField>
                 <field>EmploymentStatus</field>
                 <type>equality</type>
                 <value>3</value>
             </constraint>
             <constraint id="4">
-                <importance>1000</importance>
+                <importance>2000</importance>
                 <controlField>E_J</controlField>
                 <field>EmploymentStatus</field>
                 <type>equality</type>
@@ -213,7 +213,7 @@
             </constraint>
 
             <constraint id="5">
-                <importance>1000</importance>
+                <importance>2000</importance>
                 <controlField>E_H</controlField>
                 <field>EmploymentStatus</field>
                 <type>equality</type>

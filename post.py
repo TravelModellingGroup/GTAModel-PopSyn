@@ -115,20 +115,20 @@ with engine.connect() as db_connection:
     gta_ph_grouped[:, 'S', 'F'].reset_index().to_csv("output/ZonalResidence/SF.csv", index=False)
     gta_ph_grouped[:, 'S', 'P'].reset_index().to_csv("output/ZonalResidence/SP.csv", index=False)
 
-    pd_grouped = gta_ph.groupby(['PD', 'Occupation', 'EmploymentStatus'])['Persons'].apply(sum)
-    pd_grouped[:,'G','F'].reset_index().to_csv("output/ZonalResidencePD/ZonalResidence/GF.csv", index=False)
-    pd_grouped[:, 'G', 'P'].reset_index().to_csv("output/ZonalResidencePD/ZonalResidence/GP.csv", index=False)
-    pd_grouped[:, 'M', 'F'].reset_index().to_csv("output/ZonalResidencePD/ZonalResidence/MF.csv", index=False)
-    pd_grouped[:, 'M', 'P'].reset_index().to_csv("output/ZonalResidencePD/ZonalResidence/MP.csv", index=False)
-    pd_grouped[:, 'P', 'F'].reset_index().to_csv("output/ZonalResidencePD/ZonalResidence/PF.csv", index=False)
-    pd_grouped[:, 'P', 'P'].reset_index().to_csv("output/ZonalResidencePD/ZonalResidence/PP.csv", index=False)
-    pd_grouped[:, 'S', 'F'].reset_index().to_csv("output/ZonalResidencePD/ZonalResidence/SF.csv", index=False)
-    pd_grouped[:, 'S', 'P'].reset_index().to_csv("output/ZonalResidencePD/ZonalResidence/SP.csv", index=False)
+    # pd_grouped = gta_ph.groupby(['PD', 'Occupation', 'EmploymentStatus'])['Persons'].apply(sum)
+    # pd_grouped[:,'G','F'].reset_index().to_csv("output/ZonalResidencePD/ZonalResidence/GF.csv", index=False)
+    # pd_grouped[:, 'G', 'P'].reset_index().to_csv("output/ZonalResidencePD/ZonalResidence/GP.csv", index=False)
+    # pd_grouped[:, 'M', 'F'].reset_index().to_csv("output/ZonalResidencePD/ZonalResidence/MF.csv", index=False)
+    # pd_grouped[:, 'M', 'P'].reset_index().to_csv("output/ZonalResidencePD/ZonalResidence/MP.csv", index=False)
+    # pd_grouped[:, 'P', 'F'].reset_index().to_csv("output/ZonalResidencePD/ZonalResidence/PF.csv", index=False)
+    # pd_grouped[:, 'P', 'P'].reset_index().to_csv("output/ZonalResidencePD/ZonalResidence/PP.csv", index=False)
+    # pd_grouped[:, 'S', 'F'].reset_index().to_csv("output/ZonalResidencePD/ZonalResidence/SF.csv", index=False)
+    # pd_grouped[:, 'S', 'P'].reset_index().to_csv("output/ZonalResidencePD/ZonalResidence/SP.csv", index=False)
 
     # set the employment zone to 0 for those not at 8888 or outside
 
-    gta_persons[(gta_persons['EmploymentZone'] < 6000) & (gta_persons['EmploymentZone'] != 8888)] = 0
-    gta_persons.to_csv('output/HouseholdData/Persons.csv', index=False)
+    # gta_persons[(gta_persons['EmploymentZone'] < 6000) & (gta_persons['EmploymentZone'] != 8888)] = 0
+    # gta_persons.to_csv('output/HouseholdData/Persons.csv', index=False)
 
     """
     gta_ph_grouped.loc[(gta_ph_grouped.Occupation == 'G') &
