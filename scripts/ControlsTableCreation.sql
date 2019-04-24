@@ -47,9 +47,6 @@ CREATE TABLE control_totals_maz
     hhsize2        INT NULL,
     hhsize3        INT NULL,
     hhsize4p       INT NULL,
-    numv1          INT NULL,
-    numv2          INT NULL,
-    numv3p         INT NULL,
     income_class_1 INT NULL,
     income_class_2 INT NULL,
     income_class_3 INT NULL,
@@ -96,9 +93,6 @@ CREATE TABLE control_totals_taz
     hhsize2        INT NULL,
     hhsize3        INT NULL,
     hhsize4p       INT NULL,
-    numv1          INT NULL,
-    numv2          INT NULL,
-    numv3p         INT NULL,
     income_class_1 INT NULL,
     income_class_2 INT NULL,
     income_class_3 INT NULL,
@@ -110,15 +104,6 @@ CREATE TABLE control_totals_taz
     employment_zone_internal INT NULL,
     employment_zone_external INT NULL,
     employment_zone_roaming INT NULL,
-    /*oez_pfe INT NULL,
-    oez_pfr INT NULL,
-    oez_pfi INT NULL,
-    oez_ppe INT NULL,
-    oez_ppr INT NULL,
-    oez_gpi INT NULL,
-    oez_gpe INT NULL,
-    oez_gpr INT NULL,
-    oez_gpi INT NULL,*/
     PRIMARY KEY (taz)
 );
 

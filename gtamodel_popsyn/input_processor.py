@@ -3,6 +3,7 @@ import numpy as np
 import gtamodel_popsyn.control_totals_builder as gtactb
 import gtamodel_popsyn.constants as constants
 
+
 class InputProcessor(object):
     """
     InputProcessor will read and process the input configuration and apply and defined attribute
@@ -31,10 +32,10 @@ class InputProcessor(object):
 
         # read input data
         self._read_persons_households()
-
         # perform control total processing here
         self._control_totals_builder.build_control_totals(self._households_base,
-                                                          self._persons_households)
+                                                          self._persons_households,
+                                                          self._zones)
 
         # perform any post process modifications and write results to file
         self._post_process_persons_households()
@@ -51,6 +52,8 @@ class InputProcessor(object):
         # read zone information
         self._zones = pd.read_csv("data/Zones.csv",
                                   dtype={'Zone#': int, 'PD': int})[['Zone#', 'PD']]
+
+        self._zones = self._zones.sort_values(['PD', 'Zone#']).reset_index()
 
         # self._zones = self._zones[self._zones.PD > 0]
 
@@ -89,14 +92,13 @@ class InputProcessor(object):
         self._households_base = self._households_base[self._households_base.PD > 0]
         self._persons_households = self._persons_households[self._persons_households.PD > 0]
         self._persons_households = self._persons_households[
-        self._persons_households['HouseholdZone'].isin(constants.ZONE_RANGE)]
+            self._persons_households['HouseholdZone'].isin(constants.ZONE_RANGE)]
 
         self._households_base = self._households_base[
-        self._households_base['HouseholdZone'].isin(constants.ZONE_RANGE)]
+            self._households_base['HouseholdZone'].isin(constants.ZONE_RANGE)]
         self._persons_households.sort_values(by=['HouseholdZone', 'PD'],
                                              ascending=True).reset_index(inplace=True)
         return
-
 
     def _assign_puma_values(self):
         """
@@ -104,7 +106,9 @@ class InputProcessor(object):
         :return:
         """
         self._households_base['puma'] = 0
+        self._zones['puma'] = 0
         for index, pd_range in enumerate(constants.PUMA_PD_RANGES):
+            self._zones.loc[self._zones['PD'].isin(pd_range), 'puma'] = index + 1
             self._households_base.loc[self._households_base['PD'].isin(pd_range), 'puma'] = index + 1
 
     def _preprocess_persons(self):
@@ -117,7 +121,6 @@ class InputProcessor(object):
         self._persons_base.rename(columns={'ExpansionFactor': 'weightp'}, inplace=True)
 
         self._persons_base.EmploymentZone = self._persons_base.EmploymentZone.astype(int)
-
 
     def _preprocess_households(self):
         """
@@ -141,8 +144,13 @@ class InputProcessor(object):
             (self._persons_households.EmploymentStatus != '9') &
             (self._persons_households.Occupation != '9')]
 
-        self._postprocess_households()
+        # compare the number of persons
+
         self._postprocess_persons()
+        self._postprocess_households()
+
+        # rr = ph[['HouseholdId', 'NumberOfPersons', 'PersonNumber']].groupby(['HouseholdId']).agg(
+        #    {'NumberOfPersons': lambda x: x.iloc[0], 'PersonNumber': 'count'})
 
     def _postprocess_households(self):
         """
@@ -163,14 +171,32 @@ class InputProcessor(object):
         or filtering of invalid or unwanted records.
         :return:
         """
+
         persons = self._persons_households[
             ['HouseholdId', 'puma', 'PersonNumber', 'Age', 'Sex', 'License', 'EmploymentStatus',
-             'Occupation', 'StudentStatus', 'EmploymentZone', 'weightp']].copy()
+             'Occupation', 'StudentStatus', 'EmploymentZone', 'weightp']]
         persons.rename(columns={'weightp': 'weight'}, inplace=True)
 
-        persons = persons[
-            (persons.EmploymentStatus != '9') & (persons.Occupation != '9')]
+        # update _persons_households
 
+        unmatched = self._persons_households.loc[:, ('HouseholdId', 'NumberOfPersons', 'PersonNumber')].groupby(['HouseholdId']).agg({'NumberOfPersons': lambda x: x.iloc[0], 'PersonNumber': 'count'})
+
+        unmatched = unmatched.loc[unmatched['NumberOfPersons'] != unmatched['PersonNumber']]
+
+        def adjust(group):
+            group['NumberOfPersons'] = unmatched.loc[group.name, 'PersonNumber']
+            group['PersonNumber'] = range(1, unmatched.loc[group.name, 'PersonNumber'] + 1)
+            return group
+
+        self._persons_households.loc[self._persons_households.HouseholdId.isin(unmatched.index)] = \
+        self._persons_households.loc[self._persons_households.HouseholdId.isin(unmatched.index)].groupby('HouseholdId').apply(lambda x: adjust(x))
+
+        # unmatched_person_totals = self._persons_households[self._persons_households.HouseholdId.isin(unmatched.index)]
+        # self._persons_households['NumberOfPersons'] = unmatched_person_totals.apply(lambda x: unmatched.loc[x.HouseholdId]['PersonNumber'],axis=1)
+
+        # ph[ph.HouseholdId.isin(unmatched.index)].apply(lambda x: unmatched.loc[x.HouseholdId]['NumberOfPersons'],
+        #                                              axis=1)
+        #                                              axis=1)
         # map any persons attributes to the values specified in the configuration
         for mapping in self._config['CategoryMapping']['Persons'].items():
             persons[mapping[0]] = persons[mapping[0]].map(mapping[1])
@@ -182,7 +208,8 @@ class InputProcessor(object):
             :param row:
             :return:
             """
-            zone = 1 if row['EmploymentZone'] in constants.ZONE_RANGE else ( 3 if row['EmploymentZone'] == constants.ROAMING_ZONE_ID else 2)
+            zone = 1 if row['EmploymentZone'] in constants.ZONE_RANGE else (
+                3 if row['EmploymentZone'] == constants.ROAMING_ZONE_ID else 2)
             row['Occ_Emp_Zone'] = row['Occupation'] + row['EmploymentStatus'] + zone
 
         # persons['Occ_Emp_Zone'] = 0

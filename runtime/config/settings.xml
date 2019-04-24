@@ -22,7 +22,7 @@
         <pumsHhTable>hhtable</pumsHhTable>
         <pumsHhIdField>hhnum</pumsHhIdField>
         <pumsPersTable>perstable</pumsPersTable>
-        <maxExpansionFactor>50</maxExpansionFactor>
+        <maxExpansionFactor>60</maxExpansionFactor>
         <synpopOutputHhTableName>synpop_hh</synpopOutputHhTableName>
         <synpopOutputPersTableName>synpop_person</synpopOutputPersTableName>
         <outputHhAttributes>HouseholdId, DwellingType, NumberOfPersons, Vehicles, IncomeClass</outputHhAttributes>
@@ -128,7 +128,7 @@
     <marginals>
             <id>2</id>
         	<description>Number of persons by age Category</description>
-            <geographyType>maz</geographyType>
+            <geographyType>taz</geographyType>
             <controlType>count</controlType>
             <table>perstable</table>
            <constraint id="1">
@@ -178,7 +178,7 @@
             	<type>interval</type>
             	<lo_value>65</lo_value>
             	<lo_type>closed</lo_type>
-            	<hi_value>999999999</hi_value>
+            	<hi_value>2000</hi_value>
             	<hi_type>open</hi_type>
     		</constraint>
         </marginals>
@@ -294,7 +294,7 @@
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>1500</importance>
+                <importance>2000</importance>
                 <controlField>employment_zone_internal</controlField>
                 <field>EmploymentZone</field>
                 <type>interval</type>
@@ -304,17 +304,17 @@
                 <hi_type>open</hi_type>
             </constraint>
             <constraint id="2">
-                <importance>1500</importance>
+                <importance>2000</importance>
                 <controlField>employment_zone_external</controlField>
                 <field>EmploymentZone</field>
                 <type>interval</type>
                 <lo_value>6000</lo_value>
                 <lo_type>closed</lo_type>
-                <hi_value>8000</hi_value>
+                <hi_value>8400</hi_value>
                 <hi_type>open</hi_type>
             </constraint>
             <constraint id="3">
-                <importance>1500</importance>
+                <importance>2000</importance>
                 <controlField>employment_zone_roaming</controlField>
                 <field>EmploymentZone</field>
                 <type>equality</type>

@@ -54,3 +54,4 @@ TRANSFORM_HOUSEHOLD_TOTALS_SQL_COMMANDS = [
     group by HouseholdZone)
     """
 ]
+

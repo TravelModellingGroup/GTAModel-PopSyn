@@ -86,10 +86,9 @@ class OutputProcessor(object):
 
 
     def _process_zonal_residences(self):
+        gta_ph = pandas.DataFrame()
         """
-        gta_ph = this._.loc[gta_ph.EmploymentZone < 6000]
-        gta_ph = gta_ph[['HouseholdZone', 'EmploymentStatus', 'Occupation', 'ExpansionFactor']]
-        ph_group = self._persons.groupby(['Zone', 'Occupation', 'EmploymentStatus'])['Persons'].apply(sum)
+        gta_ph_grouped = gta_ph.groupby(['Zone', 'Occupation', 'EmploymentStatus'])['Persons'].apply(sum)
         gta_ph_grouped[:, 'G', 'F'].reset_index().to_csv("output/ZonalResidence/GF.csv", index=False)
         gta_ph_grouped[:, 'G', 'P'].reset_index().to_csv("output/ZonalResidence/GP.csv", index=False)
         gta_ph_grouped[:, 'M', 'F'].reset_index().to_csv("output/ZonalResidence/MF.csv", index=False)

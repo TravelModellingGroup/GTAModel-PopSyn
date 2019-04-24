@@ -91,7 +91,6 @@ with engine.connect() as db_connection:
     gta_persons = gta_persons[['HouseholdId', 'Occupation',
                                'ExpansionFactor', 'EmploymentZone', 'EmploymentStatus']]
 
-
     gta_ph = pandas.merge(left=gta_persons.copy(), right=gta_households, left_on='HouseholdId', right_on='HouseholdId')
     gta_ph = gta_ph.loc[gta_ph.EmploymentZone < 6000]
     gta_ph = gta_ph[['HouseholdZone', 'EmploymentStatus', 'Occupation', 'ExpansionFactor']]
