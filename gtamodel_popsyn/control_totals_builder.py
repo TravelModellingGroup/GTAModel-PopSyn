@@ -25,13 +25,16 @@ class ControlTotalsBuilder(object):
         """
         self._config = config
         self._zones = pd.DataFrame()
+        self._age_bin_columns = []
+        for age_bin in AGE_BINS:
+            self._age_bin_columns.append(f'age{age_bin.start}_{age_bin.stop}')
+
         self._controls = pd.DataFrame(columns=['region',
                                                'puma', 'taz', 'maz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P',
                                                'license_Y'
-            , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G', 'S', 'M', 'O', 'age0_14', 'age15_29',
-                                               'age30_44',
-                                               'age45_64'
-            , 'age65p', 'hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p',
+                                                  , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G', 'S', 'M',
+                                               'O' +
+                                               'age65p', 'hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p',
                                                'income_class_1',
                                                'income_class_2',
                                                'income_class_3',
@@ -42,7 +45,7 @@ class ControlTotalsBuilder(object):
                                                'female',
                                                'employment_zone_internal',
                                                'employment_zone_external',
-                                               'employment_zone_roaming'])
+                                               'employment_zone_roaming'] + self._age_bin_columns)
 
     def build_control_totals(self, households, persons_households, zones):
         """
@@ -58,13 +61,16 @@ class ControlTotalsBuilder(object):
         hh_group = persons_households.groupby(['HouseholdZone'])
 
         self._controls['maz'] = self._zones['Zone#']
+        self._controls['taz'] = self._zones['Zone#']
         self._controls = self._controls.set_index('maz')
         self._zones = self._zones.set_index('Zone#')
         self._controls['region'] = 1
         self._controls['totalhh'] = hh2_group.weighth.sum().astype(int)
         self._controls['totpop'] = hh_group.weightp.sum().astype(int)
-        self._controls['puma'] = self._zones['puma'].astype(int)
-        self._controls['taz'] = self._zones['PD'].astype(int)
+        self._controls['puma'] = (self._zones['puma'].astype(int))
+        # self._controls['taz'] = self._zones['PD'].astype(int)
+
+        self._controls.to_csv('temp/test.csv')
 
         self._controls['male'] = hh_group.apply(lambda x: self._sum_column(x, 'Sex', 'M', 'weightp')).astype(
             int)
@@ -102,6 +108,12 @@ class ControlTotalsBuilder(object):
         self._controls['hhsize4p'] = hh2_group.apply(
             lambda x: self._sum_column_gte(x, 'NumberOfPersons', 4, 'weighth')).astype(int)
 
+        for index, age_bin in enumerate(self._age_bin_columns):
+            self._controls[age_bin] = hh_group.apply(
+                lambda x: self._sum_column_range(x, 'Age', AGE_BINS[index].start, AGE_BINS[index].stop,
+                                                 'weightp')).astype(int)
+
+        """
         self._controls['age0_14'] = hh_group.apply(
             lambda x: self._sum_column_range(x, 'Age', 0, 14, 'weightp')).astype(int)
         self._controls['age15_29'] = hh_group.apply(
@@ -112,7 +124,7 @@ class ControlTotalsBuilder(object):
             lambda x: self._sum_column_range(x, 'Age', 45, 64, 'weightp')).astype(int)
         self._controls['age65p'] = hh_group.apply(
             lambda x: self._sum_column_range(x, 'Age', 65, 2000, 'weightp')).astype(int)
-
+        """
         self._controls['E_J'] = hh_group.apply(
             lambda x: self._sum_column(x, 'EmploymentStatus', 'J', 'weightp')).astype(
             int)
@@ -154,8 +166,8 @@ class ControlTotalsBuilder(object):
 
         self._controls = self._controls.fillna(0)
         self._write_maz_control_totals_file()
-        self._write_taz_control_totals_file()
-        self._write_meta_control_totals_file()
+        taz_controls = self._write_taz_control_totals_file()
+        self._write_meta_control_totals_file(taz_controls)
 
         return
 
@@ -164,24 +176,22 @@ class ControlTotalsBuilder(object):
 
         :return:
         """
-        self._controls.reset_index()[['region',
-                                      'puma', 'taz', 'maz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P', 'license_Y'
-            , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G', 'S', 'M', 'O', 'age0_14', 'age15_29',
-                                      'age30_44',
-                                      'age45_64'
-            , 'age65p', 'hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p',
-                                      'income_class_1',
-                                      'income_class_2',
-                                      'income_class_3',
-                                      'income_class_4',
-                                      'income_class_5',
-                                      'income_class_6',
-                                      'male',
-                                      'female',
-                                      'employment_zone_internal',
-                                      'employment_zone_external',
-                                      'employment_zone_roaming'
-                                      ]].sort_values(['puma', 'taz', 'maz']). \
+        self._controls.reset_index()[(['region',
+                                       'puma', 'taz', 'maz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P', 'license_Y'
+                                          , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G', 'S', 'M', 'O']
+                                      + self._age_bin_columns + ['hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p',
+                                                                 'income_class_1',
+                                                                 'income_class_2',
+                                                                 'income_class_3',
+                                                                 'income_class_4',
+                                                                 'income_class_5',
+                                                                 'income_class_6',
+                                                                 'male',
+                                                                 'female',
+                                                                 'employment_zone_internal',
+                                                                 'employment_zone_external',
+                                                                 'employment_zone_roaming'
+                                                                 ])].sort_values(['maz', 'taz', 'puma']). \
             to_csv(f"{self._config['MazLevelControls']}", index=False)
 
     def _write_taz_control_totals_file(self):
@@ -189,61 +199,42 @@ class ControlTotalsBuilder(object):
 
         :return:
         """
-        controls_taz = self._controls.groupby('taz')[['totalhh', 'totpop', 'S_O', 'S_S', 'S_P', 'license_Y'
-            , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G', 'S', 'M', 'O', 'age0_14', 'age15_29',
-                                                      'age30_44',
-                                                      'age45_64'
-            , 'age65p', 'hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p',
-                                                      'income_class_1',
-                                                      'income_class_2',
-                                                      'income_class_3',
-                                                      'income_class_4',
-                                                      'income_class_5',
-                                                      'income_class_6',
-                                                      'male',
-                                                      'female',
-                                                      'employment_zone_internal',
-                                                      'employment_zone_external',
-                                                      'employment_zone_roaming'
-                                                      ]].sum().reset_index()
-        controls_taz['region'] = 1
-        controls_taz['puma'] = self._controls.groupby('taz', as_index=False)['puma'].apply(lambda x: list(x)[0])
-        controls_taz[['region',
-                      'puma', 'taz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P', 'license_Y'
-            , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G', 'S', 'M', 'O', 'age0_14', 'age15_29',
-                      'age30_44',
-                      'age45_64'
-            , 'age65p', 'hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p',
-                      'income_class_1',
-                      'income_class_2',
-                      'income_class_3',
-                      'income_class_4',
-                      'income_class_5',
-                      'income_class_6',
-                      'male',
-                      'female',
-                      'employment_zone_internal',
-                      'employment_zone_external',
-                      'employment_zone_roaming'
-                      ]].to_csv(f"{self._config['TazLevelControls']}", index=False)
+        controls_taz = self._controls.reset_index()[(['region',
+                                       'puma', 'taz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P', 'license_Y'
+                                          , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G', 'S', 'M', 'O']
+                                      + self._age_bin_columns + ['hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p',
+                                                                 'income_class_1',
+                                                                 'income_class_2',
+                                                                 'income_class_3',
+                                                                 'income_class_4',
+                                                                 'income_class_5',
+                                                                 'income_class_6',
+                                                                 'male',
+                                                                 'female',
+                                                                 'employment_zone_internal',
+                                                                 'employment_zone_external',
+                                                                 'employment_zone_roaming'
+                                                                 ])].sort_values(['taz',  'puma'])
 
-    def _write_meta_control_totals_file(self):
+        controls_taz.to_csv(f"{self._config['TazLevelControls']}", index=False)
+        return controls_taz
+
+    def _write_meta_control_totals_file(self, taz_controls):
         """
         Writes the meta control totals file.
         :param self:
         :return:
         """
-        controls_meta = self._controls.groupby('region')[['totalhh', 'totpop',
-                                                          'P', 'G', 'S', 'M', 'O',
-                                                          'E_O', 'E_F', 'E_P', 'E_J', 'E_H',
-                                                          'income_class_1',
-                                                          'income_class_2',
-                                                          'income_class_3',
-                                                          'income_class_4',
-                                                          'income_class_5',
-                                                          'income_class_6',
-                                                          'employment_zone_internal',
-                                                          'employment_zone_external',
-                                                          'employment_zone_roaming'
-                                                          ]].sum().reset_index()
-        controls_meta.to_csv(f"{self._config['MetaLevelControls']}", index=False)
+        meta_controls = taz_controls.groupby(['region'])['totalhh', 'totpop',
+                                                                 'P', 'G', 'S', 'M', 'O',
+                                                                 'E_O', 'E_F', 'E_P', 'E_J', 'E_H',
+                                                                 'income_class_1',
+                                                                 'income_class_2',
+                                                                 'income_class_3',
+                                                                 'income_class_4',
+                                                                 'income_class_5',
+                                                                 'income_class_6',
+                                                                 'employment_zone_internal',
+                                                                 'employment_zone_external',
+                                                                 'employment_zone_roaming'].apply(sum).reset_index()
+        meta_controls.to_csv(f"{self._config['MetaLevelControls']}", index=False)

@@ -26,7 +26,7 @@
         <synpopOutputHhTableName>synpop_hh</synpopOutputHhTableName>
         <synpopOutputPersTableName>synpop_person</synpopOutputPersTableName>
         <outputHhAttributes>HouseholdId, DwellingType, NumberOfPersons, Vehicles, IncomeClass</outputHhAttributes>
-        <outputPersAttributes>PersonNumber, Age, Sex, License, EmploymentStatus, Occupation, StudentStatus, EmploymentZone
+        <outputPersAttributes>PersonNumber, Age, Sex, License, TransitPass, EmploymentStatus, Occupation, StudentStatus, FreeParking, EmploymentZone
         </outputPersAttributes>
     </pumsData>
 
@@ -87,7 +87,7 @@
         <marginals>
             <id>1</id>
             <description>Number of Households by Persons per Household Category</description>
-            <geographyType>maz</geographyType>
+            <geographyType>taz</geographyType>
             <controlType>simple</controlType>
             <table>hhtable</table>
             <constraint id="1">
@@ -124,63 +124,94 @@
         </marginals>
     </target>
 
+
     <target>
-    <marginals>
+        <marginals>
             <id>2</id>
-        	<description>Number of persons by age Category</description>
+            <description>Number of persons by age Category</description>
             <geographyType>taz</geographyType>
             <controlType>count</controlType>
             <table>perstable</table>
-           <constraint id="1">
-            	<importance>1000</importance>
-            	<field>Age</field>
-            	<controlField>age0_14</controlField>
-            	<type>interval</type>
-            	<lo_value>0</lo_value>
-            	<lo_type>closed</lo_type>
-            	<hi_value>14</hi_value>
-            	<hi_type>closed</hi_type>
-    		</constraint>
-           <constraint id="2">
-            	<importance>1000</importance>
-            	<field>Age</field>
-            	<controlField>age15_29</controlField>
-            	<type>interval</type>
-            	<lo_value>15</lo_value>
-            	<lo_type>closed</lo_type>
-            	<hi_value>29</hi_value>
-            	<hi_type>closed</hi_type>
-    		</constraint>
-           <constraint id="3">
-            	<importance>1000</importance>
-            	<field>Age</field>
-            	<controlField>age30_44</controlField>
-            	<type>interval</type>
-            	<lo_value>30</lo_value>
-            	<lo_type>closed</lo_type>
-            	<hi_value>44</hi_value>
-            	<hi_type>closed</hi_type>
-    		</constraint>
-			<constraint id="4">
-            	<importance>1000</importance>
-            	<field>Age</field>
-            	<controlField>age45_64</controlField>
-            	<type>interval</type>
-            	<lo_value>45</lo_value>
-            	<lo_type>closed</lo_type>
-            	<hi_value>64</hi_value>
-            	<hi_type>closed</hi_type>
-    		</constraint>
+            <constraint id="1">
+                <importance>1500</importance>
+                <field>Age</field>
+                <controlField>age0_4</controlField>
+                <type>interval</type>
+                <lo_value>0</lo_value>
+                <lo_type>closed</lo_type>
+                <hi_value>4</hi_value>
+                <hi_type>closed</hi_type>
+            </constraint>
+            <constraint id="2">
+                <importance>1500</importance>
+                <field>Age</field>
+                <controlField>age5_10</controlField>
+                <type>interval</type>
+                <lo_value>5</lo_value>
+                <lo_type>closed</lo_type>
+                <hi_value>10</hi_value>
+                <hi_type>closed</hi_type>
+            </constraint>
+            <constraint id="3">
+                <importance>1500</importance>
+                <field>Age</field>
+                <controlField>age16_25</controlField>
+                <type>interval</type>
+                <lo_value>16</lo_value>
+                <lo_type>closed</lo_type>
+                <hi_value>25</hi_value>
+                <hi_type>closed</hi_type>
+            </constraint>
+            <constraint id="4">
+                <importance>1500</importance>
+                <field>Age</field>
+                <controlField>age26_35</controlField>
+                <type>interval</type>
+                <lo_value>26</lo_value>
+                <lo_type>closed</lo_type>
+                <hi_value>35</hi_value>
+                <hi_type>closed</hi_type>
+            </constraint>
             <constraint id="5">
-            	<importance>1000</importance>
-            	<field>Age</field>
-            	<controlField>age65p</controlField>
-            	<type>interval</type>
-            	<lo_value>65</lo_value>
-            	<lo_type>closed</lo_type>
-            	<hi_value>2000</hi_value>
-            	<hi_type>open</hi_type>
-    		</constraint>
+                <importance>1500</importance>
+                <field>Age</field>
+                <controlField>age36_45</controlField>
+                <type>interval</type>
+                <lo_value>36</lo_value>
+                <lo_type>closed</lo_type>
+                <hi_value>45</hi_value>
+                <hi_type>closed</hi_type>
+            </constraint>
+            <constraint id="6">
+                <importance>1500</importance>
+                <field>Age</field>
+                <controlField>age46_55</controlField>
+                <type>interval</type>
+                <lo_value>46</lo_value>
+                <lo_type>closed</lo_type>
+                <hi_value>55</hi_value>
+                <hi_type>closed</hi_type>
+            </constraint>
+            <constraint id="7">
+                <importance>1500</importance>
+                <field>Age</field>
+                <controlField>age56_64</controlField>
+                <type>interval</type>
+                <lo_value>56</lo_value>
+                <lo_type>closed</lo_type>
+                <hi_value>64</hi_value>
+                <hi_type>closed</hi_type>
+            </constraint>
+            <constraint id="8">
+                <importance>1500</importance>
+                <field>Age</field>
+                <controlField>age65_200</controlField>
+                <type>interval</type>
+                <lo_value>65</lo_value>
+                <lo_type>closed</lo_type>
+                <hi_value>2000</hi_value>
+                <hi_type>open</hi_type>
+            </constraint>
         </marginals>
 
     </target>
@@ -330,7 +361,7 @@
         <marginals>
             <id>6</id>
             <description>Household Income controls per category</description>
-            <geographyType>meta</geographyType>
+            <geographyType>taz</geographyType>
             <controlType>simple</controlType>
             <table>hhtable</table>
             <constraint id="1">
@@ -394,10 +425,10 @@
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>10000</importance>
+                <importance>10</importance>
                 <field>weight</field>
                 <controlField>totpop</controlField>
-                <type>equality</type>
+                <type>interval</type>
                 <lo_value>0</lo_value>
                 <lo_type>open</lo_type>
                 <hi_value>999999999</hi_value>

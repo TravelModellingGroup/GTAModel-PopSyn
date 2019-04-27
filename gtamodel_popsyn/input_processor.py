@@ -21,6 +21,8 @@ class InputProcessor(object):
         self._zones = pd.DataFrame()
         self._control_totals_builder = gtactb.ControlTotalsBuilder(config)
 
+        pd.set_option('mode.chained_assignment', 'raise')
+
         return
 
     def generate(self):
@@ -58,9 +60,11 @@ class InputProcessor(object):
         # self._zones = self._zones[self._zones.PD > 0]
 
         # read in csv data
-        self._persons_base = pd.read_csv(f"{self._config['PersonsSeedFile']}")
+        self._persons_base = pd.read_csv(f"{self._config['PersonsSeedFile']}",
+                                         dtype={'HouseholdId': int})
+
         self._households_base = pd.read_csv(f"{self._config['HouseholdsSeedFile']}",
-                                            dtype={'HouseholdZone': int})
+                                            dtype={'HouseholdZone': int, 'HouseholdId': int})
 
         self._households_base = pd.merge(self._households_base, self._zones,
                                          left_on="HouseholdZone", right_on="Zone#")[
@@ -89,8 +93,7 @@ class InputProcessor(object):
         Filters household and persons records from invalid zones and PDs
         :return:
         """
-        self._households_base = self._households_base[self._households_base.PD > 0]
-        self._persons_households = self._persons_households[self._persons_households.PD > 0]
+        self._households_base = self._households_base[self._households_base.HouseholdZone.isin(constants.ZONE_RANGE)]
         self._persons_households = self._persons_households[
             self._persons_households['HouseholdZone'].isin(constants.ZONE_RANGE)]
 
@@ -109,7 +112,9 @@ class InputProcessor(object):
         self._zones['puma'] = 0
         for index, pd_range in enumerate(constants.PUMA_PD_RANGES):
             self._zones.loc[self._zones['PD'].isin(pd_range), 'puma'] = index + 1
+            # elf._persons_households.loc[self._persons_households['PD'].isin(pd_range), 'puma'] = index + 1
             self._households_base.loc[self._households_base['PD'].isin(pd_range), 'puma'] = index + 1
+        self._households_base['puma'] = self._households_base['puma'].astype(int)
 
     def _preprocess_persons(self):
         """
@@ -121,6 +126,7 @@ class InputProcessor(object):
         self._persons_base.rename(columns={'ExpansionFactor': 'weightp'}, inplace=True)
 
         self._persons_base.EmploymentZone = self._persons_base.EmploymentZone.astype(int)
+        #vself._persons_base['puma'] = self._persons_base['puma'].astype(int)
 
     def _preprocess_households(self):
         """
@@ -140,17 +146,27 @@ class InputProcessor(object):
         Post process the joint set of persons and households.
         :return:
         """
-        self._persons_households = self._persons_households[
-            (self._persons_households.EmploymentStatus != '9') &
-            (self._persons_households.Occupation != '9')]
+        # self._persons_households = self._persons_households[
+        #    (self._persons_households.EmploymentStatus != '9') &
+        #    (self._persons_households.Occupation != '9')]
+
+        unmatched = self._persons_households.loc[:, ('HouseholdId', 'NumberOfPersons', 'PersonNumber')].groupby(
+            ['HouseholdId']).agg({'NumberOfPersons': lambda x: x.iloc[0], 'PersonNumber': 'count'})
+
+        unmatched = unmatched.loc[unmatched['NumberOfPersons'] != unmatched['PersonNumber']]
+
+        def adjust(group):
+            group['NumberOfPersons'] = unmatched.loc[group.name, 'PersonNumber']
+            group['PersonNumber'] = range(1, unmatched.loc[group.name, 'PersonNumber'] + 1)
+            return group
 
         # compare the number of persons
+        self._persons_households.loc[self._persons_households.HouseholdId.isin(unmatched.index)] = \
+            self._persons_households.loc[self._persons_households.HouseholdId.isin(unmatched.index)].groupby(
+                'HouseholdId').apply(lambda x: adjust(x))
 
         self._postprocess_persons()
         self._postprocess_households()
-
-        # rr = ph[['HouseholdId', 'NumberOfPersons', 'PersonNumber']].groupby(['HouseholdId']).agg(
-        #    {'NumberOfPersons': lambda x: x.iloc[0], 'PersonNumber': 'count'})
 
     def _postprocess_households(self):
         """
@@ -163,6 +179,8 @@ class InputProcessor(object):
             .drop_duplicates(['HouseholdId'])
         households.rename(columns={'weighth': 'weight'}, inplace=True)
         households.sort_values(by=['HouseholdId'], ascending=True).reset_index(inplace=True)
+        households['HouseholdId'] = households['HouseholdId'].astype(int)
+        households['puma'] = households['puma'].astype(int)
         households.to_csv(f"{self._config['ProcessedHouseholdsSeedFile']}", index=False)
 
     def _postprocess_persons(self):
@@ -171,35 +189,13 @@ class InputProcessor(object):
         or filtering of invalid or unwanted records.
         :return:
         """
-
         persons = self._persons_households[
-            ['HouseholdId', 'puma', 'PersonNumber', 'Age', 'Sex', 'License', 'EmploymentStatus',
-             'Occupation', 'StudentStatus', 'EmploymentZone', 'weightp']]
+            ['HouseholdId', 'puma', 'PersonNumber', 'Age', 'Sex', 'License', 'TransitPass', 'EmploymentStatus',
+             'Occupation', 'StudentStatus', 'FreeParking', 'EmploymentZone', 'weightp']].copy()
         persons.rename(columns={'weightp': 'weight'}, inplace=True)
 
-        # update _persons_households
-
-        unmatched = self._persons_households.loc[:, ('HouseholdId', 'NumberOfPersons', 'PersonNumber')].groupby(['HouseholdId']).agg({'NumberOfPersons': lambda x: x.iloc[0], 'PersonNumber': 'count'})
-
-        unmatched = unmatched.loc[unmatched['NumberOfPersons'] != unmatched['PersonNumber']]
-
-        def adjust(group):
-            group['NumberOfPersons'] = unmatched.loc[group.name, 'PersonNumber']
-            group['PersonNumber'] = range(1, unmatched.loc[group.name, 'PersonNumber'] + 1)
-            return group
-
-        self._persons_households.loc[self._persons_households.HouseholdId.isin(unmatched.index)] = \
-        self._persons_households.loc[self._persons_households.HouseholdId.isin(unmatched.index)].groupby('HouseholdId').apply(lambda x: adjust(x))
-
-        # unmatched_person_totals = self._persons_households[self._persons_households.HouseholdId.isin(unmatched.index)]
-        # self._persons_households['NumberOfPersons'] = unmatched_person_totals.apply(lambda x: unmatched.loc[x.HouseholdId]['PersonNumber'],axis=1)
-
-        # ph[ph.HouseholdId.isin(unmatched.index)].apply(lambda x: unmatched.loc[x.HouseholdId]['NumberOfPersons'],
-        #                                              axis=1)
-        #                                              axis=1)
-        # map any persons attributes to the values specified in the configuration
         for mapping in self._config['CategoryMapping']['Persons'].items():
-            persons[mapping[0]] = persons[mapping[0]].map(mapping[1])
+            persons.loc[:, mapping[0]] = persons.loc[:, mapping[0]].map(mapping[1])
 
         def map_occ_emp_zone(row):
             """
@@ -216,5 +212,6 @@ class InputProcessor(object):
         # persons.apply(lambda x: map_occ_emp_zone(x),axis=1)
 
         persons.sort_values(by=['HouseholdId'], ascending=True).reset_index(inplace=True)
-
+        persons['HouseholdId'] = persons['HouseholdId'].astype(int)
+        persons['puma'] = persons['puma'].astype(int)
         persons.to_csv(f"{self._config['ProcessedPersonsSeedFile']}", index=False)
