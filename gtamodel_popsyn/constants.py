@@ -1,5 +1,6 @@
 PUMA_PD_RANGES = [range(1, 17), range(17, 10000)]
 ZONE_RANGE = range(1, 6000)
+INTERNAL_ZONE_RANGE = range(1, 6000)
 ROAMING_ZONE_ID = 8888
 
 """

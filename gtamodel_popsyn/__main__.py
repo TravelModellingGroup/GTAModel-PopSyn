@@ -15,6 +15,10 @@ parser.add_argument('-i', '--input-process-only',
                     required=False,
                     action="store_true",
                     help="Only generate synthesis files and don't run synthesis procedure.")
+parser.add_argument('-d', '--database-only',
+                    required=False,
+                    action="store_true",
+                    help="Only initialize the database and tables required for PopSyn3.")
 parser.add_argument('-o', '--output-only',
                     required=False,
                     action="store_true",
@@ -37,6 +41,10 @@ logger.info(f'GTAModel PopSyn')
 logger.info(f'Configuration file loaded: {args.config}')
 
 gtamodel_popsyn = GTAModelPopSyn(config)
+
+if args.database_only:
+    gtamodel_popsyn.initialize_database()
+    sys.exit(0)
 
 if args.input_process_only:
     gtamodel_popsyn.generate_inputs()

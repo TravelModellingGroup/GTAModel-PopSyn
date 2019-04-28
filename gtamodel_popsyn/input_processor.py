@@ -10,6 +10,14 @@ class InputProcessor(object):
     mappings in the seed population records.
     """
 
+    @property
+    def processed_persons(self):
+        return self._processed_persons
+
+    @property
+    def processed_households(self):
+        return self._persons_households
+
     def __init__(self, config):
         """
         :param config: configuration input
@@ -20,6 +28,8 @@ class InputProcessor(object):
         self._persons_base = pd.DataFrame()
         self._zones = pd.DataFrame()
         self._control_totals_builder = gtactb.ControlTotalsBuilder(config)
+        self._processed_persons = None
+        self._processed_households = None
 
         pd.set_option('mode.chained_assignment', 'raise')
 
@@ -181,6 +191,7 @@ class InputProcessor(object):
         households.sort_values(by=['HouseholdId'], ascending=True).reset_index(inplace=True)
         households['HouseholdId'] = households['HouseholdId'].astype(int)
         households['puma'] = households['puma'].astype(int)
+        self._processed_households = households.copy()
         households.to_csv(f"{self._config['ProcessedHouseholdsSeedFile']}", index=False)
 
     def _postprocess_persons(self):
@@ -197,21 +208,8 @@ class InputProcessor(object):
         for mapping in self._config['CategoryMapping']['Persons'].items():
             persons.loc[:, mapping[0]] = persons.loc[:, mapping[0]].map(mapping[1])
 
-        def map_occ_emp_zone(row):
-            """
-            Create a pseudo attribute binding Occupation EmploymentStatus
-            and EmploymentZone categories
-            :param row:
-            :return:
-            """
-            zone = 1 if row['EmploymentZone'] in constants.ZONE_RANGE else (
-                3 if row['EmploymentZone'] == constants.ROAMING_ZONE_ID else 2)
-            row['Occ_Emp_Zone'] = row['Occupation'] + row['EmploymentStatus'] + zone
-
-        # persons['Occ_Emp_Zone'] = 0
-        # persons.apply(lambda x: map_occ_emp_zone(x),axis=1)
-
         persons.sort_values(by=['HouseholdId'], ascending=True).reset_index(inplace=True)
         persons['HouseholdId'] = persons['HouseholdId'].astype(int)
         persons['puma'] = persons['puma'].astype(int)
-        persons.to_csv(f"{self._config['ProcessedPersonsSeedFile']}", index=False)
+        self._processed_persons = persons.copy()
+        self._processed_persons.to_csv(f"{self._config['ProcessedPersonsSeedFile']}", index=False)
