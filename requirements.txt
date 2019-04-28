@@ -1,7 +1,9 @@
 colorama==0.4.1
 cycler==0.10.0
+Jinja2==2.10.1
 kiwisolver==1.0.1
 logzero==1.5.0
+MarkupSafe==1.1.1
 matplotlib==3.0.3
 mysql-connector==2.2.9
 numpy==1.16.2
