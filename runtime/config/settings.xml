@@ -26,7 +26,8 @@
         <synpopOutputHhTableName>synpop_hh</synpopOutputHhTableName>
         <synpopOutputPersTableName>synpop_person</synpopOutputPersTableName>
         <outputHhAttributes>HouseholdId, DwellingType, NumberOfPersons, Vehicles, IncomeClass</outputHhAttributes>
-        <outputPersAttributes>PersonNumber, Age, Sex, License, TransitPass, EmploymentStatus, Occupation, StudentStatus, FreeParking, EmploymentZone
+        <outputPersAttributes>PersonNumber, Age, Sex, License, TransitPass, EmploymentStatus, Occupation, StudentStatus,
+            FreeParking, EmploymentZone
         </outputPersAttributes>
     </pumsData>
 
@@ -87,7 +88,7 @@
         <marginals>
             <id>1</id>
             <description>Number of Households by Persons per Household Category</description>
-            <geographyType>taz</geographyType>
+            <geographyType>maz</geographyType>
             <controlType>simple</controlType>
             <table>hhtable</table>
             <constraint id="1">
@@ -129,7 +130,7 @@
         <marginals>
             <id>2</id>
             <description>Number of persons by age Category</description>
-            <geographyType>taz</geographyType>
+            <geographyType>maz</geographyType>
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
@@ -221,7 +222,7 @@
         <marginals>
             <id>3</id>
             <description>Occupation Counts</description>
-            <geographyType>taz</geographyType>
+            <geographyType>maz</geographyType>
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
@@ -271,7 +272,7 @@
         <marginals>
             <id>4</id>
             <description>EmploymentStatus Counts</description>
-            <geographyType>taz</geographyType>
+            <geographyType>maz</geographyType>
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
@@ -321,7 +322,7 @@
         <marginals>
             <id>5</id>
             <description>Employment Zone</description>
-            <geographyType>taz</geographyType>
+            <geographyType>maz</geographyType>
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
@@ -434,7 +435,7 @@
         </marginals>
 
     </target>
-        <target>
+    <target>
 
         <marginals>
             <id>8</id>
@@ -456,7 +457,7 @@
     </target>
 
 
-  <target>
+    <target>
 
         <marginals>
             <id>9</id>
@@ -465,15 +466,15 @@
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-            	<importance>10</importance>
-            	<field>weight</field>
-            	<controlField>totpop</controlField>
-            	<type>interval</type>
-				<lo_value>0</lo_value>
-				<lo_type>open</lo_type>
-				<hi_value>999999999</hi_value>
-				<hi_type>open</hi_type>
-    		</constraint>
+                <importance>10</importance>
+                <field>weight</field>
+                <controlField>totpop</controlField>
+                <type>interval</type>
+                <lo_value>0</lo_value>
+                <lo_type>open</lo_type>
+                <hi_value>999999999</hi_value>
+                <hi_type>open</hi_type>
+            </constraint>
 
 
         </marginals>
