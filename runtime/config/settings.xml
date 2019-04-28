@@ -22,7 +22,7 @@
         <pumsHhTable>hhtable</pumsHhTable>
         <pumsHhIdField>hhnum</pumsHhIdField>
         <pumsPersTable>perstable</pumsPersTable>
-        <maxExpansionFactor>100</maxExpansionFactor>
+        <maxExpansionFactor>200</maxExpansionFactor>
         <synpopOutputHhTableName>synpop_hh</synpopOutputHhTableName>
         <synpopOutputPersTableName>synpop_person</synpopOutputPersTableName>
         <outputHhAttributes>HouseholdId, DwellingType, NumberOfPersons, Vehicles, IncomeClass</outputHhAttributes>

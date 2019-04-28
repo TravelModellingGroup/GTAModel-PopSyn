@@ -7,6 +7,7 @@
   "HouseholdsSeedFile": "",
   "MazLevelControls": "",
   "TazLevelControls": "",
+  "InputSample": 1.0,
   "MetaLevelControls": "",
   "Java64Path": "C:\\Path\\To\\Jre",
   "PopSyn3SettingsFile": "runtime\\config\\settings.xml",
