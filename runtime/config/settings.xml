@@ -71,8 +71,11 @@
                 <importance>1000</importance>
                 <field>weight</field>
                 <controlField>totalhh</controlField>
-                <type>equality</type>
-                <value>0</value>
+                <type>interval</type>
+                <lo_value>0</lo_value>
+                <lo_type>open</lo_type>
+                <hi_value>infinity</hi_value>
+                <hi_type>open</hi_type>
             </constraint>
         </marginals>
     </target>
@@ -411,8 +414,6 @@
         </marginals>
     </target>
 
-
-
     <target>
 
         <marginals>
@@ -422,7 +423,49 @@
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>1000000</importance>
+                <importance>4000</importance>
+                <field>weight</field>
+                <controlField>male</controlField>
+                <type>equality</type>
+                <value>'M'</value>
+            </constraint>
+
+
+        </marginals>
+
+    </target>
+        <target>
+
+        <marginals>
+            <id>8</id>
+            <description>population</description>
+            <geographyType>meta</geographyType>
+            <controlType>count</controlType>
+            <table>perstable</table>
+            <constraint id="1">
+                <importance>4000</importance>
+                <field>weight</field>
+                <controlField>female</controlField>
+                <type>equality</type>
+                <value>'F'</value>
+            </constraint>
+
+
+        </marginals>
+
+    </target>
+
+
+   <!-- <target>
+
+        <marginals>
+            <id>7</id>
+            <description>population</description>
+            <geographyType>meta</geographyType>
+            <controlType>count</controlType>
+            <table>perstable</table>
+            <constraint id="1">
+                <importance>100000</importance>
                 <field>weight</field>
                 <controlField>totpop</controlField>
                 <type>equality</type>
@@ -432,6 +475,6 @@
 
         </marginals>
 
-    </target>
+    </target> -->
 
 </targets>

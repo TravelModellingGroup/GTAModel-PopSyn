@@ -234,6 +234,8 @@ class ControlTotalsBuilder(object):
                                                                  'income_class_4',
                                                                  'income_class_5',
                                                                  'income_class_6',
+                                                                 'male',
+                                                                'female',
                                                                  'employment_zone_internal',
                                                                  'employment_zone_external',
                                                                  'employment_zone_roaming'].apply(sum).reset_index()
