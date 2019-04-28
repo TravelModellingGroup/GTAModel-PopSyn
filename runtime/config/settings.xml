@@ -418,8 +418,8 @@
 
         <marginals>
             <id>7</id>
-            <description>population</description>
-            <geographyType>meta</geographyType>
+            <description>male population</description>
+            <geographyType>maz</geographyType>
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
@@ -438,8 +438,8 @@
 
         <marginals>
             <id>8</id>
-            <description>population</description>
-            <geographyType>meta</geographyType>
+            <description>female population</description>
+            <geographyType>maz</geographyType>
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
@@ -456,25 +456,28 @@
     </target>
 
 
-   <!-- <target>
+  <target>
 
         <marginals>
-            <id>7</id>
+            <id>9</id>
             <description>population</description>
             <geographyType>meta</geographyType>
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>100000</importance>
-                <field>weight</field>
-                <controlField>totpop</controlField>
-                <type>equality</type>
-                <value>0</value>
-            </constraint>
+            	<importance>10</importance>
+            	<field>weight</field>
+            	<controlField>totpop</controlField>
+            	<type>interval</type>
+				<lo_value>0</lo_value>
+				<lo_type>open</lo_type>
+				<hi_value>999999999</hi_value>
+				<hi_type>open</hi_type>
+    		</constraint>
 
 
         </marginals>
 
-    </target> -->
+    </target>
 
 </targets>
