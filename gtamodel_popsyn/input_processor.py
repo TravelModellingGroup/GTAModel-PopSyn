@@ -160,6 +160,8 @@ class InputProcessor(object):
         #    (self._persons_households.EmploymentStatus != '9') &
         #    (self._persons_households.Occupation != '9')]
 
+        self._persons_households = self._persons_households.sample(frac=self._config["InputSample"])
+
         unmatched = self._persons_households.loc[:, ('HouseholdId', 'NumberOfPersons', 'PersonNumber')].groupby(
             ['HouseholdId']).agg({'NumberOfPersons': lambda x: x.iloc[0], 'PersonNumber': 'count'})
 
@@ -175,7 +177,7 @@ class InputProcessor(object):
             self._persons_households.loc[self._persons_households.HouseholdId.isin(unmatched.index)].groupby(
                 'HouseholdId').apply(lambda x: adjust(x))
 
-        self._persons_households = self._persons_households.sample(frac=f'{self._config["InputSample"]}')
+
 
         self._postprocess_persons()
         self._postprocess_households()
@@ -214,4 +216,4 @@ class InputProcessor(object):
         persons['HouseholdId'] = persons['HouseholdId'].astype(int)
         persons['puma'] = persons['puma'].astype(int)
         self._processed_persons = persons.copy()
-        self._processed_persons.sample.to_csv(f"{self._config['ProcessedPersonsSeedFile']}", index=False)
+        self._processed_persons.to_csv(f"{self._config['ProcessedPersonsSeedFile']}", index=False)
