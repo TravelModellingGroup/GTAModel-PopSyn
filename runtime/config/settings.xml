@@ -22,7 +22,7 @@
         <pumsHhTable>hhtable</pumsHhTable>
         <pumsHhIdField>hhnum</pumsHhIdField>
         <pumsPersTable>perstable</pumsPersTable>
-        <maxExpansionFactor>60</maxExpansionFactor>
+        <maxExpansionFactor>100</maxExpansionFactor>
         <synpopOutputHhTableName>synpop_hh</synpopOutputHhTableName>
         <synpopOutputPersTableName>synpop_person</synpopOutputPersTableName>
         <outputHhAttributes>HouseholdId, DwellingType, NumberOfPersons, Vehicles, IncomeClass</outputHhAttributes>
@@ -415,7 +415,7 @@
     </target>
 
 
-    <!-- control total target for total population of entire region -->
+
     <target>
 
         <marginals>
@@ -425,19 +425,15 @@
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>10</importance>
+                <importance>1000000</importance>
                 <field>weight</field>
                 <controlField>totpop</controlField>
-                <type>interval</type>
-                <lo_value>0</lo_value>
-                <lo_type>open</lo_type>
-                <hi_value>999999999</hi_value>
-                <hi_type>open</hi_type>
+                <type>equality</type>
+                <value>0</value>
             </constraint>
 
 
         </marginals>
 
-    </target>
 
 </targets>
