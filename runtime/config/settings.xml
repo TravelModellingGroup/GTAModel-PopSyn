@@ -71,11 +71,8 @@
                 <importance>1000</importance>
                 <field>weight</field>
                 <controlField>totalhh</controlField>
-                <type>interval</type>
-                <lo_value>0</lo_value>
-                <lo_type>open</lo_type>
-                <hi_value>infinity</hi_value>
-                <hi_type>open</hi_type>
+                <type>equality</type>
+                <value>0</value>
             </constraint>
         </marginals>
     </target>
@@ -435,5 +432,6 @@
 
         </marginals>
 
+    </target>
 
 </targets>
