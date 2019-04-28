@@ -22,7 +22,7 @@
         <pumsHhTable>hhtable</pumsHhTable>
         <pumsHhIdField>hhnum</pumsHhIdField>
         <pumsPersTable>perstable</pumsPersTable>
-        <maxExpansionFactor>200</maxExpansionFactor>
+        <maxExpansionFactor>20</maxExpansionFactor>
         <synpopOutputHhTableName>synpop_hh</synpopOutputHhTableName>
         <synpopOutputPersTableName>synpop_person</synpopOutputPersTableName>
         <outputHhAttributes>HouseholdId, DwellingType, NumberOfPersons, Vehicles, IncomeClass</outputHhAttributes>
@@ -210,7 +210,7 @@
                 <type>interval</type>
                 <lo_value>65</lo_value>
                 <lo_type>closed</lo_type>
-                <hi_value>2000</hi_value>
+                <hi_value>infinity</hi_value>
                 <hi_type>open</hi_type>
             </constraint>
         </marginals>
@@ -326,7 +326,7 @@
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>2000</importance>
+                <importance>1000</importance>
                 <controlField>employment_zone_internal</controlField>
                 <field>EmploymentZone</field>
                 <type>interval</type>
@@ -336,7 +336,7 @@
                 <hi_type>open</hi_type>
             </constraint>
             <constraint id="2">
-                <importance>2000</importance>
+                <importance>1000</importance>
                 <controlField>employment_zone_external</controlField>
                 <field>EmploymentZone</field>
                 <type>interval</type>
@@ -346,7 +346,7 @@
                 <hi_type>open</hi_type>
             </constraint>
             <constraint id="3">
-                <importance>2000</importance>
+                <importance>1000</importance>
                 <controlField>employment_zone_roaming</controlField>
                 <field>EmploymentZone</field>
                 <type>equality</type>
@@ -362,7 +362,7 @@
         <marginals>
             <id>6</id>
             <description>Household Income controls per category</description>
-            <geographyType>taz</geographyType>
+            <geographyType>meta</geographyType>
             <controlType>simple</controlType>
             <table>hhtable</table>
             <constraint id="1">
@@ -420,15 +420,15 @@
         <marginals>
             <id>7</id>
             <description>male population</description>
-            <geographyType>maz</geographyType>
+            <geographyType>meta</geographyType>
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>4000</importance>
-                <field>weight</field>
+                <importance>1000</importance>
+                <field>Sex</field>
                 <controlField>male</controlField>
                 <type>equality</type>
-                <value>'M'</value>
+                <value>1</value>
             </constraint>
 
 
@@ -440,15 +440,15 @@
         <marginals>
             <id>8</id>
             <description>female population</description>
-            <geographyType>maz</geographyType>
+            <geographyType>meta</geographyType>
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>4000</importance>
-                <field>weight</field>
+                <importance>1000</importance>
+                <field>Sex</field>
                 <controlField>female</controlField>
                 <type>equality</type>
-                <value>'F'</value>
+                <value>2</value>
             </constraint>
 
 
@@ -466,7 +466,7 @@
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>10</importance>
+                <importance>3000</importance>
                 <field>weight</field>
                 <controlField>totpop</controlField>
                 <type>interval</type>

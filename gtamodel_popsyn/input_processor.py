@@ -136,7 +136,7 @@ class InputProcessor(object):
         self._persons_base.rename(columns={'ExpansionFactor': 'weightp'}, inplace=True)
 
         self._persons_base.EmploymentZone = self._persons_base.EmploymentZone.astype(int)
-        #vself._persons_base['puma'] = self._persons_base['puma'].astype(int)
+        # vself._persons_base['puma'] = self._persons_base['puma'].astype(int)
 
     def _preprocess_households(self):
         """
@@ -156,10 +156,11 @@ class InputProcessor(object):
         Post process the joint set of persons and households.
         :return:
         """
-        # self._persons_households = self._persons_households[
-        #    (self._persons_households.EmploymentStatus != '9') &
-        #    (self._persons_households.Occupation != '9')]
+        self._persons_households = self._persons_households[
+            (self._persons_households.EmploymentStatus != '9') &
+            (self._persons_households.Occupation != '9')]
 
+        # sample only some of the input house holds
         self._persons_households = self._persons_households.sample(frac=self._config["InputSample"])
 
         unmatched = self._persons_households.loc[:, ('HouseholdId', 'NumberOfPersons', 'PersonNumber')].groupby(
@@ -176,8 +177,6 @@ class InputProcessor(object):
         self._persons_households.loc[self._persons_households.HouseholdId.isin(unmatched.index)] = \
             self._persons_households.loc[self._persons_households.HouseholdId.isin(unmatched.index)].groupby(
                 'HouseholdId').apply(lambda x: adjust(x))
-
-
 
         self._postprocess_persons()
         self._postprocess_households()
