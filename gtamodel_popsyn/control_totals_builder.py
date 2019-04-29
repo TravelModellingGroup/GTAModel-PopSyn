@@ -200,21 +200,24 @@ class ControlTotalsBuilder(object):
         :return:
         """
         controls_taz = self._controls.reset_index()[(['region',
-                                       'puma', 'taz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P', 'license_Y'
-                                          , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G', 'S', 'M', 'O']
-                                      + self._age_bin_columns + ['hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p',
-                                                                 'income_class_1',
-                                                                 'income_class_2',
-                                                                 'income_class_3',
-                                                                 'income_class_4',
-                                                                 'income_class_5',
-                                                                 'income_class_6',
-                                                                 'male',
-                                                                 'female',
-                                                                 'employment_zone_internal',
-                                                                 'employment_zone_external',
-                                                                 'employment_zone_roaming'
-                                                                 ])].sort_values(['taz',  'puma'])
+                                                      'puma', 'taz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P',
+                                                      'license_Y'
+                                                         , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G',
+                                                      'S', 'M', 'O']
+                                                     + self._age_bin_columns + ['hhsize1', 'hhsize2', 'hhsize3',
+                                                                                'hhsize4p',
+                                                                                'income_class_1',
+                                                                                'income_class_2',
+                                                                                'income_class_3',
+                                                                                'income_class_4',
+                                                                                'income_class_5',
+                                                                                'income_class_6',
+                                                                                'male',
+                                                                                'female',
+                                                                                'employment_zone_internal',
+                                                                                'employment_zone_external',
+                                                                                'employment_zone_roaming'
+                                                                                ])].sort_values(['taz', 'puma'])
 
         controls_taz.to_csv(f"{self._config['TazLevelControls']}", index=False)
         return controls_taz
@@ -225,18 +228,19 @@ class ControlTotalsBuilder(object):
         :param self:
         :return:
         """
-        meta_controls = taz_controls.groupby(['region'])['totalhh', 'totpop',
-                                                                 'P', 'G', 'S', 'M', 'O',
-                                                                 'E_O', 'E_F', 'E_P', 'E_J', 'E_H',
-                                                                 'income_class_1',
-                                                                 'income_class_2',
-                                                                 'income_class_3',
-                                                                 'income_class_4',
-                                                                 'income_class_5',
-                                                                 'income_class_6',
-                                                                 'male',
-                                                                'female',
-                                                                 'employment_zone_internal',
-                                                                 'employment_zone_external',
-                                                                 'employment_zone_roaming'].apply(sum).reset_index()
+        meta_controls = taz_controls.groupby(['region'])[(['totalhh', 'totpop',
+                                                          'P', 'G', 'S', 'M', 'O'] +
+                                                         self._age_bin_columns + [
+                                                             'E_O', 'E_F', 'E_P', 'E_J', 'E_H',
+                                                             'income_class_1',
+                                                             'income_class_2',
+                                                             'income_class_3',
+                                                             'income_class_4',
+                                                             'income_class_5',
+                                                             'income_class_6',
+                                                             'male',
+                                                             'female',
+                                                             'employment_zone_internal',
+                                                             'employment_zone_external',
+                                                             'employment_zone_roaming'])].apply(sum).reset_index()
         meta_controls.to_csv(f"{self._config['MetaLevelControls']}", index=False)

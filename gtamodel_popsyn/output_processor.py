@@ -31,8 +31,9 @@ class OutputProcessor(object):
     def _process_persons(self):
         for mapping in self._config['CategoryMapping']['Persons'].items():
             inverted_map = {value: key for key, value in mapping[1].items()}
-            self._persons[mapping[0]] = self._persons[mapping[0]].map(inverted_map)
+            self._persons.loc[:, mapping[0]] = self._persons.loc[:, mapping[0]].map(inverted_map)
 
+        # persons.loc[:, mapping[0]] = persons.loc[:, mapping[0]].map(mapping[1])
         self._persons[(self._persons['EmploymentZone'] < ZONE_RANGE.start) &
                       (self._persons['EmploymentZone'] != ROAMING_ZONE_ID)] = 0
         return

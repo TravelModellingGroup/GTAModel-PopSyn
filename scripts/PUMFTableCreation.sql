@@ -33,7 +33,7 @@ CREATE TABLE pumf_person(
 	EmploymentStatus TINYINT NULL,
 	Occupation TINYINT NULL,
 	StudentStatus VARCHAR(1) NULL,
-	FreeParking VARCHAR(2) NULL,
+	FreeParking VARCHAR(1) NULL,
 	EmploymentZone INT NULL,
 	# Occ_Emp_Zone INT NULL,
 	weight INT NULL,
