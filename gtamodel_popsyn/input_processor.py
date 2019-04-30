@@ -161,7 +161,7 @@ class InputProcessor(object):
             (self._persons_households.Occupation != '9')]
 
         # sample only some of the input house holds
-        self._persons_households = self._persons_households.sample(frac=self._config["InputSample"])
+        # self._persons_households = self._persons_households.sample(frac=self._config["InputSample"])
 
         unmatched = self._persons_households.loc[:, ('HouseholdId', 'NumberOfPersons', 'PersonNumber')].groupby(
             ['HouseholdId']).agg({'NumberOfPersons': lambda x: x.iloc[0], 'PersonNumber': 'count'})

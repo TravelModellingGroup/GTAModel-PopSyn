@@ -24,16 +24,16 @@ class OutputProcessor(object):
         return
 
     def _read_persons_households(self):
-        self._persons = pandas.read_sql_table('gta_households', self._db_connection)
+        self._persons = pandas.read_sql_table('gta_persons', self._db_connection)
         self._households = pandas.read_sql_table('gta_households', self._db_connection)
         return
 
     def _process_persons(self):
+
         for mapping in self._config['CategoryMapping']['Persons'].items():
             inverted_map = {value: key for key, value in mapping[1].items()}
             self._persons.loc[:, mapping[0]] = self._persons.loc[:, mapping[0]].map(inverted_map)
 
-        # persons.loc[:, mapping[0]] = persons.loc[:, mapping[0]].map(mapping[1])
         self._persons[(self._persons['EmploymentZone'] < ZONE_RANGE.start) &
                       (self._persons['EmploymentZone'] != ROAMING_ZONE_ID)] = 0
         return
