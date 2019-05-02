@@ -35,8 +35,8 @@ class OutputProcessor(object):
             inverted_map = {value: key for key, value in mapping[1].items()}
             self._persons.loc[:, mapping[0]] = self._persons.loc[:, mapping[0]].map(inverted_map)
 
-        self._persons[(self._persons['EmploymentZone'] < ZONE_RANGE.start) &
-                      (self._persons['EmploymentZone'] != ROAMING_ZONE_ID)]['EmploymentZone'] = 0
+        #self._persons.loc[(self._persons['EmploymentZone'] < ZONE_RANGE.start) &
+        #              (self._persons['EmploymentZone'] != ROAMING_ZONE_ID),'EmploymentZone'] = 0
 
         return
 
@@ -46,6 +46,8 @@ class OutputProcessor(object):
 
     def _process_persons_households(self):
         self._persons_households = pandas.merge(left=self._persons, right=self._households, left_on="HouseholdId",right_on="HouseholdId")
+        self._persons_households.rename(columns={'ExpansionFactor_x': 'Persons'},inplace=True)
+
 
     def _gta_model_transform(self):
         """
@@ -96,8 +98,11 @@ class OutputProcessor(object):
         :return:
         """
 
+        internal_persons_households = self._persons_households.loc[self._persons_households['EmploymentZone'].isin(INTERNAL_ZONE_RANGE)].copy()
         # print(self._persons_households)
-        gta_ph_grouped = self._persons_households.groupby(['HouseholdZone', 'Occupation', 'EmploymentStatus'])['ExpansionFactor_x'].apply(sum)
+        gta_ph_grouped = internal_persons_households.groupby(['HouseholdZone', 'Occupation', 'EmploymentStatus'])['Persons'].apply(sum)
+
+        gta_ph_grouped.reset_index().to_csv('temp/all.csv',index=False)
 
         gta_ph_grouped[:, 'G', 'F'].reset_index().to_csv(f'{self._config["OutputFolder"]}/ZonalResidence/GF.csv',
                                                          index=False)
