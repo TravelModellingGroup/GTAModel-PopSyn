@@ -3,6 +3,7 @@ from sqlalchemy import create_engine
 import gtamodel_popsyn.sql_commands as sql_commands
 from gtamodel_popsyn.constants import *
 
+
 class OutputProcessor(object):
     """
     Performs processing on PopSyn3's output data.
@@ -35,12 +36,16 @@ class OutputProcessor(object):
             self._persons.loc[:, mapping[0]] = self._persons.loc[:, mapping[0]].map(inverted_map)
 
         self._persons[(self._persons['EmploymentZone'] < ZONE_RANGE.start) &
-                      (self._persons['EmploymentZone'] != ROAMING_ZONE_ID)] = 0
+                      (self._persons['EmploymentZone'] != ROAMING_ZONE_ID)]['EmploymentZone'] = 0
+
         return
 
     def _process_households(self):
 
         return
+
+    def _process_persons_households(self):
+        self._persons_households = pandas.merge(left=self._persons, right=self._households, left_on="HouseholdId",right_on="HouseholdId")
 
     def _gta_model_transform(self):
         """
@@ -85,21 +90,33 @@ class OutputProcessor(object):
             f'{self._config["OutputFolder"]}/HouseholdData/HouseholdTotals.csv', index=False)
         return
 
-
     def _process_zonal_residences(self):
-        gta_ph = pandas.DataFrame()
         """
-        gta_ph_grouped = gta_ph.groupby(['Zone', 'Occupation', 'EmploymentStatus'])['Persons'].apply(sum)
-        gta_ph_grouped[:, 'G', 'F'].reset_index().to_csv("output/ZonalResidence/GF.csv", index=False)
-        gta_ph_grouped[:, 'G', 'P'].reset_index().to_csv("output/ZonalResidence/GP.csv", index=False)
-        gta_ph_grouped[:, 'M', 'F'].reset_index().to_csv("output/ZonalResidence/MF.csv", index=False)
-        gta_ph_grouped[:, 'M', 'P'].reset_index().to_csv("output/ZonalResidence/MP.csv", index=False)
-        gta_ph_grouped[:, 'P', 'F'].reset_index().to_csv("output/ZonalResidence/PF.csv", index=False)
-        gta_ph_grouped[:, 'P', 'P'].reset_index().to_csv("output/ZonalResidence/PP.csv", index=False)
-        gta_ph_grouped[:, 'S', 'F'].reset_index().to_csv("output/ZonalResidence/SF.csv", index=False)
-        gta_ph_grouped[:, 'S', 'P'].reset_index().to_csv("output/ZonalResidence/SP.csv", index=False)
+        Creates zonal residence files for occupation and employment statuses.
+        :return:
         """
+
+        # print(self._persons_households)
+        gta_ph_grouped = self._persons_households.groupby(['HouseholdZone', 'Occupation', 'EmploymentStatus'])['ExpansionFactor_x'].apply(sum)
+
+        gta_ph_grouped[:, 'G', 'F'].reset_index().to_csv(f'{self._config["OutputFolder"]}/ZonalResidence/GF.csv',
+                                                         index=False)
+        gta_ph_grouped[:, 'G', 'P'].reset_index().to_csv(f'{self._config["OutputFolder"]}/ZonalResidence/GP.csv',
+                                                         index=False)
+        gta_ph_grouped[:, 'M', 'F'].reset_index().to_csv(f'{self._config["OutputFolder"]}/ZonalResidence/MF.csv',
+                                                         index=False)
+        gta_ph_grouped[:, 'M', 'P'].reset_index().to_csv(f'{self._config["OutputFolder"]}/ZonalResidence/MP.csv',
+                                                         index=False)
+        gta_ph_grouped[:, 'P', 'F'].reset_index().to_csv(f'{self._config["OutputFolder"]}/ZonalResidence/PF.csv',
+                                                         index=False)
+        gta_ph_grouped[:, 'P', 'P'].reset_index().to_csv(f'{self._config["OutputFolder"]}/ZonalResidence/PP.csv',
+                                                         index=False)
+        gta_ph_grouped[:, 'S', 'F'].reset_index().to_csv(f'{self._config["OutputFolder"]}/ZonalResidence/SF.csv',
+                                                         index=False)
+        gta_ph_grouped[:, 'S', 'P'].reset_index().to_csv(f'{self._config["OutputFolder"]}/ZonalResidence/SP.csv',
+                                                         index=False)
         return
+
     def generate_outputs(self):
         """
         Generates and writes all output files to the specified output location
@@ -112,16 +129,18 @@ class OutputProcessor(object):
         self._gta_model_transform()
 
         # Read and process household and persons data
-
         self._read_persons_households()
 
         self._process_persons()
         self._process_households()
 
+        self._process_persons_households()
+
+        self._process_zonal_residences()
+
         # Process and write outputs
         self._write_households_file()
         self._write_persons_file()
-
         self._db_connection.close()
         return
 

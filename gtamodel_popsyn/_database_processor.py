@@ -1,7 +1,11 @@
 import sqlalchemy
+from pandas import DataFrame
 from sqlalchemy import create_engine
 import pandas as pd
 
+from sqlalchemy import create_engine
+from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, SmallInteger
+from sqlalchemy import inspect
 
 class DatabaseProcessor(object):
     """
@@ -13,6 +17,9 @@ class DatabaseProcessor(object):
         self._config = config
         self._engine = None
         self._connection = None
+
+
+
 
     def initialize_database(self, persons=None, households=None):
         """
@@ -28,13 +35,18 @@ class DatabaseProcessor(object):
 
         self._connection.execute(f'CREATE DATABASE IF NOT EXISTS {self._config["DatabaseName"]}')
 
-    def _initialize_record_tables(self, persons: pd.DataFrame = None, households: pd.DataFrame = None):
+    def _initialize_record_tables(self, persons: DataFrame = None, households: pd.DataFrame = None):
 
         if persons is None:
-            persons = pd.read_csv(f"{self._config['ProcessedPersonsSeedFile']}")
+            persons: pd.DataFrame = pd.read_csv(f"{self._config['ProcessedPersonsSeedFile']}")
 
         if households is None:
-            households = pd.read_csv(f"{self._config['ProcessedHouseholdsSeedFile']}")
+            households: pd.DataFrame = pd.read_csv(f"{self._config['ProcessedHouseholdsSeedFile']}")
+
+
+        # [persons.dtypes[c] for c in persons.columns]
+
+        households_table = Table()
 
         persons.to_sql('pumf_person', self._connection, if_exists='replace', index=False)
         households.to_sql('pumf_hh', self._connection, if_exists='replace', index=False)

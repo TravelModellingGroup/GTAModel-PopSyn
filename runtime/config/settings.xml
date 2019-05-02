@@ -67,11 +67,11 @@
             <geographyType>maz</geographyType>
             <table>hhtable</table>
             <constraint id="1">
-                <importance>1000</importance>
+                <importance>1000000</importance>
                 <field>weight</field>
                 <controlField>totalhh</controlField>
                 <type>interval</type>
-                <lo_value>0</lo_value>
+                <lo_value>-100</lo_value>
                 <lo_type>open</lo_type>
                 <hi_value>infinity</hi_value>
                 <hi_type>open</hi_type>
@@ -79,29 +79,7 @@
         </marginals>
     </target>
 
-        <target>
 
-        <marginals>
-            <id>1</id>
-            <description>population</description>
-            <geographyType>maz</geographyType>
-            <controlType>count</controlType>
-            <table>perstable</table>
-            <constraint id="1">
-                <importance>1000</importance>
-                <field>weight</field>
-                <controlField>totpop</controlField>
-                <type>interval</type>
-                <lo_value>0</lo_value>
-                <lo_type>open</lo_type>
-                <hi_value>infinity</hi_value>
-                <hi_type>open</hi_type>
-            </constraint>
-
-
-        </marginals>
-
-    </target>
 
 <!--
     <target>
@@ -151,42 +129,35 @@
     <target>
 
         <marginals>
-            <id>2</id>
+            <id>1</id>
             <description>Occupation Counts</description>
             <geographyType>maz</geographyType>
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>1000</importance>
+                <importance>10000</importance>
                 <controlField>G</controlField>
                 <field>Occupation</field>
                 <type>equality</type>
                 <value>1</value>
             </constraint>
             <constraint id="2">
-                <importance>1000</importance>
-                <controlField>S</controlField>
-                <field>Occupation</field>
-                <type>equality</type>
-                <value>2</value>
-            </constraint>
-            <constraint id="3">
-                <importance>1000</importance>
+                <importance>10000</importance>
                 <controlField>M</controlField>
                 <field>Occupation</field>
                 <type>equality</type>
                 <value>3</value>
             </constraint>
-            <constraint id="4">
-                <importance>1000</importance>
+            <constraint id="3">
+                <importance>10000</importance>
                 <controlField>P</controlField>
                 <field>Occupation</field>
                 <type>equality</type>
                 <value>4</value>
             </constraint>
 
-            <constraint id="5">
-                <importance>1000</importance>
+            <constraint id="4">
+                <importance>10000</importance>
                 <controlField>O</controlField>
                 <field>Occupation</field>
                 <type>equality</type>
@@ -201,48 +172,68 @@
 
         <!-- O F P J H -->
         <marginals>
-            <id>3</id>
+            <id>2</id>
             <description>EmploymentStatus Counts</description>
             <geographyType>maz</geographyType>
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>1000</importance>
+                <importance>10000</importance>
                 <controlField>E_O</controlField>
                 <field>EmploymentStatus</field>
                 <type>equality</type>
                 <value>1</value>
             </constraint>
             <constraint id="2">
-                <importance>1000</importance>
+                <importance>10000</importance>
                 <controlField>E_F</controlField>
                 <field>EmploymentStatus</field>
                 <type>equality</type>
                 <value>2</value>
             </constraint>
             <constraint id="3">
-                <importance>1000</importance>
+                <importance>10000</importance>
                 <controlField>E_P</controlField>
                 <field>EmploymentStatus</field>
                 <type>equality</type>
                 <value>3</value>
             </constraint>
-            <constraint id="4">
-                <importance>1000</importance>
-                <controlField>E_J</controlField>
-                <field>EmploymentStatus</field>
-                <type>equality</type>
-                <value>4</value>
-            </constraint>
 
-            <constraint id="5">
-                <importance>1000</importance>
+            <constraint id="4">
+                <importance>10000</importance>
                 <controlField>E_H</controlField>
                 <field>EmploymentStatus</field>
                 <type>equality</type>
                 <value>5</value>
             </constraint>
 
+
+        </marginals>
+    </target>
+
+    <target>
+
+        <!-- O F P J H -->
+        <marginals>
+            <id>3</id>
+            <description>Student Status Counts</description>
+            <geographyType>maz</geographyType>
+            <controlType>count</controlType>
+            <table>perstable</table>
+            <constraint id="1">
+                <importance>1000</importance>
+                <controlField>S_S</controlField>
+                <field>StudentStatus</field>
+                <type>equality</type>
+                <value>'S'</value>
+            </constraint>
+            <constraint id="2">
+                <importance>10000</importance>
+                <controlField>S_P</controlField>
+                <field>StudentStatus</field>
+                <type>equality</type>
+                <value>'P'</value>
+            </constraint>
 
         </marginals>
     </target>
@@ -266,17 +257,8 @@
                 <hi_value>6000</hi_value>
                 <hi_type>open</hi_type>
             </constraint>
+
             <constraint id="2">
-                <importance>1000</importance>
-                <controlField>employment_zone_external</controlField>
-                <field>EmploymentZone</field>
-                <type>interval</type>
-                <lo_value>6000</lo_value>
-                <lo_type>closed</lo_type>
-                <hi_value>8400</hi_value>
-                <hi_type>open</hi_type>
-            </constraint>
-            <constraint id="3">
                 <importance>1000</importance>
                 <controlField>employment_zone_roaming</controlField>
                 <field>EmploymentZone</field>
@@ -346,51 +328,12 @@
         </marginals>
     </target>
 
-    <target>
 
+
+
+    <target>
         <marginals>
             <id>6</id>
-            <description>male population</description>
-            <geographyType>meta</geographyType>
-            <controlType>count</controlType>
-            <table>perstable</table>
-            <constraint id="1">
-                <importance>1000</importance>
-                <field>Sex</field>
-                <controlField>male</controlField>
-                <type>equality</type>
-                <value>1</value>
-            </constraint>
-
-
-        </marginals>
-
-    </target>
-    <target>
-
-        <marginals>
-            <id>7</id>
-            <description>female population</description>
-            <geographyType>meta</geographyType>
-            <controlType>count</controlType>
-            <table>perstable</table>
-            <constraint id="1">
-                <importance>1000</importance>
-                <field>Sex</field>
-                <controlField>female</controlField>
-                <type>equality</type>
-                <value>2</value>
-            </constraint>
-
-
-        </marginals>
-
-    </target>
-
-
-    <target>
-        <marginals>
-            <id>8</id>
             <description>Number of persons by age Category</description>
             <geographyType>meta</geographyType>
             <controlType>count</controlType>
@@ -476,16 +419,6 @@
                 <hi_value>64</hi_value>
                 <hi_type>closed</hi_type>
             </constraint>
-            <constraint id="9">
-                <importance>1000</importance>
-                <field>Age</field>
-                <controlField>age65_200</controlField>
-                <type>interval</type>
-                <lo_value>65</lo_value>
-                <lo_type>closed</lo_type>
-                <hi_value>infinity</hi_value>
-                <hi_type>open</hi_type>
-            </constraint>
         </marginals>
 
     </target>
@@ -493,13 +426,13 @@
     <target>
 
         <marginals>
-            <id>9</id>
+            <id>7</id>
             <description>population</description>
             <geographyType>meta</geographyType>
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>1500</importance>
+                <importance>100000</importance>
                 <field>weight</field>
                 <controlField>totpop</controlField>
                 <type>interval</type>

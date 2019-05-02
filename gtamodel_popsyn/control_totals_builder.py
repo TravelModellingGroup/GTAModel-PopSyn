@@ -176,7 +176,7 @@ class ControlTotalsBuilder(object):
 
         :return:
         """
-        self._controls.reset_index()[(['region',
+        maz_controls = self._controls.reset_index()[(['region',
                                        'puma', 'taz', 'maz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P', 'license_Y'
                                           , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G', 'S', 'M', 'O']
                                       + self._age_bin_columns + ['hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p',
@@ -191,8 +191,9 @@ class ControlTotalsBuilder(object):
                                                                  'employment_zone_internal',
                                                                  'employment_zone_external',
                                                                  'employment_zone_roaming'
-                                                                 ])].sort_values(['maz', 'taz', 'puma']). \
-            to_csv(f"{self._config['MazLevelControls']}", index=False)
+                                                                 ])].sort_values(['puma', 'taz', 'maz'])
+
+        maz_controls[maz_controls['totpop'] > 0].astype(int).to_csv(f"{self._config['MazLevelControls']}", index=False)
 
     def _write_taz_control_totals_file(self):
         """
@@ -219,7 +220,7 @@ class ControlTotalsBuilder(object):
                                                                                 'employment_zone_roaming'
                                                                                 ])].sort_values(['taz', 'puma'])
 
-        controls_taz.to_csv(f"{self._config['TazLevelControls']}", index=False)
+        controls_taz[controls_taz['totpop']>0].astype(int).to_csv(f"{self._config['TazLevelControls']}", index=False)
         return controls_taz
 
     def _write_meta_control_totals_file(self, taz_controls):
@@ -243,4 +244,4 @@ class ControlTotalsBuilder(object):
                                                              'employment_zone_internal',
                                                              'employment_zone_external',
                                                              'employment_zone_roaming'])].apply(sum).reset_index()
-        meta_controls.to_csv(f"{self._config['MetaLevelControls']}", index=False)
+        meta_controls.astype(int).to_csv(f"{self._config['MetaLevelControls']}", index=False)
