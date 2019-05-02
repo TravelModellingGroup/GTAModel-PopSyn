@@ -35,6 +35,7 @@ engine = create_engine(
     f'mysql+pymysql://{config["DatabaseUser"]}:{config["DatabasePassword"]}@{config["DatabaseServer"]}/{config["DatabaseName"]}'
 )
 
+"""
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     with engine.connect() as db_connection:
@@ -71,7 +72,7 @@ with warnings.catch_warnings():
             execute_multi_sql(db_connection, controls_table_processing_sql)
 
 logger.info("Finished initial database setup.")
-
+"""
 logger.info('Preprocessing popsyn3 settings input with matching config.json information')
 
 et = xml.etree.ElementTree.parse(config["PopSyn3SettingsFile"])

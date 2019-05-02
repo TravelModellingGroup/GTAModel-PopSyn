@@ -120,11 +120,15 @@ class InputProcessor(object):
         """
         self._households_base['puma'] = 0
         self._zones['puma'] = 0
-        for index, pd_range in enumerate(constants.PUMA_PD_RANGES):
-            self._zones.loc[self._zones['PD'].isin(pd_range), 'puma'] = index + 1
+        #for index, pd_range in enumerate(constants.PUMA_PD_RANGES):
+        #    self._zones.loc[self._zones['PD'].isin(pd_range), 'puma'] = index + 1
             # elf._persons_households.loc[self._persons_households['PD'].isin(pd_range), 'puma'] = index + 1
-            self._households_base.loc[self._households_base['PD'].isin(pd_range), 'puma'] = index + 1
-        self._households_base['puma'] = self._households_base['puma'].astype(int)
+        #    self._households_base.loc[self._households_base['PD'].isin(pd_range), 'puma'] = index + 1
+
+
+        self._households_base['puma'] = self._households_base['HouseholdZone'].apply(lambda x: list(self._zones.loc[self._zones['Zone#'] == x,'PD'])[0]).astype(int)
+
+        # self._households_base['puma'] = self._zones.loc[self._zones['Zone#'self._households_base['puma']
 
     def _preprocess_persons(self):
         """
@@ -156,9 +160,10 @@ class InputProcessor(object):
         Post process the joint set of persons and households.
         :return:
         """
-        self._persons_households = self._persons_households[
+        self._persons_households = self._persons_households.loc[
             (self._persons_households.EmploymentStatus != '9') &
-            (self._persons_households.Occupation != '9')]
+            (self._persons_households.Occupation != '9') & (self._persons_households.StudentStatus != '9')]
+
 
         # sample only some of the input house holds
         # self._persons_households = self._persons_households.sample(frac=self._config["InputSample"])
@@ -204,7 +209,7 @@ class InputProcessor(object):
         :return:
         """
         persons = self._persons_households[
-            ['HouseholdId', 'puma', 'PersonNumber', 'Age', 'Sex', 'License', 'TransitPass', 'EmploymentStatus',
+            ['HouseholdId',  'PersonNumber', 'puma', 'Age', 'Sex', 'License', 'TransitPass', 'EmploymentStatus',
              'Occupation', 'StudentStatus', 'FreeParking', 'EmploymentZone', 'SchoolZone', 'weightp']].copy()
         persons.rename(columns={'weightp': 'weight'}, inplace=True)
 

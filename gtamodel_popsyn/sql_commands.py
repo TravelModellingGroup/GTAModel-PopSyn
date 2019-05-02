@@ -11,7 +11,7 @@ TRANSFORM_PERSONS_TABLE_SQL_COMMANDS = [
         EmploymentStatus smallint,
         Occupation smallint,
         FreeParking VARCHAR(1) DEFAULT 'O',
-        StudentStatus VARCHAR(1),
+        StudentStatus TINYINT,
         EmploymentZone smallint DEFAULT 0,
         SchoolZone smallint DEFAULT  0,
         ExpansionFactor smallint )

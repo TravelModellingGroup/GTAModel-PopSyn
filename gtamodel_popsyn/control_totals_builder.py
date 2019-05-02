@@ -61,16 +61,16 @@ class ControlTotalsBuilder(object):
         hh_group = persons_households.groupby(['HouseholdZone'])
 
         self._controls['maz'] = self._zones['Zone#']
+        self._controls['puma'] = 0
+        self._controls['puma'] = self._controls['maz'].apply(lambda x: list(self._zones.loc[self._zones['Zone#'] == x,'PD'])[0]).astype(int)
         self._controls['taz'] = self._zones['Zone#']
         self._controls = self._controls.set_index('maz')
         self._zones = self._zones.set_index('Zone#')
         self._controls['region'] = 1
         self._controls['totalhh'] = hh2_group.weighth.sum().astype(int)
         self._controls['totpop'] = hh_group.weightp.sum().astype(int)
-        self._controls['puma'] = (self._zones['puma'].astype(int))
+        # self._controls['puma'] = (self._zones['puma'].astype(int))
         # self._controls['taz'] = self._zones['PD'].astype(int)
-
-        self._controls.to_csv('temp/test.csv')
 
         self._controls['male'] = hh_group.apply(lambda x: self._sum_column(x, 'Sex', 'M', 'weightp')).astype(
             int)
@@ -218,7 +218,7 @@ class ControlTotalsBuilder(object):
                                                                                 'employment_zone_internal',
                                                                                 'employment_zone_external',
                                                                                 'employment_zone_roaming'
-                                                                                ])].sort_values(['taz', 'puma'])
+                                                                                ])].sort_values(['puma','taz'])
 
         controls_taz[controls_taz['totpop']>0].astype(int).to_csv(f"{self._config['TazLevelControls']}", index=False)
         return controls_taz
