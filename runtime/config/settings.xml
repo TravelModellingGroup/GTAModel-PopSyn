@@ -425,11 +425,35 @@
         </marginals>
 
     </target>
+            <target>
+
+        <!-- O F P J H -->
+        <marginals>
+            <id>7</id>
+            <description>Employment Zone</description>
+            <geographyType>meta</geographyType>
+            <controlType>count</controlType>
+            <table>perstable</table>
+
+            <constraint id="1">
+                <importance>1000</importance>
+                <controlField>employment_zone_external</controlField>
+                <field>EmploymentZone</field>
+                <type>interval</type>
+                <lo_value>6000</lo_value>
+                <lo_type>closed</lo_type>
+                <hi_value>8500</hi_value>
+                <hi_type>open</hi_type>
+            </constraint>
+
+        </marginals>
+    </target>
+
 
     <target>
 
         <marginals>
-            <id>7</id>
+            <id>8</id>
             <description>population</description>
             <geographyType>meta</geographyType>
             <controlType>count</controlType>
@@ -449,6 +473,7 @@
         </marginals>
 
     </target>
+
 
 
 
