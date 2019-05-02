@@ -83,8 +83,8 @@ class ControlTotalsBuilder(object):
             hh_group.apply(lambda x: x[x.EmploymentZone == ROAMING_ZONE_ID]['weightp'].sum()).astype(int)
         self._controls['employment_zone_external'] = \
             hh_group.apply(
-                lambda x: x[(x.EmploymentZone >= EXTERNAL_ZONE_RANGE.start) &
-                            (x.EmploymentZone != ROAMING_ZONE_ID)]['weightp'].sum()).astype(int)
+                lambda x: x.loc[(x.EmploymentZone >= EXTERNAL_ZONE_RANGE.start) &
+                            (x.EmploymentZone != ROAMING_ZONE_ID),'weightp'].sum()).astype(int)
 
         self._controls['income_class_1'] = hh2_group.apply(
             lambda x: self._sum_column(x, 'IncomeClass', 1, 'weighth')).astype(int)
