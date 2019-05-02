@@ -32,7 +32,7 @@ CREATE TABLE pumf_person(
 	TransitPass VARCHAR (1) NULL,
 	EmploymentStatus TINYINT NULL,
 	Occupation TINYINT NULL,
-	StudentStatus VARCHAR(1) NULL,
+	StudentStatus TINYINT NULL,
 	FreeParking VARCHAR(1) NULL,
 	EmploymentZone INT NULL,
 	SchoolZone INT NULL,

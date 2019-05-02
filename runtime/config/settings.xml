@@ -218,14 +218,14 @@
                 <controlField>S_S</controlField>
                 <field>StudentStatus</field>
                 <type>equality</type>
-                <value>'S'</value>
+                <value>1</value>
             </constraint>
             <constraint id="2">
                 <importance>10000</importance>
                 <controlField>S_P</controlField>
                 <field>StudentStatus</field>
                 <type>equality</type>
-                <value>'P'</value>
+                <value>2</value>
             </constraint>
 
         </marginals>
