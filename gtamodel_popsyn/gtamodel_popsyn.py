@@ -79,9 +79,8 @@ class GTAModelPopSyn(object):
         and output generation will be performed.
         :return:
         """
-
-        if self._arguments.include_input:
-            os.makedirs(f'{self._output_path}/Input/', exist_ok=True)
+        #
+        os.makedirs(f'{self._output_path}/Inputs/', exist_ok=True)
         self.generate_inputs()
         self.initialize_database(
             self._input_processor.processed_persons,

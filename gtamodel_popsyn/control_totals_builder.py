@@ -65,7 +65,6 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
 
         self._controls['maz'] = self._zones['Zone#']
         self._controls['puma'] = 0
-        # self._controls['puma'] = self._controls['maz'].apply(lambda x: list(self._zones.loc[self._zones['Zone#'] == x,'PD'])[0]).astype(int)
         self._controls['taz'] = self._zones['Zone#']
         self._controls = self._controls.set_index('maz')
         self._zones = self._zones.set_index('Zone#')
@@ -77,8 +76,8 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
 
         self._controls['male'] = hh_group.apply(lambda x: self._sum_column(x, 'Sex', 'M', 'weightp')).astype(
             int)
-        self._controls['female'] = hh_group.apply(lambda x: self._sum_column(x, 'Sex', 'F', 'weightp')).astype(
-            int)
+        self._controls['female'] = \
+            hh_group.apply(lambda x: self._sum_column(x, 'Sex', 'F', 'weightp')).astype(int)
 
         self._controls['employment_zone_internal'] = \
             hh_group.apply(lambda x: x[x.EmploymentZone.isin(ZONE_RANGE)]['weightp'].sum()).astype(int)
@@ -185,10 +184,7 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
                                        'employment_zone_roaming'
                                        ])].sort_values(['puma', 'taz', 'maz'])
 
-        maz_controls[maz_controls['totpop'] > 0].astype(int).to_csv(f"{self._config['MazLevelControls']}", index=False)
-        if self._arguments.include_input:
-            copyfile(f"{self._config['MazLevelControls']}",
-                     f"{self._output_path}/Inputs/{self._config['MazLevelControls']}")
+        maz_controls[maz_controls['totpop'] > 0].astype(int).to_csv(f"{self._output_path}/Inputs/{self._config['MazLevelControls']}", index=False)
 
     def _write_taz_control_totals_file(self):
         """
@@ -210,10 +206,8 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
                                                       ])].sort_values(
             ['puma', 'taz'])
 
-        controls_taz[controls_taz['totpop'] > 0].astype(int).to_csv(f"{self._config['TazLevelControls']}", index=False)
-        if self._arguments.include_input:
-            copyfile(f"{self._config['TazLevelControls']}",
-                     f"{self._output_path}/Inputs/{self._config['TazLevelControls']}")
+        controls_taz[controls_taz['totpop'] > 0].astype(int).\
+            to_csv(f"{self._output_path}/Inputs/{self._config['TazLevelControls']}", index=False)
         return controls_taz
 
     def _write_meta_control_totals_file(self, taz_controls):
@@ -237,7 +231,4 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
                                                               'employment_zone_internal',
                                                               'employment_zone_external',
                                                               'employment_zone_roaming'])].apply(sum).reset_index()
-        meta_controls.astype(int).to_csv(f"{self._config['MetaLevelControls']}", index=False)
-        if self._arguments.include_input:
-            copyfile(f"{self._config['MetaLevelControls']}",
-                     f"{self._output_path}/Inputs/{self._config['MetaLevelControls']}")
+        meta_controls.astype(int).to_csv(f"{self._output_path}/Inputs/{self._config['MetaLevelControls']}", index=False)

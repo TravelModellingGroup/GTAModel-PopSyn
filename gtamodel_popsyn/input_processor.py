@@ -126,9 +126,6 @@ class InputProcessor(GTAModelPopSynProcessor):
             # self._persons_households.loc[self._persons_households['PD'].isin(pd_range), 'puma'] = index + 1
             self._households_base.loc[self._households_base['PD'].isin(pd_range), 'puma'] = index + 1
 
-        # self._households_base['puma'] = self._households_base['HouseholdZone'].apply(lambda x: list(self._zones.loc[self._zones['Zone#'] == x,'PD'])[0]).astype(int)
-
-        # self._households_base['puma'] = self._zones.loc[self._zones['Zone#'self._households_base['puma']
 
     def _preprocess_persons(self):
         """
@@ -164,8 +161,6 @@ class InputProcessor(GTAModelPopSynProcessor):
             (self._persons_households.EmploymentStatus != '9') &
             (self._persons_households.Occupation != '9') & (self._persons_households.StudentStatus != '9')]
 
-        # sample only some of the input house holds
-        # self._persons_households = self._persons_households.sample(frac=self._config["InputSample"])
 
         unmatched = self._persons_households.loc[:, ('HouseholdId', 'NumberOfPersons', 'PersonNumber')].groupby(
             ['HouseholdId']).agg({'NumberOfPersons': lambda x: x.iloc[0], 'PersonNumber': 'count'})
@@ -199,10 +194,7 @@ class InputProcessor(GTAModelPopSynProcessor):
         households['HouseholdId'] = households['HouseholdId'].astype(int)
         households['puma'] = households['puma'].astype(int)
         self._processed_households = households.copy()
-        households.to_csv(f"{self._config['ProcessedHouseholdsSeedFile']}", index=False)
-        if self._arguments.include_input:
-            copyfile(f"{self._config['ProcessedHouseholdsSeedFile']}",
-                     f"{self._output_path}/Inputs/{self._config['ProcessedHouseholdsSeedFile']}")
+        households.to_csv(f"{self._output_path}/Inputs/{self._config['ProcessedHouseholdsSeedFile']}", index=False)
 
     def _postprocess_persons(self):
         """
@@ -222,8 +214,5 @@ class InputProcessor(GTAModelPopSynProcessor):
         persons['HouseholdId'] = persons['HouseholdId'].astype(int)
         persons['puma'] = persons['puma'].astype(int)
         self._processed_persons = persons.copy()
-        self._processed_persons.to_csv(f"{self._config['ProcessedPersonsSeedFile']}", index=False)
+        self._processed_persons.to_csv(f"{self._output_path}/Inputs/{self._config['ProcessedPersonsSeedFile']}", index=False)
 
-        if self._arguments.include_input:
-            copyfile(f"{self._config['ProcessedPersonsSeedFile']}",
-                     f"{self._output_path}/Inputs/{self._config['ProcessedPersonsSeedFile']}")

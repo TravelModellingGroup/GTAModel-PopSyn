@@ -59,10 +59,10 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
         """
 
         if persons is None:
-            persons: pd.DataFrame = pd.read_csv(f"{self._config['ProcessedPersonsSeedFile']}")
+            persons: pd.DataFrame = pd.read_csv(f"{self._output_path}/Inputs/{self._config['ProcessedPersonsSeedFile']}")
 
         if households is None:
-            households: pd.DataFrame = pd.read_csv(f"{self._config['ProcessedHouseholdsSeedFile']}")
+            households: pd.DataFrame = pd.read_csv(f"{self._output_path}/Inputs/{self._config['ProcessedHouseholdsSeedFile']}")
 
         metadata = MetaData()
 
@@ -124,13 +124,13 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
         """
 
         if maz_controls is None:
-            maz_controls = pd.read_csv(f"{self._config['MazLevelControls']}")
+            maz_controls = pd.read_csv(f"{self._output_path}/Inputs/{self._config['MazLevelControls']}")
 
         if taz_controls is None:
-            taz_controls = pd.read_csv(f"{self._config['TazLevelControls']}")
+            taz_controls = pd.read_csv(f"{self._output_path}/Inputs/{self._config['TazLevelControls']}")
 
         if meta_controls is None:
-            meta_controls = pd.read_csv(f"{self._config['MetaLevelControls']}")
+            meta_controls = pd.read_csv(f"{self._output_path}/Inputs/{self._config['MetaLevelControls']}")
 
         metadata = MetaData()
 
