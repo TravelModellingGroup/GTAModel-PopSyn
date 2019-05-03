@@ -62,14 +62,14 @@ class ControlTotalsBuilder(object):
 
         self._controls['maz'] = self._zones['Zone#']
         self._controls['puma'] = 0
-        self._controls['puma'] = self._controls['maz'].apply(lambda x: list(self._zones.loc[self._zones['Zone#'] == x,'PD'])[0]).astype(int)
+        # self._controls['puma'] = self._controls['maz'].apply(lambda x: list(self._zones.loc[self._zones['Zone#'] == x,'PD'])[0]).astype(int)
         self._controls['taz'] = self._zones['Zone#']
         self._controls = self._controls.set_index('maz')
         self._zones = self._zones.set_index('Zone#')
         self._controls['region'] = 1
         self._controls['totalhh'] = hh2_group.weighth.sum().astype(int)
         self._controls['totpop'] = hh_group.weightp.sum().astype(int)
-        # self._controls['puma'] = (self._zones['puma'].astype(int))
+        self._controls['puma'] = (self._zones['puma'].astype(int))
         # self._controls['taz'] = self._zones['PD'].astype(int)
 
         self._controls['male'] = hh_group.apply(lambda x: self._sum_column(x, 'Sex', 'M', 'weightp')).astype(
@@ -229,7 +229,7 @@ class ControlTotalsBuilder(object):
         :param self:
         :return:
         """
-        meta_controls = taz_controls.groupby(['region'])[(['totalhh', 'totpop',
+        meta_controls = taz_controls.groupby(['region'])[(['totalhh', 'totpop','S_O', 'S_S', 'S_P',
                                                           'P', 'G', 'S', 'M', 'O'] +
                                                          self._age_bin_columns + [
                                                              'E_O', 'E_F', 'E_P', 'E_J', 'E_H',

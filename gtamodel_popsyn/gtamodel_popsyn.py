@@ -1,5 +1,4 @@
-import pandas as pd
-import json
+import datetime
 from gtamodel_popsyn._database_processor import DatabaseProcessor
 from gtamodel_popsyn.control_totals_builder import ControlTotalsBuilder
 from gtamodel_popsyn.input_processor import InputProcessor
@@ -10,7 +9,7 @@ from logzero import logger, setup_logger
 
 class GTAModelPopSyn(object):
 
-    def __init__(self, config):
+    def __init__(self, config, start_time = datetime.datetime.now()):
         """
         Initializes GTAModelPopSyn class responsible for building control totals and
         processing the input seed data.
@@ -18,11 +17,15 @@ class GTAModelPopSyn(object):
         """
         self._logger = setup_logger(name='gtamodel')
         self._config = config
+        self._start_time = start_time
+        self._output_folder = f'{self._config["OutputFolder"]}/{self._start_time:%Y-%m-%d_%H-%M}'
+
         self._summary_report = SummaryReport(config)
         self._control_totals_builder = ControlTotalsBuilder(self._config)
         self._input_processor = InputProcessor(self._config)
-        self._output_processor = OutputProcessor(self._config)
+        self._output_processor = OutputProcessor(self._config, self._output_folder)
         self._database_processor = DatabaseProcessor(self._config)
+
 
         return
 

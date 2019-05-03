@@ -1,7 +1,10 @@
 import pandas
+from logzero import setup_logger
 from sqlalchemy import create_engine
 import gtamodel_popsyn.sql_commands as sql_commands
 from gtamodel_popsyn.constants import *
+import datetime
+import os
 
 
 class OutputProcessor(object):
@@ -11,31 +14,37 @@ class OutputProcessor(object):
     transformed into the input format expected by the GTAModel runtime.
     """
 
-    def __init__(self, config):
+    def __init__(self, config, output_path):
         self._config = config
         self._db_connection = None
+        self._logger = setup_logger(name='gtamodel')
         self._persons = pandas.DataFrame()
         self._households = pandas.DataFrame()
         self._persons_households = pandas.DataFrame()
+        self._output_folder = f'{output_path}'
         self._engine = create_engine(
             f'mysql+pymysql://{config["DatabaseUser"]}:'
             f'{config["DatabasePassword"]}@{config["DatabaseServer"]}/{config["DatabaseName"]}'
         )
 
+        os.makedirs(f'{self._output_folder}/ZonalResidence/')
+        os.makedirs(f'{self._output_folder}/HouseholdData/')
+
         return
 
     def _read_persons_households(self):
+        self._logger.info("Reading persons and households records from database.")
         self._persons = pandas.read_sql_table('gta_persons', self._db_connection)
         self._households = pandas.read_sql_table('gta_households', self._db_connection)
         return
 
     def _process_persons(self):
-
+        self._logger.info("Remapping category attributes.")
         for mapping in self._config['CategoryMapping']['Persons'].items():
             inverted_map = {value: key for key, value in mapping[1].items()}
             self._persons.loc[:, mapping[0]] = self._persons.loc[:, mapping[0]].map(inverted_map)
 
-        #self._persons.loc[(self._persons['EmploymentZone'] < ZONE_RANGE.start) &
+        # self._persons.loc[(self._persons['EmploymentZone'] < ZONE_RANGE.start) &
         #              (self._persons['EmploymentZone'] != ROAMING_ZONE_ID),'EmploymentZone'] = 0
 
         return
@@ -45,9 +54,10 @@ class OutputProcessor(object):
         return
 
     def _process_persons_households(self):
-        self._persons_households = pandas.merge(left=self._persons, right=self._households, left_on="HouseholdId",right_on="HouseholdId")
-        self._persons_households.rename(columns={'ExpansionFactor_x': 'Persons'},inplace=True)
 
+        self._persons_households = pandas.merge(left=self._persons, right=self._households, left_on="HouseholdId",
+                                                right_on="HouseholdId")
+        self._persons_households.rename(columns={'ExpansionFactor_x': 'Persons'}, inplace=True)
 
     def _gta_model_transform(self):
         """
@@ -56,6 +66,7 @@ class OutputProcessor(object):
         of GTAModel.
         :return:
         """
+        self._logger.info("Transforming synthetic population database tables.")
         for command in sql_commands.TRANSFORM_PERSONS_TABLE_SQL_COMMANDS:
             self._db_connection.execute(command)
 
@@ -70,7 +81,8 @@ class OutputProcessor(object):
         If any attribute mappings are present, they will be applied to the output data.
         :return:
          """
-        self._persons.to_csv(f'{self._config["OutputFolder"]}/HouseholdData/Persons.csv', index=False)
+        self._logger.info("Writing synthesized population (persons) to file.")
+        self._persons.to_csv(f'{self._output_folder}/HouseholdData/Persons.csv', index=False)
         return
 
     def _write_households_file(self):
@@ -78,7 +90,8 @@ class OutputProcessor(object):
         Outputs file HouseholdData/Households.csv
         :return:
         """
-        self._households.to_csv(f'{self._config["OutputFolder"]}/HouseholdData/Households.csv', index=False)
+        self._logger.info("Writing synthesized population (households) to file.")
+        self._households.to_csv(f'{self._output_folder}/HouseholdData/Households.csv', index=False)
         return
 
     def _process_household_totals(self):
@@ -86,10 +99,11 @@ class OutputProcessor(object):
 
         :return:
         """
+        self._logger.info("Writing synthesized population (household totals) to file.")
         self._households[['HouseholdZone', 'ExpansionFactor']] \
             .groupby('HouseholdZone').agg({'ExpansionFactor': sum}).reset_index().rename(
             columns={'HouseholdZone': 'Zone', 'ExpansionFactor': 'ExpandedHouseholds'}).to_csv(
-            f'{self._config["OutputFolder"]}/HouseholdData/HouseholdTotals.csv', index=False)
+            f'{self._output_folder}/HouseholdData/HouseholdTotals.csv', index=False)
         return
 
     def _process_zonal_residences(self):
@@ -98,27 +112,32 @@ class OutputProcessor(object):
         :return:
         """
 
-        internal_persons_households = self._persons_households.loc[self._persons_households['EmploymentZone'].isin(INTERNAL_ZONE_RANGE)].copy()
+        self._logger.info("Processing zonal residence information for occupation and employment.")
+
+        internal_persons_households = self._persons_households.loc[
+            self._persons_households['EmploymentZone'].isin(INTERNAL_ZONE_RANGE)].copy()
+        internal_persons_households.rename(columns={'HouseholdZone': 'Zone'}, inplace=True)
         # print(self._persons_households)
-        gta_ph_grouped = internal_persons_households.groupby(['HouseholdZone', 'Occupation', 'EmploymentStatus'])['Persons'].apply(sum)
+        gta_ph_grouped = internal_persons_households.groupby(['Zone', 'Occupation', 'EmploymentStatus'])[
+            'Persons'].apply(sum)
 
-        gta_ph_grouped.reset_index().to_csv('temp/all.csv',index=False)
+        # gta_ph_grouped.reset_index().to_csv('temp/all.csv',index=False)
 
-        gta_ph_grouped[:, 'G', 'F'].reset_index().to_csv(f'{self._config["OutputFolder"]}/ZonalResidence/GF.csv',
+        gta_ph_grouped[:, 'G', 'F'].reset_index().to_csv(f'{self._output_folder}/ZonalResidence/GF.csv',
                                                          index=False)
-        gta_ph_grouped[:, 'G', 'P'].reset_index().to_csv(f'{self._config["OutputFolder"]}/ZonalResidence/GP.csv',
+        gta_ph_grouped[:, 'G', 'P'].reset_index().to_csv(f'{self._output_folder}/ZonalResidence/GP.csv',
                                                          index=False)
-        gta_ph_grouped[:, 'M', 'F'].reset_index().to_csv(f'{self._config["OutputFolder"]}/ZonalResidence/MF.csv',
+        gta_ph_grouped[:, 'M', 'F'].reset_index().to_csv(f'{self._output_folder}/ZonalResidence/MF.csv',
                                                          index=False)
-        gta_ph_grouped[:, 'M', 'P'].reset_index().to_csv(f'{self._config["OutputFolder"]}/ZonalResidence/MP.csv',
+        gta_ph_grouped[:, 'M', 'P'].reset_index().to_csv(f'{self._output_folder}/ZonalResidence/MP.csv',
                                                          index=False)
-        gta_ph_grouped[:, 'P', 'F'].reset_index().to_csv(f'{self._config["OutputFolder"]}/ZonalResidence/PF.csv',
+        gta_ph_grouped[:, 'P', 'F'].reset_index().to_csv(f'{self._output_folder}/ZonalResidence/PF.csv',
                                                          index=False)
-        gta_ph_grouped[:, 'P', 'P'].reset_index().to_csv(f'{self._config["OutputFolder"]}/ZonalResidence/PP.csv',
+        gta_ph_grouped[:, 'P', 'P'].reset_index().to_csv(f'{self._output_folder}/ZonalResidence/PP.csv',
                                                          index=False)
-        gta_ph_grouped[:, 'S', 'F'].reset_index().to_csv(f'{self._config["OutputFolder"]}/ZonalResidence/SF.csv',
+        gta_ph_grouped[:, 'S', 'F'].reset_index().to_csv(f'{self._output_folder}/ZonalResidence/SF.csv',
                                                          index=False)
-        gta_ph_grouped[:, 'S', 'P'].reset_index().to_csv(f'{self._config["OutputFolder"]}/ZonalResidence/SP.csv',
+        gta_ph_grouped[:, 'S', 'P'].reset_index().to_csv(f'{self._output_folder}/ZonalResidence/SP.csv',
                                                          index=False)
         return
 
@@ -146,7 +165,10 @@ class OutputProcessor(object):
         # Process and write outputs
         self._write_households_file()
         self._write_persons_file()
+
         self._db_connection.close()
+
+        self._logger.info("Finished output processing.")
         return
 
     def __del__(self):

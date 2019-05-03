@@ -3,7 +3,8 @@ import logzero
 import sys
 import argparse
 import json
-
+import datetime
+import os
 # parse input arguments
 from gtamodel_popsyn.input_processor import InputProcessor
 from gtamodel_popsyn.gtamodel_popsyn import GTAModelPopSyn
@@ -36,11 +37,14 @@ except:
     logger.info("GTAModel PopSyn will now terminate.")
     sys.exit(1)
 
-logger = setup_logger('gtamodel',logfile=f'{config["OutputFolder"]}/gtamodel_popsyn.log')
+
+start_time = datetime.datetime.now()
+os.makedirs(f'{config["OutputFolder"]}/{start_time:%Y-%m-%d_%H-%M}/')
+logger = setup_logger('gtamodel',logfile=f'{config["OutputFolder"]}/{start_time:%Y-%m-%d_%H-%M}/gtamodel_popsyn.log')
 logger.info(f'GTAModel PopSyn')
 logger.info(f'Configuration file loaded: {args.config}')
 
-gtamodel_popsyn = GTAModelPopSyn(config)
+gtamodel_popsyn = GTAModelPopSyn(config,start_time = start_time)
 
 if args.database_only:
     gtamodel_popsyn.initialize_database()

@@ -106,4 +106,4 @@ subprocess.run([f'{config["Java64Path"]}/bin/java', "-showversion", '-server', '
                 'popGenerator.PopGenerator', 'input/settings_modified.xml'], shell=True)
 
 logger.info('Popsyn process has completed.')
-subprocess.run(["python", "post.py"], shell=True)
+subprocess.run(["python","-m","gtamodel_popsyn" "-o"], shell=True)
