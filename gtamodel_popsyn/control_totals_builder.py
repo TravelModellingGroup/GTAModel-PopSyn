@@ -1,6 +1,8 @@
+from shutil import copyfile
+
 import pandas as pd
 from gtamodel_popsyn.constants import *
-from  gtamodel_popsyn._gtamodel_popsyn_processor import GTAModelPopSynProcessor
+from gtamodel_popsyn._gtamodel_popsyn_processor import GTAModelPopSynProcessor
 
 
 class ControlTotalsBuilder(GTAModelPopSynProcessor):
@@ -184,6 +186,9 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
                                        ])].sort_values(['puma', 'taz', 'maz'])
 
         maz_controls[maz_controls['totpop'] > 0].astype(int).to_csv(f"{self._config['MazLevelControls']}", index=False)
+        if self._arguments.include_input:
+            copyfile(f"{self._config['MazLevelControls']}",
+                     f"{self._output_path}/Inputs/{self._config['MazLevelControls']}")
 
     def _write_taz_control_totals_file(self):
         """
@@ -194,23 +199,21 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
                                                       'puma', 'taz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P',
                                                       'license_Y'
                                                          , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G',
-                                                      'S', 'M', 'O']
-                                                     + self._age_bin_columns + ['hhsize1', 'hhsize2', 'hhsize3',
-                                                                                'hhsize4p',
-                                                                                'income_class_1',
-                                                                                'income_class_2',
-                                                                                'income_class_3',
-                                                                                'income_class_4',
-                                                                                'income_class_5',
-                                                                                'income_class_6',
-                                                                                'male',
-                                                                                'female',
-                                                                                'employment_zone_internal',
-                                                                                'employment_zone_external',
-                                                                                'employment_zone_roaming'
-                                                                                ])].sort_values(['puma', 'taz'])
+                                                      'S', 'M', 'O'] + self._age_bin_columns +
+                                                     ['hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p',
+                                                      'income_class_1', 'income_class_2', 'income_class_3',
+                                                      'income_class_4', 'income_class_5', 'income_class_6',
+                                                      'male', 'female',
+                                                      'employment_zone_internal',
+                                                      'employment_zone_external',
+                                                      'employment_zone_roaming'
+                                                      ])].sort_values(
+            ['puma', 'taz'])
 
         controls_taz[controls_taz['totpop'] > 0].astype(int).to_csv(f"{self._config['TazLevelControls']}", index=False)
+        if self._arguments.include_input:
+            copyfile(f"{self._config['TazLevelControls']}",
+                     f"{self._output_path}/Inputs/{self._config['TazLevelControls']}")
         return controls_taz
 
     def _write_meta_control_totals_file(self, taz_controls):
@@ -235,3 +238,6 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
                                                               'employment_zone_external',
                                                               'employment_zone_roaming'])].apply(sum).reset_index()
         meta_controls.astype(int).to_csv(f"{self._config['MetaLevelControls']}", index=False)
+        if self._arguments.include_input:
+            copyfile(f"{self._config['MetaLevelControls']}",
+                     f"{self._output_path}/Inputs/{self._config['MetaLevelControls']}")

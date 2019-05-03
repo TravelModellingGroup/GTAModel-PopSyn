@@ -30,6 +30,10 @@ parser.add_argument('-r', '--validation-report-only',
                     required=False,
                     action="store_true",
                     help="Only generate a summary report from existing output files.")
+parser.add_argument('-m', '--include-input',
+                    required=False,
+                    action="store_true",
+                    help="Include a copy of input controls and seed data in output folder.")
 args = parser.parse_args()
 
 try:

@@ -1,4 +1,5 @@
 import datetime
+import os
 import subprocess
 import xml.etree.ElementTree
 from logzero import logger, setup_logger
@@ -78,6 +79,9 @@ class GTAModelPopSyn(object):
         and output generation will be performed.
         :return:
         """
+
+        if self._arguments.include_input:
+            os.makedirs(f'{self._output_path}/Input/', exist_ok=True)
         self.generate_inputs()
         self.initialize_database(
             self._input_processor.processed_persons,
@@ -124,6 +128,6 @@ class GTAModelPopSyn(object):
                         '-XX:ErrorFile=output/java_error%p.log',
                         '-cp', ';'.join(classpaths), '-Djppf.config=jppf-clientLocal.properties',
                         f'-Djava.library.path={libpath}',
-                        'popGenerator.PopGenerator', 'input/settings_modified.xml'], shell=True)
+                        'popGenerator.PopGenerator', f'{self._output_path}/settings.xml'], shell=True)
         self._logger.info('PopSyn3 process has completed.')
         return

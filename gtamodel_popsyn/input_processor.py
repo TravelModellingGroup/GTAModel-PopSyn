@@ -3,7 +3,7 @@ import numpy as np
 import gtamodel_popsyn.constants as constants
 from gtamodel_popsyn._gtamodel_popsyn_processor import GTAModelPopSynProcessor
 import gtamodel_popsyn.control_totals_builder as ctb
-
+from shutil import copyfile
 
 class InputProcessor(GTAModelPopSynProcessor):
     """
@@ -200,6 +200,9 @@ class InputProcessor(GTAModelPopSynProcessor):
         households['puma'] = households['puma'].astype(int)
         self._processed_households = households.copy()
         households.to_csv(f"{self._config['ProcessedHouseholdsSeedFile']}", index=False)
+        if self._arguments.include_input:
+            copyfile(f"{self._config['ProcessedHouseholdsSeedFile']}",
+                     f"{self._output_path}/Inputs/{self._config['ProcessedHouseholdsSeedFile']}")
 
     def _postprocess_persons(self):
         """
@@ -220,3 +223,7 @@ class InputProcessor(GTAModelPopSynProcessor):
         persons['puma'] = persons['puma'].astype(int)
         self._processed_persons = persons.copy()
         self._processed_persons.to_csv(f"{self._config['ProcessedPersonsSeedFile']}", index=False)
+
+        if self._arguments.include_input:
+            copyfile(f"{self._config['ProcessedPersonsSeedFile']}",
+                     f"{self._output_path}/Inputs/{self._config['ProcessedPersonsSeedFile']}")

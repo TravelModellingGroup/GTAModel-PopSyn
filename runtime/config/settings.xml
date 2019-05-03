@@ -27,7 +27,8 @@
         <synpopOutputPersTableName>synpop_person</synpopOutputPersTableName>
         <outputHhAttributes>HouseholdId, DwellingType, NumberOfPersons, Vehicles, IncomeClass</outputHhAttributes>
         <outputPersAttributes>PersonNumber, Age, Sex, License, TransitPass, EmploymentStatus, Occupation,FreeParking,
-            StudentStatus,EmploymentZone</outputPersAttributes>
+            StudentStatus,EmploymentZone
+        </outputPersAttributes>
     </pumsData>
     <!-- changed max expansion factor -->
 
@@ -202,36 +203,6 @@
                 <type>equality</type>
                 <value>8888</value>
             </constraint>
-
-
-        </marginals>
-    </target>
-
-        <target>
-
-
-        <marginals>
-            <id>4</id>
-            <description>Student Status</description>
-            <geographyType>taz</geographyType>
-            <controlType>count</controlType>
-            <table>perstable</table>
-            <constraint id="1">
-                <importance>100</importance>
-                <controlField>S_S</controlField>
-                <field>StudentStatus</field>
-                <type>equality</type>
-                <value>1</value>
-            </constraint>
-            <constraint id="2">
-                <importance>100</importance>
-                <controlField>S_P</controlField>
-                <field>StudentStatus</field>
-                <type>equality</type>
-                <value>2</value>
-            </constraint>
-
-
 
 
         </marginals>
