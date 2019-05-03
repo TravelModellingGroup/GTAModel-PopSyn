@@ -34,18 +34,12 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
 
         self._controls = pd.DataFrame(columns=['region',
                                                'puma', 'taz', 'maz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P',
-                                               'license_Y'
-                                                  , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G', 'S', 'M',
-                                               'O' +
+                                               'license_Y', 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H',
+                                               'P', 'G', 'S', 'M', 'O' +
                                                'age65p', 'hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p',
-                                               'income_class_1',
-                                               'income_class_2',
-                                               'income_class_3',
-                                               'income_class_4',
-                                               'income_class_5',
-                                               'income_class_6',
-                                               'male',
-                                               'female',
+                                               'income_class_1', 'income_class_2', 'income_class_3',
+                                               'income_class_4', 'income_class_5', 'income_class_6',
+                                               'male', 'female',
                                                'employment_zone_internal',
                                                'employment_zone_external',
                                                'employment_zone_roaming'] + self._age_bin_columns)
@@ -167,24 +161,25 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
         :return:
         """
         maz_controls = self._controls.reset_index()
-        maz_conotrols = maz_controls[(['region', 'puma', 'taz', 'maz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P',
-                                       'license_Y', 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G',
-                                       'S', 'M', 'O'] + self._age_bin_columns +
-                                      ['hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p',
-                                       'income_class_1',
-                                       'income_class_2',
-                                       'income_class_3',
-                                       'income_class_4',
-                                       'income_class_5',
-                                       'income_class_6',
-                                       'male',
-                                       'female',
-                                       'employment_zone_internal',
-                                       'employment_zone_external',
-                                       'employment_zone_roaming'
-                                       ])].sort_values(['puma', 'taz', 'maz'])
+        maz_controls = maz_controls[(['region', 'puma', 'taz', 'maz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P',
+                                      'license_Y', 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G',
+                                      'S', 'M', 'O'] + self._age_bin_columns +
+                                     ['hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p',
+                                      'income_class_1',
+                                      'income_class_2',
+                                      'income_class_3',
+                                      'income_class_4',
+                                      'income_class_5',
+                                      'income_class_6',
+                                      'male',
+                                      'female',
+                                      'employment_zone_internal',
+                                      'employment_zone_external',
+                                      'employment_zone_roaming'
+                                      ])].sort_values(['puma', 'taz', 'maz'])
 
-        maz_controls[maz_controls['totpop'] > 0].astype(int).to_csv(f"{self._output_path}/Inputs/{self._config['MazLevelControls']}", index=False)
+        maz_controls[maz_controls['totpop'] > 0].astype(int).to_csv(
+            f"{self._output_path}/Inputs/{self._config['MazLevelControls']}", index=False)
 
     def _write_taz_control_totals_file(self):
         """
@@ -193,21 +188,20 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
         """
         controls_taz = self._controls.reset_index()[(['region',
                                                       'puma', 'taz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P',
-                                                      'license_Y'
-                                                         , 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G',
-                                                      'S', 'M', 'O'] + self._age_bin_columns +
+                                                      'license_Y', 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H',
+                                                      'P', 'G', 'S', 'M', 'O'] +
+                                                     self._age_bin_columns +
                                                      ['hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p',
                                                       'income_class_1', 'income_class_2', 'income_class_3',
                                                       'income_class_4', 'income_class_5', 'income_class_6',
                                                       'male', 'female',
                                                       'employment_zone_internal',
                                                       'employment_zone_external',
-                                                      'employment_zone_roaming'
-                                                      ])].sort_values(
-            ['puma', 'taz'])
+                                                      'employment_zone_roaming'])].sort_values(['puma', 'taz'])
 
-        controls_taz[controls_taz['totpop'] > 0].astype(int).\
-            to_csv(f"{self._output_path}/Inputs/{self._config['TazLevelControls']}", index=False)
+        controls_taz[controls_taz['totpop'] > 0].astype(int).to_csv(
+            f"{self._output_path}/Inputs/{self._config['TazLevelControls']}", index=False)
+
         return controls_taz
 
     def _write_meta_control_totals_file(self, taz_controls):

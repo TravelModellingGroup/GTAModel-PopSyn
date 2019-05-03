@@ -5,6 +5,7 @@ from gtamodel_popsyn._gtamodel_popsyn_processor import GTAModelPopSynProcessor
 import gtamodel_popsyn.control_totals_builder as ctb
 from shutil import copyfile
 
+
 class InputProcessor(GTAModelPopSynProcessor):
     """
     InputProcessor will read and process the input configuration and apply and defined attribute
@@ -126,7 +127,6 @@ class InputProcessor(GTAModelPopSynProcessor):
             # self._persons_households.loc[self._persons_households['PD'].isin(pd_range), 'puma'] = index + 1
             self._households_base.loc[self._households_base['PD'].isin(pd_range), 'puma'] = index + 1
 
-
     def _preprocess_persons(self):
         """
         Process any person specific attributes before the control generation stage.
@@ -160,7 +160,6 @@ class InputProcessor(GTAModelPopSynProcessor):
         self._persons_households = self._persons_households.loc[
             (self._persons_households.EmploymentStatus != '9') &
             (self._persons_households.Occupation != '9') & (self._persons_households.StudentStatus != '9')]
-
 
         unmatched = self._persons_households.loc[:, ('HouseholdId', 'NumberOfPersons', 'PersonNumber')].groupby(
             ['HouseholdId']).agg({'NumberOfPersons': lambda x: x.iloc[0], 'PersonNumber': 'count'})
@@ -214,5 +213,5 @@ class InputProcessor(GTAModelPopSynProcessor):
         persons['HouseholdId'] = persons['HouseholdId'].astype(int)
         persons['puma'] = persons['puma'].astype(int)
         self._processed_persons = persons.copy()
-        self._processed_persons.to_csv(f"{self._output_path}/Inputs/{self._config['ProcessedPersonsSeedFile']}", index=False)
-
+        self._processed_persons.to_csv(f"{self._output_path}/Inputs/{self._config['ProcessedPersonsSeedFile']}",
+                                       index=False)
