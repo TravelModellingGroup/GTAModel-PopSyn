@@ -83,7 +83,7 @@ settings_root.find('.database/server').text = config['DatabaseServer']
 settings_root.find('.database/user').text = config['DatabaseUser']
 settings_root.find('.database/password').text = config['DatabasePassword']
 settings_root.find('.database/dbName').text = config['DatabaseName']
-
+settings_root.find('.pumsData/outputPersAttributes').text = ' '.join(settings_root.find('.pumsData/outputPersAttributes').text.split())
 
 et.write("input/settings_modified.xml")
 # et.write('')

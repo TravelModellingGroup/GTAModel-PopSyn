@@ -210,7 +210,7 @@ class InputProcessor(object):
         """
         persons = self._persons_households[
             ['HouseholdId',  'PersonNumber', 'puma', 'Age', 'Sex', 'License', 'TransitPass', 'EmploymentStatus',
-             'Occupation', 'StudentStatus', 'FreeParking', 'EmploymentZone', 'SchoolZone', 'weightp']].copy()
+             'Occupation','FreeParking',  'StudentStatus', 'EmploymentZone', 'SchoolZone', 'weightp']].copy()
         persons.rename(columns={'weightp': 'weight'}, inplace=True)
 
         for mapping in self._config['CategoryMapping']['Persons'].items():
