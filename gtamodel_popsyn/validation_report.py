@@ -1,21 +1,28 @@
 import pandas as pd
+
+from gtamodel_popsyn._gtamodel_popsyn_processor import GTAModelPopSynProcessor
 from gtamodel_popsyn.constants import *
 import os
 
-class SummaryReport(object):
+
+class ValidationReport(GTAModelPopSynProcessor):
     """
-    Generates a summary report comparing attribute totals between the input records
-    and the synthetic population
+    Generates a set of files that provides support for validation and analysis
+    of the synthetic population.
+
+    The validation report step requires the previous' step's output files to have
+    already been created.
     """
 
-    def __init__(self, config):
+    def __init__(self, gtamodel_popsyn_instance):
         """
+
+        :param gtamodel_popsyn_instance:
         """
-        self._config = config
+        GTAModelPopSynProcessor.__init__(self, gtamodel_popsyn_instance)
         self._households_original = pd.DataFrame()
         self._persons_original = pd.DataFrame()
         self._persons_households_original = pd.DataFrame()
-
         self._households_synthesized = pd.DataFrame()
         self._persons_synthesized = pd.DataFrame()
         self._persons_households_synthesized = pd.DataFrame()
@@ -23,11 +30,11 @@ class SummaryReport(object):
 
     def generate(self):
         """
-
+        Starts the validation report generation process.
         :return:
         """
         try:
-            os.makedirs(f'{self._config["OutputFolder"]}/SummaryReport/')
+            os.makedirs(f'{self._output_folder}/Validation/')
         except FileExistsError:
             pass
         self._read_data()

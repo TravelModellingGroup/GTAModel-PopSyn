@@ -6,9 +6,11 @@ import json
 import datetime
 import os
 # parse input arguments
-from gtamodel_popsyn.input_processor import InputProcessor
-from gtamodel_popsyn.gtamodel_popsyn import GTAModelPopSyn
+
 from logzero import logger, setup_logger
+
+from gtamodel_popsyn.gtamodel_popsyn import GTAModelPopSyn
+
 parser = argparse.ArgumentParser()
 parser.add_argument('-c', '--config', action='store', required=False, default='config.json',
                     help="Path of the configuration file to use.", type=argparse.FileType('r'))
@@ -24,7 +26,7 @@ parser.add_argument('-o', '--output-only',
                     required=False,
                     action="store_true",
                     help="Only write synthesized population from existing database data.")
-parser.add_argument('-r', '--report-only',
+parser.add_argument('-r', '--validation-report-only',
                     required=False,
                     action="store_true",
                     help="Only generate a summary report from existing output files.")
@@ -39,12 +41,12 @@ except:
 
 
 start_time = datetime.datetime.now()
-os.makedirs(f'{config["OutputFolder"]}/{start_time:%Y-%m-%d_%H-%M}/')
+os.makedirs(f'{config["OutputFolder"]}/{start_time:%Y-%m-%d_%H-%M}/',exist_ok=True)
 logger = setup_logger('gtamodel',logfile=f'{config["OutputFolder"]}/{start_time:%Y-%m-%d_%H-%M}/gtamodel_popsyn.log')
 logger.info(f'GTAModel PopSyn')
 logger.info(f'Configuration file loaded: {args.config}')
 
-gtamodel_popsyn = GTAModelPopSyn(config,start_time = start_time)
+gtamodel_popsyn = GTAModelPopSyn(config, args, start_time = start_time)
 
 if args.database_only:
     gtamodel_popsyn.initialize_database()
@@ -58,8 +60,10 @@ if args.output_only:
     gtamodel_popsyn.generate_outputs()
     sys.exit(0)
 
-if args.report_only:
+if args.validation_report_only:
     gtamodel_popsyn.generate_summary_report()
     sys.exit(0)
+
+# generating full report
 
 gtamodel_popsyn.run()

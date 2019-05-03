@@ -72,7 +72,7 @@ with warnings.catch_warnings():
             execute_multi_sql(db_connection, controls_table_processing_sql)
 
 logger.info("Finished initial database setup.")
-"""
+
 logger.info('Preprocessing popsyn3 settings input with matching config.json information')
 
 et = xml.etree.ElementTree.parse(config["PopSyn3SettingsFile"])
@@ -83,7 +83,7 @@ settings_root.find('.database/server').text = config['DatabaseServer']
 settings_root.find('.database/user').text = config['DatabaseUser']
 settings_root.find('.database/password').text = config['DatabasePassword']
 settings_root.find('.database/dbName').text = config['DatabaseName']
-settings_root.find('.pumsData/outputPersAttributes').text = ' '.join(settings_root.find('.pumsData/outputPersAttributes').text.split())
+settings_root.find('.pumsData/outputPersAttributes').text = ', '.join([x.strip(',') for x in settings_root.find('.pumsData/outputPersAttributes').text.split()])
 
 et.write("input/settings_modified.xml")
 # et.write('')
@@ -107,3 +107,4 @@ subprocess.run([f'{config["Java64Path"]}/bin/java', "-showversion", '-server', '
 
 logger.info('Popsyn process has completed.')
 subprocess.run(["python","-m","gtamodel_popsyn" "-o"], shell=True)
+"""

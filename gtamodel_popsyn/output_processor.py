@@ -3,32 +3,36 @@ from logzero import setup_logger
 from sqlalchemy import create_engine
 import gtamodel_popsyn.sql_commands as sql_commands
 from gtamodel_popsyn.constants import *
-import datetime
+from gtamodel_popsyn._gtamodel_popsyn_processor import GTAModelPopSynProcessor
 import os
 
 
-class OutputProcessor(object):
+class OutputProcessor(GTAModelPopSynProcessor):
     """
     Performs processing on PopSyn3's output data.
     Synthesized persons and households are extracted from the processing database and
     transformed into the input format expected by the GTAModel runtime.
     """
 
-    def __init__(self, config, output_path):
-        self._config = config
+    def __init__(self, gtamodel_popsyn_instance):
+
+        GTAModelPopSynProcessor.__init__(self, gtamodel_popsyn_instance)
         self._db_connection = None
         self._logger = setup_logger(name='gtamodel')
         self._persons = pandas.DataFrame()
         self._households = pandas.DataFrame()
         self._persons_households = pandas.DataFrame()
-        self._output_folder = f'{output_path}'
+        self._output_folder = self._output_path
         self._engine = create_engine(
-            f'mysql+pymysql://{config["DatabaseUser"]}:'
-            f'{config["DatabasePassword"]}@{config["DatabaseServer"]}/{config["DatabaseName"]}'
+            f'mysql+pymysql://{self._config["DatabaseUser"]}:'
+            f'{self._config["DatabasePassword"]}@{self._config["DatabaseServer"]}/{self._config["DatabaseName"]}'
         )
 
-        os.makedirs(f'{self._output_folder}/ZonalResidence/')
-        os.makedirs(f'{self._output_folder}/HouseholdData/')
+        try:
+            os.makedirs(f'{self._output_folder}/ZonalResidence/')
+            os.makedirs(f'{self._output_folder}/HouseholdData/')
+        except FileExistsError:
+            pass
 
         return
 

@@ -1,10 +1,11 @@
 import pandas as pd
 import numpy as np
-import gtamodel_popsyn.control_totals_builder as gtactb
 import gtamodel_popsyn.constants as constants
+from gtamodel_popsyn._gtamodel_popsyn_processor import GTAModelPopSynProcessor
+import gtamodel_popsyn.control_totals_builder as ctb
 
 
-class InputProcessor(object):
+class InputProcessor(GTAModelPopSynProcessor):
     """
     InputProcessor will read and process the input configuration and apply and defined attribute
     mappings in the seed population records.
@@ -18,16 +19,16 @@ class InputProcessor(object):
     def processed_households(self):
         return self._persons_households
 
-    def __init__(self, config):
+    def __init__(self, gtamodel_popsyn_instance):
         """
         :param config: configuration input
         """
-        self._config = config
+        GTAModelPopSynProcessor.__init__(self, gtamodel_popsyn_instance)
         self._persons_households = pd.DataFrame()
         self._households_base = pd.DataFrame()
         self._persons_base = pd.DataFrame()
         self._zones = pd.DataFrame()
-        self._control_totals_builder = gtactb.ControlTotalsBuilder(config)
+        self._control_totals_builder = ctb.ControlTotalsBuilder(gtamodel_popsyn_instance)
         self._processed_persons = None
         self._processed_households = None
 
@@ -125,8 +126,7 @@ class InputProcessor(object):
             # self._persons_households.loc[self._persons_households['PD'].isin(pd_range), 'puma'] = index + 1
             self._households_base.loc[self._households_base['PD'].isin(pd_range), 'puma'] = index + 1
 
-
-        #self._households_base['puma'] = self._households_base['HouseholdZone'].apply(lambda x: list(self._zones.loc[self._zones['Zone#'] == x,'PD'])[0]).astype(int)
+        # self._households_base['puma'] = self._households_base['HouseholdZone'].apply(lambda x: list(self._zones.loc[self._zones['Zone#'] == x,'PD'])[0]).astype(int)
 
         # self._households_base['puma'] = self._zones.loc[self._zones['Zone#'self._households_base['puma']
 
@@ -163,7 +163,6 @@ class InputProcessor(object):
         self._persons_households = self._persons_households.loc[
             (self._persons_households.EmploymentStatus != '9') &
             (self._persons_households.Occupation != '9') & (self._persons_households.StudentStatus != '9')]
-
 
         # sample only some of the input house holds
         # self._persons_households = self._persons_households.sample(frac=self._config["InputSample"])
@@ -209,8 +208,8 @@ class InputProcessor(object):
         :return:
         """
         persons = self._persons_households[
-            ['HouseholdId',  'PersonNumber', 'puma', 'Age', 'Sex', 'License', 'TransitPass', 'EmploymentStatus',
-             'Occupation','FreeParking',  'StudentStatus', 'EmploymentZone', 'SchoolZone', 'weightp']].copy()
+            ['HouseholdId', 'PersonNumber', 'puma', 'Age', 'Sex', 'License', 'TransitPass', 'EmploymentStatus',
+             'Occupation', 'FreeParking', 'StudentStatus', 'EmploymentZone', 'SchoolZone', 'weightp']].copy()
         persons.rename(columns={'weightp': 'weight'}, inplace=True)
 
         for mapping in self._config['CategoryMapping']['Persons'].items():

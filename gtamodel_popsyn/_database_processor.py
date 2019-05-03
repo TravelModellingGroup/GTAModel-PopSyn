@@ -7,6 +7,7 @@ from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, Sma
     FLOAT, VARCHAR
 from sqlalchemy import inspect
 from sqlalchemy.engine import Connection, Engine
+from gtamodel_popsyn._gtamodel_popsyn_processor import GTAModelPopSynProcessor
 
 _PANDAS_DTYPE_SQL_TYPE = {
     'int64': Integer,
@@ -16,14 +17,18 @@ _PANDAS_DTYPE_SQL_TYPE = {
 }
 
 
-class DatabaseProcessor(object):
+class DatabaseProcessor(GTAModelPopSynProcessor):
     """
     Processes input database tables for PopSyn3 - will create them where they do not exist,
     and read in the appropriate input data.
     """
 
-    def __init__(self, config):
-        self._config = config
+    def __init__(self, gtamodel_popsyn_instance):
+        """
+
+        :param gtamodel_popsyn_instance:
+        """
+        GTAModelPopSynProcessor.__init__(self, gtamodel_popsyn_instance)
         self._engine: Engine = None
         self._connection = None
 
@@ -87,21 +92,22 @@ class DatabaseProcessor(object):
         # new metadata
         metadata = MetaData()
         hhtable = Table('hhtable', metadata, *[Column(c, _PANDAS_DTYPE_SQL_TYPE[households.dtypes[c].name]) for c in
-                                    households.columns],
-                        Column('hhnum', Integer, unique=True, autoincrement=True,nullable=False))
+                                               households.columns],
+                        Column('hhnum', Integer, unique=True, autoincrement=True, nullable=False))
 
         perstable = Table('perstable', metadata, *[Column(c, _PANDAS_DTYPE_SQL_TYPE[persons.dtypes[c].name]) for c in
-                                    persons.columns],
-                        Column('hhnum', Integer))
+                                                   persons.columns],
+                          Column('hhnum', Integer))
 
-        metadata.drop_all(self._engine, [hhtable,perstable])
+        metadata.drop_all(self._engine, [hhtable, perstable])
         metadata.create_all(self._engine)
-        hhtable_data = pd.concat([households,pd.Series(range(1,households.shape[0]+1),dtype=int,name="hhnum")],axis=1)
+        hhtable_data = pd.concat([households, pd.Series(range(1, households.shape[0] + 1), dtype=int, name="hhnum")],
+                                 axis=1)
 
         hhtable_data.to_sql('hhtable', self._connection, if_exists='append', index=False)
-        pd.merge(persons, hhtable_data[['hhnum','HouseholdId']], how="left",
+        pd.merge(persons, hhtable_data[['hhnum', 'HouseholdId']], how="left",
                  left_on="HouseholdId", right_on="HouseholdId").to_sql(
-            'perstable',self._connection,if_exists="append",index=False)
+            'perstable', self._connection, if_exists="append", index=False)
 
         print("done")
         return
@@ -157,4 +163,5 @@ class DatabaseProcessor(object):
         return
 
     def __del__(self):
-        self._engine.dispose()
+        if self._engine is not None:
+            self._engine.dispose()
