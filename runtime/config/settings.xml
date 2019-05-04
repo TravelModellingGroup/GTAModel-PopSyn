@@ -70,7 +70,7 @@
             <geographyType>maz</geographyType>
             <table>hhtable</table>
             <constraint id="1">
-                <importance>1000000000</importance>
+                <importance>3000</importance>
                 <field>weight</field>
                 <controlField>totalhh</controlField>
                 <type>interval</type>
@@ -92,28 +92,28 @@
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>1000</importance>
+                <importance>10000</importance>
                 <controlField>G</controlField>
                 <field>Occupation</field>
                 <type>equality</type>
                 <value>1</value>
             </constraint>
             <constraint id="2">
-                <importance>1000</importance>
+                <importance>10000</importance>
                 <controlField>S</controlField>
                 <field>Occupation</field>
                 <type>equality</type>
                 <value>2</value>
             </constraint>
             <constraint id="3">
-                <importance>1000</importance>
+                <importance>10000</importance>
                 <controlField>M</controlField>
                 <field>Occupation</field>
                 <type>equality</type>
                 <value>3</value>
             </constraint>
             <constraint id="4">
-                <importance>1000</importance>
+                <importance>10000</importance>
                 <controlField>P</controlField>
                 <field>Occupation</field>
                 <type>equality</type>
@@ -121,7 +121,7 @@
             </constraint>
 
             <constraint id="5">
-                <importance>1000</importance>
+                <importance>10000</importance>
                 <controlField>O</controlField>
                 <field>Occupation</field>
                 <type>equality</type>
@@ -141,21 +141,21 @@
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>1000</importance>
+                <importance>10000</importance>
                 <controlField>E_O</controlField>
                 <field>EmploymentStatus</field>
                 <type>equality</type>
                 <value>1</value>
             </constraint>
             <constraint id="2">
-                <importance>1000</importance>
+                <importance>10000</importance>
                 <controlField>E_F</controlField>
                 <field>EmploymentStatus</field>
                 <type>equality</type>
                 <value>2</value>
             </constraint>
             <constraint id="3">
-                <importance>1000</importance>
+                <importance>10000</importance>
                 <controlField>E_P</controlField>
                 <field>EmploymentStatus</field>
                 <type>equality</type>
@@ -176,7 +176,7 @@
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>1000</importance>
+                <importance>10000</importance>
                 <controlField>employment_zone_internal</controlField>
                 <field>EmploymentZone</field>
                 <type>interval</type>
@@ -186,7 +186,7 @@
                 <hi_type>open</hi_type>
             </constraint>
             <constraint id="2">
-                <importance>1000</importance>
+                <importance>10000</importance>
                 <controlField>employment_zone_external</controlField>
                 <field>EmploymentZone</field>
                 <type>interval</type>
@@ -197,7 +197,7 @@
             </constraint>
 
             <constraint id="3">
-                <importance>1000</importance>
+                <importance>10000</importance>
                 <controlField>employment_zone_roaming</controlField>
                 <field>EmploymentZone</field>
                 <type>equality</type>
