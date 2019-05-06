@@ -1,7 +1,7 @@
 import datetime
 import os
 import subprocess
-from logzero import logger, setup_logger
+from logzero import setup_logger
 from gtamodel_popsyn._database_processor import DatabaseProcessor
 from gtamodel_popsyn.control_totals_builder import ControlTotalsBuilder
 from gtamodel_popsyn.input_processor import InputProcessor
@@ -48,6 +48,8 @@ class GTAModelPopSyn(object):
         self._database_processor = DatabaseProcessor(self)
         self._settings_processor = SettingsProcessor(self)
 
+        os.makedirs(f'{self._output_path}/Inputs/', exist_ok=True)
+
         return
 
     def generate_summary_report(self):
@@ -57,9 +59,9 @@ class GTAModelPopSyn(object):
         This method require an output to have already been generated.
         :return:
         """
-        logger.info('Generating summary report.')
+        self._logger.info('Generating summary report.')
         self._summary_report.generate()
-        logger.info('Summary report has been generated.')
+        self._logger.info('Summary report has been generated.')
 
     def generate_outputs(self):
         self._logger.info('Generating population synthesis outputs.')
@@ -82,8 +84,6 @@ class GTAModelPopSyn(object):
         and output generation will be performed.
         :return:
         """
-        #
-        os.makedirs(f'{self._output_path}/Inputs/', exist_ok=True)
         self.generate_inputs()
         self.initialize_database(
             self._input_processor.processed_persons,

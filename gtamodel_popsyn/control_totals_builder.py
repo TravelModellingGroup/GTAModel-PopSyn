@@ -66,7 +66,7 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
         self._controls['totalhh'] = hh2_group.weighth.sum().astype(int)
         self._controls['totpop'] = hh_group.weightp.sum().astype(int)
         self._controls['puma'] = (self._zones['puma'].astype(int))
-        # self._controls['taz'] = self._zones['PD'].astype(int)
+
 
         self._controls['male'] = hh_group.apply(lambda x: self._sum_column(x, 'Sex', 'M', 'weightp')).astype(
             int)
@@ -108,7 +108,6 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
             self._controls[age_bin] = hh_group.apply(
                 lambda x: self._sum_column_range(x, 'Age', AGE_BINS[index].start, AGE_BINS[index].stop,
                                                  'weightp')).astype(int)
-
         self._controls['E_J'] = hh_group.apply(
             lambda x: self._sum_column(x, 'EmploymentStatus', 'J', 'weightp')).astype(
             int)

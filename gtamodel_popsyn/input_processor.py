@@ -86,7 +86,6 @@ class InputProcessor(GTAModelPopSynProcessor):
 
         # assign appropriate puma values
         self._assign_puma_values()
-
         self._preprocess_households()
         self._preprocess_persons()
 
@@ -94,8 +93,9 @@ class InputProcessor(GTAModelPopSynProcessor):
         self._persons_households = pd.merge(left=self._persons_base, right=self._households_base,
                                             left_on="HouseholdId",
                                             right_on="HouseholdId",
-                                            how="left")
+                                            how="inner")
 
+        self._preprocess_persons_households()
         self._filter_records()
 
         return
@@ -124,20 +124,56 @@ class InputProcessor(GTAModelPopSynProcessor):
         self._zones['puma'] = 0
         for index, pd_range in enumerate(constants.PUMA_PD_RANGES):
             self._zones.loc[self._zones['PD'].isin(pd_range), 'puma'] = index + 1
-            # self._persons_households.loc[self._persons_households['PD'].isin(pd_range), 'puma'] = index + 1
             self._households_base.loc[self._households_base['PD'].isin(pd_range), 'puma'] = index + 1
 
     def _preprocess_persons(self):
         """
         Process any person specific attributes before the control generation stage.
         """
-        # clear certain employment zones for records
-        # self._persons_base.loc[self._persons_base.EmploymentZone < 6000,
-        #                        'EmploymentZone'] = 0
         self._persons_base.rename(columns={'ExpansionFactor': 'weightp'}, inplace=True)
-
         self._persons_base.EmploymentZone = self._persons_base.EmploymentZone.astype(int)
-        # vself._persons_base['puma'] = self._persons_base['puma'].astype(int)
+
+    def _preprocess_persons_households(self):
+        """
+        Preprocesses the join persons and households information. This step usually involves
+        removing invalid record attributes and replacing it with a draw from a distribution
+        of  its associated geography.
+        :return:
+        """
+
+        self._resample_invalid_category('Occupation')
+        self._resample_invalid_category('EmploymentStatus')
+        self._resample_invalid_category('StudentStatus')
+
+    def _resample_invalid_category(self, category, aggregate_column='puma', invalid_value='9'):
+        """
+        Resamples attributes for all records with an invalid value for the associated
+        category.
+        :param records:
+        :param category:
+        :param invalid_value:
+        :return:
+        """
+        import numpy as np
+        distributions = self._persons_households.loc[
+                self._persons_households[category] != invalid_value].groupby(aggregate_column)[
+                category].value_counts(
+                normalize=True)
+
+        def apply_resample(row):
+            """
+            Adjust the category for this row
+            :param row:
+            :return:
+            """
+            if row[category] == invalid_value:
+                row[category] = np.random.choice(
+                    distributions[row[aggregate_column]].index.to_list(),
+                    p=distributions[row[aggregate_column]].to_list())
+            return row
+
+        self._persons_households = self._persons_households.apply(lambda x: apply_resample(x),
+                                                                                        axis=1)
 
     def _preprocess_households(self):
         """
@@ -157,9 +193,9 @@ class InputProcessor(GTAModelPopSynProcessor):
         Post process the joint set of persons and households.
         :return:
         """
-        self._persons_households = self._persons_households.loc[
-            (self._persons_households.EmploymentStatus != '9') &
-            (self._persons_households.Occupation != '9') & (self._persons_households.StudentStatus != '9')]
+        # self._persons_households = self._persons_households.loc[
+        #    (self._persons_households.EmploymentStatus != '9') &
+        #    (self._persons_households.Occupation != '9') & (self._persons_households.StudentStatus != '9')]
 
         unmatched = self._persons_households.loc[:, ('HouseholdId', 'NumberOfPersons', 'PersonNumber')].groupby(
             ['HouseholdId']).agg({'NumberOfPersons': lambda x: x.iloc[0], 'PersonNumber': 'count'})

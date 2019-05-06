@@ -18,7 +18,6 @@ class OutputProcessor(GTAModelPopSynProcessor):
 
         GTAModelPopSynProcessor.__init__(self, gtamodel_popsyn_instance)
         self._db_connection = None
-        self._logger = setup_logger(name='gtamodel')
         self._persons = pandas.DataFrame()
         self._households = pandas.DataFrame()
         self._persons_households = pandas.DataFrame()

@@ -42,9 +42,9 @@ except:
 
 start_time = datetime.datetime.now()
 os.makedirs(f'{config["OutputFolder"]}/{start_time:%Y-%m-%d_%H-%M}/',exist_ok=True)
-logger = setup_logger('gtamodel',logfile=f'{config["OutputFolder"]}/{start_time:%Y-%m-%d_%H-%M}/gtamodel_popsyn.log')
-logger.info(f'GTAModel PopSyn')
-logger.info(f'Configuration file loaded: {args.config}')
+_logger = setup_logger('gtamodel',logfile=f'{config["OutputFolder"]}/{start_time:%Y-%m-%d_%H-%M}/gtamodel_popsyn.log')
+_logger.info(f'GTAModel PopSyn')
+_logger.info(f'Configuration file loaded: {args.config}')
 
 gtamodel_popsyn = GTAModelPopSyn(config, args, start_time = start_time)
 

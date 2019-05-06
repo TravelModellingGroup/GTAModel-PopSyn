@@ -1,20 +1,11 @@
-import sqlalchemy
 from pandas import DataFrame
-from sqlalchemy import create_engine
 import pandas as pd
+from sqlalchemy import Table, Column, Integer, MetaData, FLOAT, VARCHAR
 from sqlalchemy import create_engine
-from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, SmallInteger, Numeric, NVARCHAR, DECIMAL, \
-    FLOAT, VARCHAR
-from sqlalchemy import inspect
-from sqlalchemy.engine import Connection, Engine
+from sqlalchemy.engine import Engine
+
 from gtamodel_popsyn._gtamodel_popsyn_processor import GTAModelPopSynProcessor
 
-_PANDAS_DTYPE_SQL_TYPE = {
-    'int64': Integer,
-    'float64': FLOAT,
-    'float32': FLOAT,
-    'object': VARCHAR(1)
-}
 
 
 class DatabaseProcessor(GTAModelPopSynProcessor):
@@ -22,6 +13,13 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
     Processes input database tables for PopSyn3 - will create them where they do not exist,
     and read in the appropriate input data.
     """
+
+    PANDAS_DTYPE_SQL_TYPE = {
+        'int64': Integer,
+        'float64': FLOAT,
+        'float32': FLOAT,
+        'object': VARCHAR(1)
+    }
 
     def __init__(self, gtamodel_popsyn_instance):
         """
@@ -59,14 +57,16 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
         """
 
         if persons is None:
-            persons: pd.DataFrame = pd.read_csv(f"{self._output_path}/Inputs/{self._config['ProcessedPersonsSeedFile']}")
+            persons: pd.DataFrame = pd.read_csv(
+                f"{self._output_path}/Inputs/{self._config['ProcessedPersonsSeedFile']}")
 
         if households is None:
-            households: pd.DataFrame = pd.read_csv(f"{self._output_path}/Inputs/{self._config['ProcessedHouseholdsSeedFile']}")
+            households: pd.DataFrame = pd.read_csv(
+                f"{self._output_path}/Inputs/{self._config['ProcessedHouseholdsSeedFile']}")
 
         metadata = MetaData()
 
-        households_table_columns = [Column(c, _PANDAS_DTYPE_SQL_TYPE[households.dtypes[c].name]) for c in
+        households_table_columns = [Column(c, self.PANDAS_DTYPE_SQL_TYPE[households.dtypes[c].name]) for c in
                                     households.columns]
         households_table = Table('pumf_hh', metadata, *households_table_columns)
         for c in households.columns:
@@ -74,7 +74,7 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
                 households[c] = households[c].astype('float32')
         households_table.columns[households.columns[0]].primary_key = True
 
-        persons_table_columns = [Column(c, _PANDAS_DTYPE_SQL_TYPE[persons.dtypes[c].name]) for c in persons.columns]
+        persons_table_columns = [Column(c, self.PANDAS_DTYPE_SQL_TYPE[persons.dtypes[c].name]) for c in persons.columns]
         persons_table = Table('pumf_person', metadata, *persons_table_columns)
         for c in persons.columns:
             if persons.dtypes[c].name == 'float64':
@@ -91,11 +91,11 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
 
         # new metadata
         metadata = MetaData()
-        hhtable = Table('hhtable', metadata, *[Column(c, _PANDAS_DTYPE_SQL_TYPE[households.dtypes[c].name]) for c in
+        hhtable = Table('hhtable', metadata, *[Column(c, self.PANDAS_DTYPE_SQL_TYPE[households.dtypes[c].name]) for c in
                                                households.columns],
                         Column('hhnum', Integer, unique=True, autoincrement=True, nullable=False))
 
-        perstable = Table('perstable', metadata, *[Column(c, _PANDAS_DTYPE_SQL_TYPE[persons.dtypes[c].name]) for c in
+        perstable = Table('perstable', metadata, *[Column(c, self.PANDAS_DTYPE_SQL_TYPE[persons.dtypes[c].name]) for c in
                                                    persons.columns],
                           Column('hhnum', Integer))
 
@@ -135,7 +135,7 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
         metadata = MetaData()
 
         maz_controls_table = Table('control_totals_maz', metadata,
-                                   *[Column(c, _PANDAS_DTYPE_SQL_TYPE[maz_controls.dtypes[c].name]) for c in
+                                   *[Column(c, self.PANDAS_DTYPE_SQL_TYPE[maz_controls.dtypes[c].name]) for c in
                                      maz_controls.columns])
         maz_controls_table.columns[maz_controls.columns[0]].primary_key = True
         maz_controls_table.columns[maz_controls.columns[1]].primary_key = True
@@ -143,14 +143,14 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
         maz_controls_table.columns[maz_controls.columns[3]].primary_key = True
 
         taz_controls_table = Table('control_totals_taz', metadata,
-                                   *[Column(c, _PANDAS_DTYPE_SQL_TYPE[taz_controls.dtypes[c].name]) for c in
+                                   *[Column(c, self.PANDAS_DTYPE_SQL_TYPE[taz_controls.dtypes[c].name]) for c in
                                      taz_controls.columns])
         taz_controls_table.columns[taz_controls.columns[0]].primary_key = True
         taz_controls_table.columns[taz_controls.columns[1]].primary_key = True
         taz_controls_table.columns[taz_controls.columns[2]].primary_key = True
 
         meta_controls_table = Table('control_totals_meta', metadata,
-                                    *[Column(c, _PANDAS_DTYPE_SQL_TYPE[meta_controls.dtypes[c].name]) for c in
+                                    *[Column(c, self.PANDAS_DTYPE_SQL_TYPE[meta_controls.dtypes[c].name]) for c in
                                       meta_controls.columns])
         meta_controls_table.columns[meta_controls.columns[0]].primary_key = True
 
@@ -163,5 +163,4 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
         return
 
     def __del__(self):
-        if self._engine is not None:
-            self._engine.dispose()
+        return

@@ -1,4 +1,4 @@
-PUMA_PD_RANGES = [range(1, 17), range(17, 30), range(30,100000)]
+PUMA_PD_RANGES = [range(1, 12), range(12, 24), range(24, 36), range(36, 100000)]
 ZONE_RANGE = range(1, 6000)
 
 # Capture 0 for non workers
@@ -12,4 +12,3 @@ Age bins
 AGE_BINS = [range(0, 4), range(5, 10), range(11, 15), range(16, 25), range(26, 35), range(36, 45), range(46, 55),
             range(56, 64),
             range(65, 200)]
-
