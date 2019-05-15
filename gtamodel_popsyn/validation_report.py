@@ -45,9 +45,9 @@ class ValidationReport(GTAModelPopSynProcessor):
         self._persons_original = pd.read_csv(f"{self._config['PersonsSeedFile']}")
 
         self._households_synthesized = pd.read_csv(
-            f'{self._config["OutputFolder"]}/{self._config["HouseholdsOutputFile"]}')
+            f'{self._output_path}/{self._config["HouseholdsOutputFile"]}')
         self._persons_synthesized = pd.read_csv(
-            f'{self._config["OutputFolder"]}/{self._config["PersonsOutputFile"]}')
+            f'{self._output_path}/{self._config["PersonsOutputFile"]}')
 
         self._zones = pd.read_csv('data/Zones.csv')
 
@@ -79,11 +79,113 @@ class ValidationReport(GTAModelPopSynProcessor):
         self._persons_households_original = self._persons_households_original[
             self._persons_households_original['HouseholdZone'] < ZONE_RANGE.stop]
         self._persons_households_synthesized = self._persons_households_synthesized.rename(
-            columns={'ExpansionFactor_x': 'Total Synthesized'})
+            columns={'ExpansionFactor_x': 'ExpansionFactor'})
         self._persons_households_original = self._persons_households_original.rename(
-            columns={'ExpansionFactor_x': 'Total Input'})
+            columns={'ExpansionFactor_x': 'ExpansionFactor'})
 
-        self._process_occupation_employment_zone()
+        # self._process_occupation_employment_zone()
+
+        self._process_persons_totals()
+
+    def _process_persons_totals(self):
+        """
+        Processes and output region totals for person level attributes, and write the comparison to file.
+        :return:
+        """
+
+        totals = pd.DataFrame(columns=['Observed Total','Synthesized Total','Abs. Difference'],
+                              index=['Population','Male','Female',
+                                     'Occupation P','Occupation G','Occupation S','Occupation M','Occupation O'])
+
+        totals.loc['Population','Observed Total'] = self._persons_households_original['ExpansionFactor'].sum()
+        totals.loc['Population', 'Synthesized Total'] = self._persons_households_synthesized['ExpansionFactor'].sum()
+
+        totals.loc['Male','Observed Total'] = self._persons_households_original.loc[self._persons_households_original.Sex == 'M','ExpansionFactor'].sum()
+        totals.loc['Male','Synthesized Total'] = self._persons_households_synthesized.loc[self._persons_households_synthesized.Sex == 'M','ExpansionFactor'].sum()
+
+        totals.loc['Female','Observed Total'] = self._persons_households_original.loc[self._persons_households_original.Sex == 'F','ExpansionFactor'].sum()
+        totals.loc['Female','Synthesized Total'] = self._persons_households_synthesized.loc[self._persons_households_synthesized.Sex == 'F','ExpansionFactor'].sum()
+
+        totals.loc['Occupation P', 'Observed Total'] = self._persons_households_original.loc[
+            self._persons_households_original.Occupation == 'P', 'ExpansionFactor'].sum()
+        totals.loc['Occupation P', 'Synthesized Total'] = self._persons_households_synthesized.loc[
+            self._persons_households_synthesized.Occupation == 'P', 'ExpansionFactor'].sum()
+
+        totals.loc['Occupation G', 'Observed Total'] = self._persons_households_original.loc[
+            self._persons_households_original.Occupation == 'G', 'ExpansionFactor'].sum()
+        totals.loc['Occupation G', 'Synthesized Total'] = self._persons_households_synthesized.loc[
+            self._persons_households_synthesized.Occupation == 'G', 'ExpansionFactor'].sum()
+
+        totals.loc['Occupation S', 'Observed Total'] = self._persons_households_original.loc[
+            self._persons_households_original.Occupation == 'S', 'ExpansionFactor'].sum()
+        totals.loc['Occupation S', 'Synthesized Total'] = self._persons_households_synthesized.loc[
+            self._persons_households_synthesized.Occupation == 'S', 'ExpansionFactor'].sum()
+
+        totals.loc['Occupation M', 'Observed Total'] = self._persons_households_original.loc[
+            self._persons_households_original.Occupation == 'M', 'ExpansionFactor'].sum()
+        totals.loc['Occupation M', 'Synthesized Total'] = self._persons_households_synthesized.loc[
+            self._persons_households_synthesized.Occupation == 'M', 'ExpansionFactor'].sum()
+
+        totals.loc['Occupation O', 'Observed Total'] = self._persons_households_original.loc[
+            self._persons_households_original.Occupation == 'O', 'ExpansionFactor'].sum()
+        totals.loc['Occupation O', 'Synthesized Total'] = self._persons_households_synthesized.loc[
+            self._persons_households_synthesized.Occupation == 'O', 'ExpansionFactor'].sum()
+
+        totals.loc['EmploymentStatus F', 'Observed Total'] = self._persons_households_original.loc[
+            self._persons_households_original.EmploymentStatus == 'F', 'ExpansionFactor'].sum()
+        totals.loc['EmploymentStatus F', 'Synthesized Total'] = self._persons_households_synthesized.loc[
+            self._persons_households_synthesized.EmploymentStatus == 'F', 'ExpansionFactor'].sum()
+
+        totals.loc['EmploymentStatus P', 'Observed Total'] = self._persons_households_original.loc[
+            self._persons_households_original.EmploymentStatus == 'P', 'ExpansionFactor'].sum()
+        totals.loc['EmploymentStatus P', 'Synthesized Total'] = self._persons_households_synthesized.loc[
+            self._persons_households_synthesized.EmploymentStatus == 'P', 'ExpansionFactor'].sum()
+
+        totals.loc['EmploymentStatus O', 'Observed Total'] = self._persons_households_original.loc[
+            self._persons_households_original.EmploymentStatus == 'O', 'ExpansionFactor'].sum()
+        totals.loc['EmploymentStatus O', 'Synthesized Total'] = self._persons_households_synthesized.loc[
+            self._persons_households_synthesized.EmploymentStatus == 'O', 'ExpansionFactor'].sum()
+
+        totals.loc['EmploymentStatus H', 'Observed Total'] = self._persons_households_original.loc[
+            self._persons_households_original.EmploymentStatus == 'H', 'ExpansionFactor'].sum()
+        totals.loc['EmploymentStatus H', 'Synthesized Total'] = self._persons_households_synthesized.loc[
+            self._persons_households_synthesized.EmploymentStatus == 'H', 'ExpansionFactor'].sum()
+
+        totals.loc['EmploymentStatus J', 'Observed Total'] = self._persons_households_original.loc[
+            self._persons_households_original.EmploymentStatus == 'J', 'ExpansionFactor'].sum()
+        totals.loc['EmploymentStatus J', 'Synthesized Total'] = self._persons_households_synthesized.loc[
+            self._persons_households_synthesized.EmploymentStatus == 'J', 'ExpansionFactor'].sum()
+
+        totals.loc['EmploymentZone Internal', 'Observed Total'] = self._persons_households_original.loc[
+            self._persons_households_original.EmploymentZone < INTERNAL_ZONE_RANGE.stop, 'ExpansionFactor'].sum()
+        totals.loc['EmploymentZone Internal', 'Synthesized Total'] = self._persons_households_synthesized.loc[
+            self._persons_households_synthesized.EmploymentZone < INTERNAL_ZONE_RANGE.stop, 'ExpansionFactor'].sum()
+
+        totals.loc['EmploymentZone Roaming', 'Observed Total'] = self._persons_households_original.loc[
+            self._persons_households_original.EmploymentZone == ROAMING_ZONE_ID, 'ExpansionFactor'].sum()
+        totals.loc['EmploymentZone Roaming', 'Synthesized Total'] = self._persons_households_synthesized.loc[
+            self._persons_households_synthesized.EmploymentZone == ROAMING_ZONE_ID, 'ExpansionFactor'].sum()
+
+        totals.loc['EmploymentZone External', 'Observed Total'] = self._persons_households_original.loc[
+            (self._persons_households_original.EmploymentZone >= EXTERNAL_ZONE_RANGE.start) &
+            (self._persons_households_original.EmploymentZone <= EXTERNAL_ZONE_RANGE.stop), 'ExpansionFactor'].sum()
+
+        totals.loc['EmploymentZone External', 'Synthesized Total'] = self._persons_households_synthesized.loc[
+            (self._persons_households_synthesized.EmploymentZone >= EXTERNAL_ZONE_RANGE.start) &
+            (self._persons_households_synthesized.EmploymentZone <= EXTERNAL_ZONE_RANGE.stop), 'ExpansionFactor'].sum()
+
+        for bin in AGE_BINS:
+            totals.loc[f'Age {bin.start} - {bin.stop}', 'Observed Total'] = self._persons_households_original.loc[
+                (self._persons_households_original.Age >= bin.start) & (self._persons_households_original.Age <= bin.stop), 'ExpansionFactor'].sum()
+            totals.loc[f'Age {bin.start} - {bin.stop}', 'Synthesized Total'] = self._persons_households_synthesized.loc[
+                (self._persons_households_synthesized.Age >= bin.start) & (
+                            self._persons_households_synthesized.Age <= bin.stop), 'ExpansionFactor'].sum()
+
+
+        totals['Abs. Difference'] = totals['Observed Total'] - totals['Synthesized Total']
+        totals.to_csv('temp/persons_totals.csv',index=True)
+
+
 
     def _process_household_totals(self):
         """

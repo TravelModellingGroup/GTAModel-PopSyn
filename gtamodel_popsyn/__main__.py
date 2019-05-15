@@ -1,5 +1,3 @@
-from logzero import logger
-import logzero
 import sys
 import argparse
 import json
@@ -28,8 +26,8 @@ parser.add_argument('-o', '--output-only',
                     help="Only write synthesized population from existing database data.")
 parser.add_argument('-r', '--validation-report-only',
                     required=False,
-                    action="store_true",
-                    help="Only generate a summary report from existing output files.")
+                    action="store",
+                    help="Only generate a summary report from existing output files. Pass the generated output folder to use.")
 args = parser.parse_args()
 
 try:
@@ -39,31 +37,31 @@ except:
     logger.info("GTAModel PopSyn will now terminate.")
     sys.exit(1)
 
-
 start_time = datetime.datetime.now()
-os.makedirs(f'{config["OutputFolder"]}/{start_time:%Y-%m-%d_%H-%M}/',exist_ok=True)
-_logger = setup_logger('gtamodel',logfile=f'{config["OutputFolder"]}/{start_time:%Y-%m-%d_%H-%M}/gtamodel_popsyn.log')
-_logger.info(f'GTAModel PopSyn')
-_logger.info(f'Configuration file loaded: {args.config}')
 
-gtamodel_popsyn = GTAModelPopSyn(config, args, start_time = start_time)
+
+
 
 if args.database_only:
+    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time)
     gtamodel_popsyn.initialize_database()
-    sys.exit(0)
 
-if args.input_process_only:
+elif args.input_process_only:
+    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time)
     gtamodel_popsyn.generate_inputs()
-    sys.exit(0)
 
-if args.output_only:
+elif args.output_only:
+    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time,make_output=False)
     gtamodel_popsyn.generate_outputs()
-    sys.exit(0)
 
-if args.validation_report_only:
+elif args.validation_report_only:
+    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time,output_path=args.validation_report_only,make_output=False)
     gtamodel_popsyn.generate_summary_report()
-    sys.exit(0)
+else:
+    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time)
+    gtamodel_popsyn.run()
+
 
 # generating full report
 
-gtamodel_popsyn.run()
+

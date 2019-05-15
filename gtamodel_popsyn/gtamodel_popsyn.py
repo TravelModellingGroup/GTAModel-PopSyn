@@ -28,7 +28,7 @@ class GTAModelPopSyn(object):
     def arguments(self):
         return self._arguments
 
-    def __init__(self, config, arguments, start_time=datetime.datetime.now()):
+    def __init__(self, config, arguments, start_time=datetime.datetime.now(), output_path=None, make_output = True):
         """
         Initializes GTAModelPopSyn class responsible for building control totals and
         processing the input seed data.
@@ -36,11 +36,15 @@ class GTAModelPopSyn(object):
         :param arguments:
         :param start_time:
         """
-        self._arguments = arguments
-        self._logger = setup_logger(name='gtamodel')
         self._config = config
         self._start_time = start_time
-        self._output_path = f'{self._config["OutputFolder"]}/{self._start_time:%Y-%m-%d_%H-%M}'
+        if make_output:
+            os.makedirs(f'{config["OutputFolder"]}/{start_time:%Y-%m-%d_%H-%M}/', exist_ok=True)
+        self._output_path = f'{self._config["OutputFolder"]}/{self._start_time:%Y-%m-%d_%H-%M}' if output_path is None else output_path
+        self._logger = setup_logger(name='gtamodel',
+                               logfile=f'{self._output_path}/gtamodel_popsyn.log')
+        self._logger.info(f'GTAModel PopSyn')
+        self._arguments = arguments
         self._summary_report = ValidationReport(self)
         self._control_totals_builder = ControlTotalsBuilder(self)
         self._input_processor = InputProcessor(self)

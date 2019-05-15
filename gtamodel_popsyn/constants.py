@@ -2,8 +2,8 @@ PUMA_PD_RANGES = [range(1, 12), range(12, 24), range(24, 36), range(36, 100000)]
 ZONE_RANGE = range(1, 6000)
 
 # Capture 0 for non workers
-INTERNAL_ZONE_RANGE = range(0, 6000)
-EXTERNAL_ZONE_RANGE = range(6000, 10000)
+INTERNAL_ZONE_RANGE = range(1, 6000)
+EXTERNAL_ZONE_RANGE = range(6000, 8887)
 ROAMING_ZONE_ID = 8888
 
 """

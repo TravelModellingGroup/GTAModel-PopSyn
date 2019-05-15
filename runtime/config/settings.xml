@@ -70,7 +70,7 @@
             <geographyType>maz</geographyType>
             <table>hhtable</table>
             <constraint id="1">
-                <importance>3000</importance>
+                <importance>100</importance>
                 <field>weight</field>
                 <controlField>totalhh</controlField>
                 <type>interval</type>
@@ -92,28 +92,28 @@
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>10000</importance>
+                <importance>1000</importance>
                 <controlField>G</controlField>
                 <field>Occupation</field>
                 <type>equality</type>
                 <value>1</value>
             </constraint>
             <constraint id="2">
-                <importance>10000</importance>
+                <importance>1000</importance>
                 <controlField>S</controlField>
                 <field>Occupation</field>
                 <type>equality</type>
                 <value>2</value>
             </constraint>
             <constraint id="3">
-                <importance>10000</importance>
+                <importance>1000</importance>
                 <controlField>M</controlField>
                 <field>Occupation</field>
                 <type>equality</type>
                 <value>3</value>
             </constraint>
             <constraint id="4">
-                <importance>10000</importance>
+                <importance>1000</importance>
                 <controlField>P</controlField>
                 <field>Occupation</field>
                 <type>equality</type>
@@ -121,7 +121,7 @@
             </constraint>
 
             <constraint id="5">
-                <importance>10000</importance>
+                <importance>1000</importance>
                 <controlField>O</controlField>
                 <field>Occupation</field>
                 <type>equality</type>
@@ -141,21 +141,21 @@
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>10000</importance>
+                <importance>1000</importance>
                 <controlField>E_O</controlField>
                 <field>EmploymentStatus</field>
                 <type>equality</type>
                 <value>1</value>
             </constraint>
             <constraint id="2">
-                <importance>10000</importance>
+                <importance>1000</importance>
                 <controlField>E_F</controlField>
                 <field>EmploymentStatus</field>
                 <type>equality</type>
                 <value>2</value>
             </constraint>
             <constraint id="3">
-                <importance>10000</importance>
+                <importance>1000</importance>
                 <controlField>E_P</controlField>
                 <field>EmploymentStatus</field>
                 <type>equality</type>
@@ -176,32 +176,45 @@
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>10000</importance>
-                <controlField>employment_zone_internal</controlField>
+                <importance>5000</importance>
+                <controlField>employment_zone_0</controlField>
                 <field>EmploymentZone</field>
                 <type>interval</type>
                 <lo_value>0</lo_value>
                 <lo_type>closed</lo_type>
-                <hi_value>6000</hi_value>
+                <hi_value>1</hi_value>
                 <hi_type>open</hi_type>
             </constraint>
             <constraint id="2">
-                <importance>10000</importance>
+                <importance>5000</importance>
+                <controlField>employment_zone_internal</controlField>
+                <field>EmploymentZone</field>
+                <type>interval</type>
+                <lo_value>1</lo_value>
+                <lo_type>closed</lo_type>
+                <hi_value>6000</hi_value>
+                <hi_type>open</hi_type>
+            </constraint>
+            <constraint id="3">
+                <importance>5000</importance>
                 <controlField>employment_zone_external</controlField>
                 <field>EmploymentZone</field>
                 <type>interval</type>
                 <lo_value>6000</lo_value>
                 <lo_type>closed</lo_type>
-                <hi_value>8500</hi_value>
-                <hi_type>open</hi_type>
+                <hi_value>8887</hi_value>
+                <hi_type>closed</hi_type>
             </constraint>
 
-            <constraint id="3">
-                <importance>10000</importance>
+            <constraint id="4">
+                <importance>5000</importance>
                 <controlField>employment_zone_roaming</controlField>
                 <field>EmploymentZone</field>
-                <type>equality</type>
-                <value>8888</value>
+                <type>interval</type>
+                <lo_value>8888</lo_value>
+                <lo_type>closed</lo_type>
+                <hi_value>8889</hi_value>
+                <hi_type>closed</hi_type>
             </constraint>
 
 
@@ -217,7 +230,7 @@
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>10000</importance>
+                <importance>1000</importance>
                 <field>Age</field>
                 <controlField>age0_4</controlField>
                 <type>interval</type>
@@ -227,7 +240,7 @@
                 <hi_type>closed</hi_type>
             </constraint>
             <constraint id="2">
-                <importance>10000</importance>
+                <importance>1000</importance>
                 <field>Age</field>
                 <controlField>age5_10</controlField>
                 <type>interval</type>
@@ -237,7 +250,7 @@
                 <hi_type>closed</hi_type>
             </constraint>
             <constraint id="3">
-                <importance>10000</importance>
+                <importance>1000</importance>
                 <field>Age</field>
                 <controlField>age11_15</controlField>
                 <type>interval</type>
@@ -248,7 +261,7 @@
             </constraint>
 
             <constraint id="4">
-                <importance>10000</importance>
+                <importance>1000</importance>
                 <field>Age</field>
                 <controlField>age16_25</controlField>
                 <type>interval</type>
@@ -258,7 +271,7 @@
                 <hi_type>closed</hi_type>
             </constraint>
             <constraint id="5">
-                <importance>10000</importance>
+                <importance>1000</importance>
                 <field>Age</field>
                 <controlField>age26_35</controlField>
                 <type>interval</type>
@@ -268,7 +281,7 @@
                 <hi_type>closed</hi_type>
             </constraint>
             <constraint id="6">
-                <importance>10000</importance>
+                <importance>1000</importance>
                 <field>Age</field>
                 <controlField>age36_45</controlField>
                 <type>interval</type>
@@ -278,7 +291,7 @@
                 <hi_type>closed</hi_type>
             </constraint>
             <constraint id="7">
-                <importance>10000</importance>
+                <importance>1000</importance>
                 <field>Age</field>
                 <controlField>age46_55</controlField>
                 <type>interval</type>
@@ -288,7 +301,7 @@
                 <hi_type>closed</hi_type>
             </constraint>
             <constraint id="8">
-                <importance>10000</importance>
+                <importance>1000</importance>
                 <field>Age</field>
                 <controlField>age56_64</controlField>
                 <type>interval</type>
@@ -298,7 +311,7 @@
                 <hi_type>closed</hi_type>
             </constraint>
             <constraint id="9">
-                <importance>10000</importance>
+                <importance>1000</importance>
                 <field>Age</field>
                 <controlField>age65_200</controlField>
                 <type>interval</type>
@@ -319,7 +332,7 @@
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>100000</importance>
+                <importance>10000000</importance>
                 <field>weight</field>
                 <controlField>totpop</controlField>
                 <type>interval</type>

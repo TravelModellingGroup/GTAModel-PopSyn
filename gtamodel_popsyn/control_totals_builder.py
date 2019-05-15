@@ -81,6 +81,9 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
             hh_group.apply(
                 lambda x: x.loc[(x.EmploymentZone >= EXTERNAL_ZONE_RANGE.start) &
                                 (x.EmploymentZone != ROAMING_ZONE_ID), 'weightp'].sum()).astype(int)
+        self._controls['employment_zone_0'] = \
+            hh_group.apply(
+                lambda x: x.loc[(x.EmploymentZone == 0), 'weightp'].sum()).astype(int)
 
         self._controls['income_class_1'] = hh2_group.apply(
             lambda x: self._sum_column(x, 'IncomeClass', 1, 'weighth')).astype(int)
@@ -174,7 +177,8 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
                                       'female',
                                       'employment_zone_internal',
                                       'employment_zone_external',
-                                      'employment_zone_roaming'
+                                      'employment_zone_roaming',
+                                      'employment_zone_0'
                                       ])].sort_values(['puma', 'taz', 'maz'])
 
         maz_controls[maz_controls['totpop'] > 0].astype(int).to_csv(
@@ -196,7 +200,8 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
                                                       'male', 'female',
                                                       'employment_zone_internal',
                                                       'employment_zone_external',
-                                                      'employment_zone_roaming'])].sort_values(['puma', 'taz'])
+                                                      'employment_zone_roaming',
+                                                      'employment_zone_0'])].sort_values(['puma', 'taz'])
 
         controls_taz[controls_taz['totpop'] > 0].astype(int).to_csv(
             f"{self._output_path}/Inputs/{self._config['TazLevelControls']}", index=False)
@@ -223,5 +228,6 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
                                                               'female',
                                                               'employment_zone_internal',
                                                               'employment_zone_external',
-                                                              'employment_zone_roaming'])].apply(sum).reset_index()
+                                                              'employment_zone_roaming',
+                                                              'employment_zone_0'])].apply(sum).reset_index()
         meta_controls.astype(int).to_csv(f"{self._output_path}/Inputs/{self._config['MetaLevelControls']}", index=False)
