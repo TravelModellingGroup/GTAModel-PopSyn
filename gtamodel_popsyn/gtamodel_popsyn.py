@@ -28,6 +28,10 @@ class GTAModelPopSyn(object):
     def arguments(self):
         return self._arguments
 
+    @property
+    def logger(self):
+        return self._logger
+
     def __init__(self, config, arguments, start_time=datetime.datetime.now(), output_path=None, make_output = True):
         """
         Initializes GTAModelPopSyn class responsible for building control totals and
@@ -124,11 +128,14 @@ class GTAModelPopSyn(object):
 
         # run popsyn3 subprocess
         self._logger.info('PopSyn3 execution started.')
-        subprocess.run([f'{self._config["Java64Path"]}/bin/java', "-showversion", '-server', '-Xms8000m', '-Xmx15000m',
-                        '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005',
-                        '-XX:ErrorFile=output/java_error%p.log',
-                        '-cp', ';'.join(classpaths), '-Djppf.config=jppf-clientLocal.properties',
-                        f'-Djava.library.path={libpath}',
-                        'popGenerator.PopGenerator', f'{self._output_path}/Inputs/settings.xml'], shell=True)
+        p = subprocess.run(
+            [f'{self._config["Java64Path"]}/bin/java', "-showversion", '-server', '-Xms8000m', '-Xmx15000m',
+             '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005',
+             '-XX:ErrorFile=output/java_error%p.log',
+             '-cp', ';'.join(classpaths), '-Djppf.config=jppf-clientLocal.properties',
+             f'-Djava.library.path={libpath}',
+             'popGenerator.PopGenerator', f'{self._output_path}/Inputs/settings.xml'], shell=True)
+
+        self._logger.info(p.stdout)
         self._logger.info('PopSyn3 process has completed.')
         return

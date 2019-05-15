@@ -11,7 +11,7 @@ class GTAModelPopSynProcessor(object):
         :param gtamodel_popsyn_instance:
         :return:
         """
-        self._logger = setup_logger(name='gtamodel')
+        self._logger = gtamodel_popsyn_instance.logger
         self._gtamodel_popsyn_instance = gtamodel_popsyn_instance
         self._output_folder = gtamodel_popsyn_instance.output_path
         self._output_path = gtamodel_popsyn_instance.output_path
