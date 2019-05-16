@@ -41,17 +41,3 @@ TRANSFORM_HOUSEHOLDS_TABLE_SQL_COMMANDS = [
     """
 ]
 
-TRANSFORM_HOUSEHOLD_TOTALS_SQL_COMMANDS = [
-    """
-    drop table if exists gta_household_totals
-    """,
-    """
-    CREATE TABLE gta_household_totals(
-        Zone SMALLINT NOT NULL DEFAULT 0,
-        ExpandedHouseholds INT NOT NULL DEFAULT 0
-    )
-    AS (SELECT  HouseholdZone as Zone, SUM(ExpansionFactor) as ExpandedHouseholds from GTA_HOUSEHOLDS 
-    group by HouseholdZone)
-    """
-]
-
