@@ -79,6 +79,8 @@ class GTAModelPopSyn(object):
     def initialize_database(self, persons=None, households=None):
         """
         Initializes the database and table with required input data for PopSyn3 execution.
+        :param persons:
+        :param households:
         :return:
         """
         self._logger.info('Initializing database.')

@@ -57,8 +57,6 @@ class ValidationReport(GTAModelPopSynProcessor):
         self._persons_synthesized['EmploymentZone'] = self._persons_synthesized['EmploymentZone'].astype(int)
         self._persons_original['EmploymentZone'] = self._persons_original['EmploymentZone'].astype(int)
 
-        # self._households_original = self._households_original[self._households_original.isin(ZONE_RANGE)]
-
         self._persons_households_original = pd.merge(self._persons_original, self._households_original,
                                                      left_on="HouseholdId", right_on="HouseholdId")
         self._persons_households_original = pd.merge(self._persons_households_original, self._zones,
@@ -86,6 +84,7 @@ class ValidationReport(GTAModelPopSynProcessor):
         # self._process_occupation_employment_zone()
 
         self._process_persons_totals()
+        self._process_household_totals()
 
     def _process_persons_totals(self):
         """
@@ -183,7 +182,7 @@ class ValidationReport(GTAModelPopSynProcessor):
 
 
         totals['Abs. Difference'] = totals['Observed Total'] - totals['Synthesized Total']
-        totals.to_csv('temp/persons_totals.csv',index=True)
+        totals.to_csv(f'{self._output_path}/Validation/persons_totals.csv',index=True)
 
 
 
@@ -193,11 +192,44 @@ class ValidationReport(GTAModelPopSynProcessor):
 
         :return:
         """
-        households_compared = pd.DataFrame()
+        totals = pd.DataFrame(columns=['Observed Total', 'Synthesized Total', 'Abs. Difference'])
 
-        households_compared['PD'] = self._households_original['PD']
+        totals.loc['Total Households', 'Observed Total'] = self._households_original['ExpansionFactor'].sum()
+        totals.loc['Total Households', 'Synthesized Total'] = self._households_synthesized['ExpansionFactor'].sum()
 
-        households_compared.to_csv('temp/households_compared.csv')
+        totals.loc['Income Class 1', 'Observed Total'] = self._households_original.loc[
+            self._households_original.IncomeClass == 1, 'ExpansionFactor'].sum()
+        totals.loc['Income Class 1', 'Synthesized Total'] = self._households_synthesized.loc[
+            self._households_synthesized.IncomeClass == 1, 'ExpansionFactor'].sum()
+
+        totals.loc['Income Class 2', 'Observed Total'] = self._households_original.loc[
+            self._households_original.IncomeClass == 2, 'ExpansionFactor'].sum()
+        totals.loc['Income Class 2', 'Synthesized Total'] = self._households_synthesized.loc[
+            self._households_synthesized.IncomeClass == 2, 'ExpansionFactor'].sum()
+
+        totals.loc['Income Class 3', 'Observed Total'] = self._households_original.loc[
+            self._households_original.IncomeClass == 3, 'ExpansionFactor'].sum()
+        totals.loc['Income Class 3', 'Synthesized Total'] = self._households_synthesized.loc[
+            self._households_synthesized.IncomeClass == 3, 'ExpansionFactor'].sum()
+
+        totals.loc['Income Class 4', 'Observed Total'] = self._households_original.loc[
+            self._households_original.IncomeClass == 4, 'ExpansionFactor'].sum()
+        totals.loc['Income Class 4', 'Synthesized Total'] = self._households_synthesized.loc[
+            self._households_synthesized.IncomeClass == 4, 'ExpansionFactor'].sum()
+
+        totals.loc['Income Class 5', 'Observed Total'] = self._households_original.loc[
+            self._households_original.IncomeClass == 5, 'ExpansionFactor'].sum()
+        totals.loc['Income Class 5', 'Synthesized Total'] = self._households_synthesized.loc[
+            self._households_synthesized.IncomeClass == 5, 'ExpansionFactor'].sum()
+
+        totals.loc['Income Class 6', 'Observed Total'] = self._households_original.loc[
+            self._households_original.IncomeClass == 6, 'ExpansionFactor'].sum()
+        totals.loc['Income Class 6', 'Synthesized Total'] = self._households_synthesized.loc[
+            self._households_synthesized.IncomeClass == 6, 'ExpansionFactor'].sum()
+
+        totals['Abs. Difference'] = totals['Observed Total'] - totals['Synthesized Total']
+        totals.to_csv(f'{self._output_path}/Validation/households_totals.csv', index=True)
+
 
     def _process_occupation_employment_zone(self):
         """

@@ -221,10 +221,65 @@
         </marginals>
     </target>
 
+    <target>
+
+        <marginals>
+            <id>4</id>
+            <description>Household Income Class</description>
+            <geographyType>taz</geographyType>
+            <controlType>simple</controlType>
+            <table>hhtable</table>
+            <constraint id="1">
+                <importance>1000</importance>
+                <controlField>income_class_1</controlField>
+                <field>IncomeClass</field>
+                <type>equality</type>
+                <value>1</value>
+            </constraint>
+            <constraint id="2">
+                <importance>1000</importance>
+                <controlField>income_class_2</controlField>
+                <field>IncomeClass</field>
+                <type>equality</type>
+                <value>2</value>
+            </constraint>
+            <constraint id="3">
+                <importance>1000</importance>
+                <controlField>income_class_3</controlField>
+                <field>IncomeClass</field>
+                <type>equality</type>
+                <value>3</value>
+            </constraint>
+            <constraint id="4">
+                <importance>1000</importance>
+                <controlField>income_class_4</controlField>
+                <field>IncomeClass</field>
+                <type>equality</type>
+                <value>4</value>
+            </constraint>
+            <constraint id="5">
+                <importance>1000</importance>
+                <controlField>income_class_5</controlField>
+                <field>IncomeClass</field>
+                <type>equality</type>
+                <value>5</value>
+            </constraint>
+            <constraint id="6">
+                <importance>1000</importance>
+                <controlField>income_class_6</controlField>
+                <field>IncomeClass</field>
+                <type>equality</type>
+                <value>6</value>
+            </constraint>
+
+
+        </marginals>
+    </target>
+
 
     <target>
         <marginals>
-            <id>4</id>
+            <id>5</id>
             <description>Number of persons by age Category</description>
             <geographyType>meta</geographyType>
             <controlType>count</controlType>
@@ -239,94 +294,14 @@
                 <hi_value>4</hi_value>
                 <hi_type>closed</hi_type>
             </constraint>
-            <constraint id="2">
-                <importance>1000</importance>
-                <field>Age</field>
-                <controlField>age5_10</controlField>
-                <type>interval</type>
-                <lo_value>5</lo_value>
-                <lo_type>closed</lo_type>
-                <hi_value>10</hi_value>
-                <hi_type>closed</hi_type>
-            </constraint>
-            <constraint id="3">
-                <importance>1000</importance>
-                <field>Age</field>
-                <controlField>age11_15</controlField>
-                <type>interval</type>
-                <lo_value>11</lo_value>
-                <lo_type>closed</lo_type>
-                <hi_value>15</hi_value>
-                <hi_type>closed</hi_type>
-            </constraint>
 
-            <constraint id="4">
-                <importance>1000</importance>
-                <field>Age</field>
-                <controlField>age16_25</controlField>
-                <type>interval</type>
-                <lo_value>16</lo_value>
-                <lo_type>closed</lo_type>
-                <hi_value>25</hi_value>
-                <hi_type>closed</hi_type>
-            </constraint>
-            <constraint id="5">
-                <importance>1000</importance>
-                <field>Age</field>
-                <controlField>age26_35</controlField>
-                <type>interval</type>
-                <lo_value>26</lo_value>
-                <lo_type>closed</lo_type>
-                <hi_value>35</hi_value>
-                <hi_type>closed</hi_type>
-            </constraint>
-            <constraint id="6">
-                <importance>1000</importance>
-                <field>Age</field>
-                <controlField>age36_45</controlField>
-                <type>interval</type>
-                <lo_value>36</lo_value>
-                <lo_type>closed</lo_type>
-                <hi_value>45</hi_value>
-                <hi_type>closed</hi_type>
-            </constraint>
-            <constraint id="7">
-                <importance>1000</importance>
-                <field>Age</field>
-                <controlField>age46_55</controlField>
-                <type>interval</type>
-                <lo_value>46</lo_value>
-                <lo_type>closed</lo_type>
-                <hi_value>55</hi_value>
-                <hi_type>closed</hi_type>
-            </constraint>
-            <constraint id="8">
-                <importance>1000</importance>
-                <field>Age</field>
-                <controlField>age56_64</controlField>
-                <type>interval</type>
-                <lo_value>56</lo_value>
-                <lo_type>closed</lo_type>
-                <hi_value>64</hi_value>
-                <hi_type>closed</hi_type>
-            </constraint>
-            <constraint id="9">
-                <importance>1000</importance>
-                <field>Age</field>
-                <controlField>age65_200</controlField>
-                <type>interval</type>
-                <lo_value>65</lo_value>
-                <lo_type>closed</lo_type>
-                <hi_value>200</hi_value>
-                <hi_type>closed</hi_type>
-            </constraint>
         </marginals>
 
     </target>
 
-     <target>
+    <target>
         <marginals>
-            <id>5</id>
+            <id>6</id>
             <description>Total number of people</description>
             <geographyType>meta</geographyType>
             <controlType>count</controlType>
@@ -342,7 +317,7 @@
                 <hi_type>open</hi_type>
             </constraint>
         </marginals>
-     </target>
+    </target>
 
 
 </targets>

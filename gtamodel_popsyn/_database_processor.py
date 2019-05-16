@@ -3,9 +3,7 @@ import pandas as pd
 from sqlalchemy import Table, Column, Integer, MetaData, FLOAT, VARCHAR
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
-
 from gtamodel_popsyn._gtamodel_popsyn_processor import GTAModelPopSynProcessor
-
 
 
 class DatabaseProcessor(GTAModelPopSynProcessor):
