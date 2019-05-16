@@ -98,6 +98,7 @@ class GTAModelPopSyn(object):
             self._input_processor.processed_households)
         self._run_popsyn3()
         self.generate_outputs()
+        self.generate_summary_report()
 
     def generate_inputs(self):
         self._logger.info(f'Processing input data.')
