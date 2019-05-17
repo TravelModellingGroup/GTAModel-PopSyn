@@ -186,7 +186,13 @@ class InputProcessor(GTAModelPopSynProcessor):
         self._households_base.IncomeClass = self._households_base.IncomeClass.astype(int)
         self._households_base.rename(columns={'ExpansionFactor': 'weighth'}, inplace=True)
 
-        self._households_base.loc[self._households_base.IncomeClass == 7,'IncomeClass'] = np.random.randint(1, 7)
+        self._households_base.update(self._households_base.loc[self._households_base.IncomeClass == 7,'IncomeClass'].apply(
+            lambda x: np.random.randint(1, 7)))
+
+
+        #self._households_base.loc[self._households_base.IncomeClass == 7, 'IncomeClass']\
+        #    = self._households_base.loc[self._households_base.IncomeClass == 7,'IncomeClass'].apply(
+        #    lambda x: np.random.randint(1, 7))
 
         # self._households_base.IncomeClass = \
         #    self._households_base.IncomeClass.apply(lambda x: np.random.randint(1, 7) if 7 else x,axis=1)

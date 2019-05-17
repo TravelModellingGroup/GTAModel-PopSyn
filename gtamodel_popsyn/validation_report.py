@@ -92,6 +92,7 @@ class ValidationReport(GTAModelPopSynProcessor):
 
         self._process_persons_totals()
         self._process_household_totals()
+        # self._process_occupation_employment_zone()
 
     def _process_persons_totals(self):
         """
@@ -99,18 +100,22 @@ class ValidationReport(GTAModelPopSynProcessor):
         :return:
         """
 
-        totals = pd.DataFrame(columns=['Observed Total','Synthesized Total','Abs. Difference'],
-                              index=['Population','Male','Female',
-                                     'Occupation P','Occupation G','Occupation S','Occupation M','Occupation O'])
+        totals = pd.DataFrame(columns=['Observed Total', 'Synthesized Total', 'Abs. Difference'],
+                              index=['Population', 'Male', 'Female',
+                                     'Occupation P', 'Occupation G', 'Occupation S', 'Occupation M', 'Occupation O'])
 
-        totals.loc['Population','Observed Total'] = self._persons_households_original['ExpansionFactor'].sum()
+        totals.loc['Population', 'Observed Total'] = self._persons_households_original['ExpansionFactor'].sum()
         totals.loc['Population', 'Synthesized Total'] = self._persons_households_synthesized['ExpansionFactor'].sum()
 
-        totals.loc['Male','Observed Total'] = self._persons_households_original.loc[self._persons_households_original.Sex == 'M','ExpansionFactor'].sum()
-        totals.loc['Male','Synthesized Total'] = self._persons_households_synthesized.loc[self._persons_households_synthesized.Sex == 'M','ExpansionFactor'].sum()
+        totals.loc['Male', 'Observed Total'] = self._persons_households_original.loc[
+            self._persons_households_original.Sex == 'M', 'ExpansionFactor'].sum()
+        totals.loc['Male', 'Synthesized Total'] = self._persons_households_synthesized.loc[
+            self._persons_households_synthesized.Sex == 'M', 'ExpansionFactor'].sum()
 
-        totals.loc['Female','Observed Total'] = self._persons_households_original.loc[self._persons_households_original.Sex == 'F','ExpansionFactor'].sum()
-        totals.loc['Female','Synthesized Total'] = self._persons_households_synthesized.loc[self._persons_households_synthesized.Sex == 'F','ExpansionFactor'].sum()
+        totals.loc['Female', 'Observed Total'] = self._persons_households_original.loc[
+            self._persons_households_original.Sex == 'F', 'ExpansionFactor'].sum()
+        totals.loc['Female', 'Synthesized Total'] = self._persons_households_synthesized.loc[
+            self._persons_households_synthesized.Sex == 'F', 'ExpansionFactor'].sum()
 
         totals.loc['Occupation P', 'Observed Total'] = self._persons_households_original.loc[
             self._persons_households_original.Occupation == 'P', 'ExpansionFactor'].sum()
@@ -182,16 +187,14 @@ class ValidationReport(GTAModelPopSynProcessor):
 
         for bin in AGE_BINS:
             totals.loc[f'Age {bin.start} - {bin.stop}', 'Observed Total'] = self._persons_households_original.loc[
-                (self._persons_households_original.Age >= bin.start) & (self._persons_households_original.Age <= bin.stop), 'ExpansionFactor'].sum()
+                (self._persons_households_original.Age >= bin.start) & (
+                            self._persons_households_original.Age <= bin.stop), 'ExpansionFactor'].sum()
             totals.loc[f'Age {bin.start} - {bin.stop}', 'Synthesized Total'] = self._persons_households_synthesized.loc[
                 (self._persons_households_synthesized.Age >= bin.start) & (
-                            self._persons_households_synthesized.Age <= bin.stop), 'ExpansionFactor'].sum()
-
+                        self._persons_households_synthesized.Age <= bin.stop), 'ExpansionFactor'].sum()
 
         totals['Abs. Difference'] = totals['Observed Total'] - totals['Synthesized Total']
-        totals.to_csv(f'{self._output_path}/Validation/persons_totals.csv',index=True)
-
-
+        totals.to_csv(f'{self._output_path}/Validation/persons_totals.csv', index=True)
 
     def _process_household_totals(self):
         """
@@ -234,6 +237,11 @@ class ValidationReport(GTAModelPopSynProcessor):
         totals.loc['Income Class 6', 'Synthesized Total'] = self._households_synthesized.loc[
             self._households_synthesized.IncomeClass == 6, 'ExpansionFactor'].sum()
 
+        totals.loc['Income Class 7', 'Observed Total'] = self._households_original.loc[
+            self._households_original.IncomeClass == 7, 'ExpansionFactor'].sum()
+        totals.loc['Income Class 7', 'Synthesized Total'] = self._households_synthesized.loc[
+            self._households_synthesized.IncomeClass == 7, 'ExpansionFactor'].sum()
+
         totals.loc['Number of Persons 1', 'Observed Total'] = self._households_original.loc[
             self._households_original.NumberOfPersons == 1, 'ExpansionFactor'].sum()
         totals.loc['Number of Persons 1', 'Synthesized Total'] = self._households_synthesized.loc[
@@ -256,7 +264,6 @@ class ValidationReport(GTAModelPopSynProcessor):
 
         totals['Abs. Difference'] = totals['Observed Total'] - totals['Synthesized Total']
         totals.to_csv(f'{self._output_path}/Validation/households_totals.csv', index=True)
-
 
     def _process_occupation_employment_zone(self):
         """
@@ -289,5 +296,5 @@ class ValidationReport(GTAModelPopSynProcessor):
                                                persons_households_combined['Total Input']
 
         persons_households_combined.loc[range(1, 60), ['P', 'G', 'S', 'M', 'O'], ['F', 'P', 'O', 'J', 'H']].to_csv(
-            f'{self._config["OutputFolder"]}/SummaryReport/pd_occupation_employment_status_zone.csv')
+            f'{self._config["OutputFolder"]}/Validation/pd_occupation_employment_status_zone.csv')
         return

@@ -107,7 +107,6 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
                  left_on="HouseholdId", right_on="HouseholdId").to_sql(
             'perstable', self._connection, if_exists="append", index=False)
 
-        print("done")
         return
 
     def _initialize_control_tables(self, maz_controls: pd.DataFrame = None,
