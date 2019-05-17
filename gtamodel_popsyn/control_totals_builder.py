@@ -63,92 +63,74 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
         self._controls = self._controls.set_index('maz')
         self._zones = self._zones.set_index('Zone#')
         self._controls['region'] = 1
-        self._controls['totalhh'] = hh2_group.weighth.sum().astype(int)
-        self._controls['totpop'] = hh_group.weightp.sum().astype(int)
+        self._controls['totalhh'] = hh2_group.weighth.sum()
+        self._controls['totpop'] = hh_group.weightp.sum()
         self._controls['puma'] = (self._zones['puma'].astype(int))
 
-
-        self._controls['male'] = hh_group.apply(lambda x: self._sum_column(x, 'Sex', 'M', 'weightp')).astype(
-            int)
+        self._controls['male'] = hh_group.apply(lambda x: self._sum_column(x, 'Sex', 'M', 'weightp'))
         self._controls['female'] = \
-            hh_group.apply(lambda x: self._sum_column(x, 'Sex', 'F', 'weightp')).astype(int)
+            hh_group.apply(lambda x: self._sum_column(x, 'Sex', 'F', 'weightp'))
 
         self._controls['employment_zone_internal'] = \
-            hh_group.apply(lambda x: x[x.EmploymentZone.isin(ZONE_RANGE)]['weightp'].sum()).astype(int)
+            hh_group.apply(lambda x: x[x.EmploymentZone.isin(ZONE_RANGE)]['weightp'].sum())
         self._controls['employment_zone_roaming'] = \
-            hh_group.apply(lambda x: x[x.EmploymentZone == ROAMING_ZONE_ID]['weightp'].sum()).astype(int)
+            hh_group.apply(lambda x: x[x.EmploymentZone == ROAMING_ZONE_ID]['weightp'].sum())
         self._controls['employment_zone_external'] = \
             hh_group.apply(
                 lambda x: x.loc[(x.EmploymentZone >= EXTERNAL_ZONE_RANGE.start) &
-                                (x.EmploymentZone != ROAMING_ZONE_ID), 'weightp'].sum()).astype(int)
+                                (x.EmploymentZone != ROAMING_ZONE_ID), 'weightp'].sum())
         self._controls['employment_zone_0'] = \
             hh_group.apply(
-                lambda x: x.loc[(x.EmploymentZone == 0), 'weightp'].sum()).astype(int)
+                lambda x: x.loc[(x.EmploymentZone == 0), 'weightp'].sum())
 
         self._controls['income_class_1'] = hh2_group.apply(
-            lambda x: self._sum_column(x, 'IncomeClass', 1, 'weighth')).astype(int)
+            lambda x: self._sum_column(x, 'IncomeClass', 1, 'weighth'))
         self._controls['income_class_2'] = hh2_group.apply(
-            lambda x: self._sum_column(x, 'IncomeClass', 2, 'weighth')).astype(int)
+            lambda x: self._sum_column(x, 'IncomeClass', 2, 'weighth'))
         self._controls['income_class_3'] = hh2_group.apply(
-            lambda x: self._sum_column(x, 'IncomeClass', 3, 'weighth')).astype(int)
+            lambda x: self._sum_column(x, 'IncomeClass', 3, 'weighth'))
         self._controls['income_class_4'] = hh2_group.apply(
-            lambda x: self._sum_column(x, 'IncomeClass', 4, 'weighth')).astype(int)
+            lambda x: self._sum_column(x, 'IncomeClass', 4, 'weighth'))
         self._controls['income_class_5'] = hh2_group.apply(
-            lambda x: self._sum_column(x, 'IncomeClass', 5, 'weighth')).astype(int)
+            lambda x: self._sum_column(x, 'IncomeClass', 5, 'weighth'))
         self._controls['income_class_6'] = hh2_group.apply(
-            lambda x: self._sum_column(x, 'IncomeClass', 6, 'weighth')).astype(int)
+            lambda x: self._sum_column(x, 'IncomeClass', 6, 'weighth'))
 
         self._controls['hhsize1'] = hh2_group.apply(
-            lambda x: self._sum_column(x, 'NumberOfPersons', 1, 'weighth')).astype(int)
+            lambda x: self._sum_column(x, 'NumberOfPersons', 1, 'weighth'))
         self._controls['hhsize2'] = hh2_group.apply(
-            lambda x: self._sum_column(x, 'NumberOfPersons', 2, 'weighth')).astype(int)
+            lambda x: self._sum_column(x, 'NumberOfPersons', 2, 'weighth'))
         self._controls['hhsize3'] = hh2_group.apply(
-            lambda x: self._sum_column(x, 'NumberOfPersons', 3, 'weighth')).astype(int)
+            lambda x: self._sum_column(x, 'NumberOfPersons', 3, 'weighth'))
         self._controls['hhsize4p'] = hh2_group.apply(
-            lambda x: self._sum_column_gte(x, 'NumberOfPersons', 4, 'weighth')).astype(int)
+            lambda x: self._sum_column_gte(x, 'NumberOfPersons', 4, 'weighth'))
 
         for index, age_bin in enumerate(self._age_bin_columns):
             self._controls[age_bin] = hh_group.apply(
                 lambda x: self._sum_column_range(x, 'Age', AGE_BINS[index].start, AGE_BINS[index].stop,
-                                                 'weightp')).astype(int)
+                                                 'weightp'))
         self._controls['E_J'] = hh_group.apply(
-            lambda x: self._sum_column(x, 'EmploymentStatus', 'J', 'weightp')).astype(
-            int)
+            lambda x: self._sum_column(x, 'EmploymentStatus', 'J', 'weightp'))
         self._controls['E_P'] = hh_group.apply(
-            lambda x: self._sum_column(x, 'EmploymentStatus', 'P', 'weightp')).astype(
-            int)
+            lambda x: self._sum_column(x, 'EmploymentStatus', 'P', 'weightp'))
         self._controls['E_F'] = hh_group.apply(
-            lambda x: self._sum_column(x, 'EmploymentStatus', 'F', 'weightp')).astype(
-            int)
+            lambda x: self._sum_column(x, 'EmploymentStatus', 'F', 'weightp'))
         self._controls['E_O'] = hh_group.apply(
-            lambda x: self._sum_column(x, 'EmploymentStatus', 'O', 'weightp')).astype(
-            int)
+            lambda x: self._sum_column(x, 'EmploymentStatus', 'O', 'weightp'))
         self._controls['E_H'] = hh_group.apply(
-            lambda x: self._sum_column(x, 'EmploymentStatus', 'H', 'weightp')).astype(
-            int)
+            lambda x: self._sum_column(x, 'EmploymentStatus', 'H', 'weightp'))
 
-        self._controls['P'] = hh_group.apply(lambda x: self._sum_column(x, 'Occupation', 'P', 'weightp')).astype(
-            int)
-        self._controls['G'] = hh_group.apply(lambda x: self._sum_column(x, 'Occupation', 'G', 'weightp')).astype(
-            int)
-        self._controls['S'] = hh_group.apply(lambda x: self._sum_column(x, 'Occupation', 'S', 'weightp')).astype(
-            int)
-        self._controls['M'] = hh_group.apply(lambda x: self._sum_column(x, 'Occupation', 'M', 'weightp')).astype(
-            int)
-        self._controls['O'] = hh_group.apply(lambda x: self._sum_column(x, 'Occupation', 'O', 'weightp')).astype(
-            int)
+        self._controls['P'] = hh_group.apply(lambda x: self._sum_column(x, 'Occupation', 'P', 'weightp'))
+        self._controls['G'] = hh_group.apply(lambda x: self._sum_column(x, 'Occupation', 'G', 'weightp'))
+        self._controls['S'] = hh_group.apply(lambda x: self._sum_column(x, 'Occupation', 'S', 'weightp'))
+        self._controls['M'] = hh_group.apply(lambda x: self._sum_column(x, 'Occupation', 'M', 'weightp'))
+        self._controls['O'] = hh_group.apply(lambda x: self._sum_column(x, 'Occupation', 'O', 'weightp'))
 
-        self._controls['license_Y'] = hh_group.apply(lambda x: self._sum_column(x, 'License', 'Y', 'weightp')).astype(
-            int)
-        self._controls['license_N'] = hh_group.apply(lambda x: self._sum_column(x, 'License', 'N', 'weightp')).astype(
-            int)
-
-        self._controls['S_O'] = hh_group.apply(lambda x: self._sum_column(x, 'StudentStatus', 'O', 'weightp')).astype(
-            int)
-        self._controls['S_S'] = hh_group.apply(lambda x: self._sum_column(x, 'StudentStatus', 'S', 'weightp')).astype(
-            int)
-        self._controls['S_P'] = hh_group.apply(lambda x: self._sum_column(x, 'StudentStatus', 'P', 'weightp')).astype(
-            int)
+        self._controls['license_Y'] = hh_group.apply(lambda x: self._sum_column(x, 'License', 'Y', 'weightp'))
+        self._controls['license_N'] = hh_group.apply(lambda x: self._sum_column(x, 'License', 'N', 'weightp'))
+        self._controls['S_O'] = hh_group.apply(lambda x: self._sum_column(x, 'StudentStatus', 'O', 'weightp'))
+        self._controls['S_S'] = hh_group.apply(lambda x: self._sum_column(x, 'StudentStatus', 'S', 'weightp'))
+        self._controls['S_P'] = hh_group.apply(lambda x: self._sum_column(x, 'StudentStatus', 'P', 'weightp'))
 
         self._controls = self._controls.fillna(0)
         self._write_maz_control_totals_file()

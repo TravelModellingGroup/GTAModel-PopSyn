@@ -156,9 +156,9 @@ class InputProcessor(GTAModelPopSynProcessor):
         """
         import numpy as np
         distributions = self._persons_households.loc[
-                self._persons_households[category] != invalid_value].groupby(aggregate_column)[
-                category].value_counts(
-                normalize=True)
+            self._persons_households[category] != invalid_value].groupby(aggregate_column)[
+            category].value_counts(
+            normalize=True)
 
         def apply_resample(row):
             """
@@ -173,7 +173,7 @@ class InputProcessor(GTAModelPopSynProcessor):
             return row
 
         self._persons_households = self._persons_households.apply(lambda x: apply_resample(x),
-                                                                                        axis=1)
+                                                                  axis=1)
 
     def _preprocess_households(self):
         """
@@ -185,17 +185,17 @@ class InputProcessor(GTAModelPopSynProcessor):
 
         self._households_base.IncomeClass = self._households_base.IncomeClass.astype(int)
         self._households_base.rename(columns={'ExpansionFactor': 'weighth'}, inplace=True)
-        self._households_base.IncomeClass = \
-            self._households_base.IncomeClass.apply(lambda x: np.random.randint(1, 7) if 7 else x)
+
+        self._households_base.loc[self._households_base.IncomeClass == 7,'IncomeClass'] = np.random.randint(1, 7)
+
+        # self._households_base.IncomeClass = \
+        #    self._households_base.IncomeClass.apply(lambda x: np.random.randint(1, 7) if 7 else x,axis=1)
 
     def _post_process_persons_households(self):
         """
         Post process the joint set of persons and households.
         :return:
         """
-        # self._persons_households = self._persons_households.loc[
-        #    (self._persons_households.EmploymentStatus != '9') &
-        #    (self._persons_households.Occupation != '9') & (self._persons_households.StudentStatus != '9')]
 
         unmatched = self._persons_households.loc[:, ('HouseholdId', 'NumberOfPersons', 'PersonNumber')].groupby(
             ['HouseholdId']).agg({'NumberOfPersons': lambda x: x.iloc[0], 'PersonNumber': 'count'})

@@ -76,6 +76,13 @@ class ValidationReport(GTAModelPopSynProcessor):
             self._persons_households_synthesized['HouseholdZone'] < ZONE_RANGE.stop]
         self._persons_households_original = self._persons_households_original[
             self._persons_households_original['HouseholdZone'] < ZONE_RANGE.stop]
+
+        self._households_original = self._households_original[
+            self._households_original['HouseholdZone'] < ZONE_RANGE.stop]
+
+        self._households_synthesized = self._households_synthesized[
+            self._households_synthesized['HouseholdZone'] < ZONE_RANGE.stop]
+
         self._persons_households_synthesized = self._persons_households_synthesized.rename(
             columns={'ExpansionFactor_x': 'ExpansionFactor'})
         self._persons_households_original = self._persons_households_original.rename(
@@ -226,6 +233,26 @@ class ValidationReport(GTAModelPopSynProcessor):
             self._households_original.IncomeClass == 6, 'ExpansionFactor'].sum()
         totals.loc['Income Class 6', 'Synthesized Total'] = self._households_synthesized.loc[
             self._households_synthesized.IncomeClass == 6, 'ExpansionFactor'].sum()
+
+        totals.loc['Number of Persons 1', 'Observed Total'] = self._households_original.loc[
+            self._households_original.NumberOfPersons == 1, 'ExpansionFactor'].sum()
+        totals.loc['Number of Persons 1', 'Synthesized Total'] = self._households_synthesized.loc[
+            self._households_synthesized.NumberOfPersons == 1, 'ExpansionFactor'].sum()
+
+        totals.loc['Number of Persons 2', 'Observed Total'] = self._households_original.loc[
+            self._households_original.NumberOfPersons == 2, 'ExpansionFactor'].sum()
+        totals.loc['Number of Persons 2', 'Synthesized Total'] = self._households_synthesized.loc[
+            self._households_synthesized.NumberOfPersons == 2, 'ExpansionFactor'].sum()
+
+        totals.loc['Number of Persons 3', 'Observed Total'] = self._households_original.loc[
+            self._households_original.NumberOfPersons == 3, 'ExpansionFactor'].sum()
+        totals.loc['Number of Persons 3', 'Synthesized Total'] = self._households_synthesized.loc[
+            self._households_synthesized.NumberOfPersons == 3, 'ExpansionFactor'].sum()
+
+        totals.loc['Number of Persons 4+', 'Observed Total'] = self._households_original.loc[
+            self._households_original.NumberOfPersons >= 4, 'ExpansionFactor'].sum()
+        totals.loc['Number of Persons 4+', 'Synthesized Total'] = self._households_synthesized.loc[
+            self._households_synthesized.NumberOfPersons >= 4, 'ExpansionFactor'].sum()
 
         totals['Abs. Difference'] = totals['Observed Total'] - totals['Synthesized Total']
         totals.to_csv(f'{self._output_path}/Validation/households_totals.csv', index=True)

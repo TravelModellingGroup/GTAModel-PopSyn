@@ -72,6 +72,11 @@ class GTAModelPopSyn(object):
         self._logger.info('Summary report has been generated.')
 
     def generate_outputs(self):
+        """
+        Generates output files with the synthesized population and other various population vectors required by the
+        GTAModel population input.
+        :return:
+        """
         self._logger.info('Generating population synthesis outputs.')
         self._output_processor.generate_outputs()
         self._logger.info('Output generation has completed processing')
@@ -103,6 +108,10 @@ class GTAModelPopSyn(object):
         self.generate_summary_report()
 
     def generate_inputs(self):
+        """
+        Generates all inputs required for the popsyn3 procedure.
+        :return:
+        """
         self._logger.info(f'Processing input data.')
         self._input_processor.generate()
         self._logger.info(f'Input data has completed processing.')
@@ -134,9 +143,10 @@ class GTAModelPopSyn(object):
         p = subprocess.run(
             [f'{self._config["Java64Path"]}/bin/java', "-showversion", '-server', '-Xms8000m', '-Xmx15000m',
              '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005',
-             '-XX:ErrorFile=output/java_error%p.log',
+             f'-XX:ErrorFile={self._output_path}/java_error%p.log',
              '-cp', ';'.join(classpaths), '-Djppf.config=jppf-clientLocal.properties',
              f'-Djava.library.path={libpath}',
+             f'-Dlog4j.configuration=file:{self._output_path}/Inputs/log4j.xml',
              'popGenerator.PopGenerator', f'{self._output_path}/Inputs/settings.xml'], shell=True)
 
         self._logger.info(p.stdout)
