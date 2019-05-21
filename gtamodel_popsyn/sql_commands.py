@@ -16,7 +16,7 @@ TRANSFORM_PERSONS_TABLE_SQL_COMMANDS = [
         SchoolZone smallint DEFAULT  0,
         ExpansionFactor smallint )
         as SELECT tempId as HouseholdId, PersonNumber, Age, Sex, License, TransitPass,
-                  EmploymentStatus, Occupation, StudentStatus, FreeParking,  EmploymentZone,
+                  EmploymentStatus, Occupation, FreeParking, StudentStatus ,  EmploymentZone,
                   0 as SchoolZone, finalweight as ExpansionFactor
         from synpop_person order by tempId asc
     """

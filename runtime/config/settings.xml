@@ -226,7 +226,7 @@
         <marginals>
             <id>4</id>
             <description>Household Income Class</description>
-            <geographyType>taz</geographyType>
+            <geographyType>meta</geographyType>
             <controlType>simple</controlType>
             <table>hhtable</table>
             <constraint id="1">

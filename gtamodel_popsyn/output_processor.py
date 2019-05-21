@@ -38,6 +38,7 @@ class OutputProcessor(GTAModelPopSynProcessor):
     def _read_persons_households(self):
         self._logger.info("Reading persons and households records from database.")
         self._persons = pandas.read_sql_table('gta_persons', self._db_connection)
+
         self._households = pandas.read_sql_table('gta_households', self._db_connection)
         return
 
@@ -47,8 +48,7 @@ class OutputProcessor(GTAModelPopSynProcessor):
             inverted_map = {value: key for key, value in mapping[1].items()}
             self._persons.loc[:, mapping[0]] = self._persons.loc[:, mapping[0]].map(inverted_map)
 
-        # self._persons.loc[(self._persons['EmploymentZone'] < ZONE_RANGE.start) &
-        #              (self._persons['EmploymentZone'] != ROAMING_ZONE_ID),'EmploymentZone'] = 0
+        # self._persons.loc[(self._persons['EmploymentZone'] < ZONE_RANGE.stop)] = 0
 
         return
 
@@ -117,10 +117,9 @@ class OutputProcessor(GTAModelPopSynProcessor):
 
         self._logger.info("Processing zonal residence information for occupation and employment.")
 
-        internal_persons_households = self._persons_households.loc[
-            self._persons_households['EmploymentZone'].isin(INTERNAL_ZONE_RANGE)].copy()
+        internal_persons_households = self._persons_households.loc[self._persons_households.EmploymentZone < INTERNAL_ZONE_RANGE.stop].copy()
         internal_persons_households.rename(columns={'HouseholdZone': 'Zone'}, inplace=True)
-        # print(self._persons_households)
+
         gta_ph_grouped = internal_persons_households.groupby(['Zone', 'Occupation', 'EmploymentStatus'])[
             'Persons'].apply(sum)
 

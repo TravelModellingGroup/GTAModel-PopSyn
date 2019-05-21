@@ -141,11 +141,11 @@ class InputProcessor(GTAModelPopSynProcessor):
         :return:
         """
 
-        self._resample_invalid_category('Occupation')
-        self._resample_invalid_category('EmploymentStatus')
-        self._resample_invalid_category('StudentStatus')
+        self._persons_households = self._resample_invalid_category(self._persons_households, 'Occupation', '9')
+        self._persons_households = self._resample_invalid_category(self._persons_households, 'EmploymentStatus', '9')
+        self._persons_households = self._resample_invalid_category(self._persons_households, 'StudentStatus', '9')
 
-    def _resample_invalid_category(self, category, aggregate_column='puma', invalid_value='9'):
+    def _resample_invalid_category(self, df, category, invalid_value, aggregate_column='puma'):
         """
         Resamples attributes for all records with an invalid value for the associated
         category.
@@ -155,8 +155,8 @@ class InputProcessor(GTAModelPopSynProcessor):
         :return:
         """
         import numpy as np
-        distributions = self._persons_households.loc[
-            self._persons_households[category] != invalid_value].groupby(aggregate_column)[
+        distributions = df.loc[
+            df[category] != invalid_value].groupby(aggregate_column)[
             category].value_counts(
             normalize=True)
 
@@ -172,8 +172,7 @@ class InputProcessor(GTAModelPopSynProcessor):
                     p=distributions[row[aggregate_column]].to_list())
             return row
 
-        self._persons_households = self._persons_households.apply(lambda x: apply_resample(x),
-                                                                  axis=1)
+        return df.apply(lambda x: apply_resample(x), axis=1)
 
     def _preprocess_households(self):
         """
@@ -186,11 +185,13 @@ class InputProcessor(GTAModelPopSynProcessor):
         self._households_base.IncomeClass = self._households_base.IncomeClass.astype(int)
         self._households_base.rename(columns={'ExpansionFactor': 'weighth'}, inplace=True)
 
-        self._households_base.update(self._households_base.loc[self._households_base.IncomeClass == 7,'IncomeClass'].apply(
-            lambda x: np.random.randint(1, 7)))
+        # self._households_base.update(self._households_base.loc[self._households_base.IncomeClass == 7,'IncomeClass'].apply(
+        #    lambda x: np.random.randint(1, 7)))
 
+        self._households_base = self._resample_invalid_category(
+            self._households_base, 'IncomeClass', 7)
 
-        #self._households_base.loc[self._households_base.IncomeClass == 7, 'IncomeClass']\
+        # self._households_base.loc[self._households_base.IncomeClass == 7, 'IncomeClass']\
         #    = self._households_base.loc[self._households_base.IncomeClass == 7,'IncomeClass'].apply(
         #    lambda x: np.random.randint(1, 7))
 

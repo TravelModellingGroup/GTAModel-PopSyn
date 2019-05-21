@@ -22,7 +22,7 @@ parser.add_argument('-d', '--database-only',
                     help="Only initialize the database and tables required for PopSyn3.")
 parser.add_argument('-o', '--output-only',
                     required=False,
-                    action="store_true",
+                    action="store",
                     help="Only write synthesized population from existing database data.")
 parser.add_argument('-r', '--validation-report-only',
                     required=False,
@@ -51,7 +51,7 @@ elif args.input_process_only:
     gtamodel_popsyn.generate_inputs()
 
 elif args.output_only:
-    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time,make_output=False)
+    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time,output_path=args.output_only,make_output=False)
     gtamodel_popsyn.generate_outputs()
 
 elif args.validation_report_only:
