@@ -185,6 +185,23 @@ class ValidationReport(GTAModelPopSynProcessor):
             (self._persons_households_synthesized.EmploymentZone >= EXTERNAL_ZONE_RANGE.start) &
             (self._persons_households_synthesized.EmploymentZone <= EXTERNAL_ZONE_RANGE.stop), 'ExpansionFactor'].sum()
 
+        totals.loc['StudentStatus S', 'Observed Total'] = self._persons_households_original.loc[
+            self._persons_households_original.StudentStatus == 'S', 'ExpansionFactor'].sum()
+        totals.loc['StudentStatus S', 'Synthesized Total'] = self._persons_households_synthesized.loc[
+            self._persons_households_synthesized.StudentStatus == 'S', 'ExpansionFactor'].sum()
+
+        totals.loc['StudentStatus P', 'Observed Total'] = self._persons_households_original.loc[
+            self._persons_households_original.StudentStatus == 'P', 'ExpansionFactor'].sum()
+        totals.loc['StudentStatus P', 'Synthesized Total'] = self._persons_households_synthesized.loc[
+            self._persons_households_synthesized.StudentStatus == 'P', 'ExpansionFactor'].sum()
+
+        totals.loc['StudentStatus O', 'Observed Total'] = self._persons_households_original.loc[
+            self._persons_households_original.StudentStatus == 'O', 'ExpansionFactor'].sum()
+        totals.loc['StudentStatus O', 'Synthesized Total'] = self._persons_households_synthesized.loc[
+            self._persons_households_synthesized.StudentStatus == 'O', 'ExpansionFactor'].sum()
+
+
+
         for bin in AGE_BINS:
             totals.loc[f'Age {bin.start} - {bin.stop}', 'Observed Total'] = self._persons_households_original.loc[
                 (self._persons_households_original.Age >= bin.start) & (

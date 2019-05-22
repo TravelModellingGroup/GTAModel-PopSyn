@@ -299,9 +299,40 @@
 
     </target>
 
-    <target>
+     <target>
         <marginals>
             <id>6</id>
+            <description>Student Status</description>
+            <geographyType>meta</geographyType>
+            <controlType>count</controlType>
+            <table>perstable</table>
+            <constraint id="1">
+                <importance>1000</importance>
+                <field>StudentStatus</field>
+                <controlField>S_S</controlField>
+                <type>equality</type>
+                <value>1</value>
+            </constraint>
+            <constraint id="2">
+                <importance>1000</importance>
+                <field>StudentStatus</field>
+                <controlField>S_P</controlField>
+                <type>equality</type>
+                <value>2</value>
+            </constraint>
+            <constraint id="3">
+                <importance>1000</importance>
+                <field>StudentStatus</field>
+                <controlField>S_O</controlField>
+                <type>equality</type>
+                <value>3</value>
+            </constraint>
+        </marginals>
+    </target>
+
+    <target>
+        <marginals>
+            <id>7</id>
             <description>Total number of people</description>
             <geographyType>meta</geographyType>
             <controlType>count</controlType>
