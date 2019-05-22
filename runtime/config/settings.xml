@@ -226,7 +226,7 @@
         <marginals>
             <id>4</id>
             <description>Household Income Class</description>
-            <geographyType>meta</geographyType>
+            <geographyType>taz</geographyType>
             <controlType>simple</controlType>
             <table>hhtable</table>
             <constraint id="1">
@@ -294,6 +294,86 @@
                 <hi_value>4</hi_value>
                 <hi_type>closed</hi_type>
             </constraint>
+            <constraint id="2">
+                <importance>1000</importance>
+                <field>Age</field>
+                <controlField>age5_10</controlField>
+                <type>interval</type>
+                <lo_value>5</lo_value>
+                <lo_type>closed</lo_type>
+                <hi_value>10</hi_value>
+                <hi_type>closed</hi_type>
+            </constraint>
+            <constraint id="3">
+                <importance>1000</importance>
+                <field>Age</field>
+                <controlField>age11_15</controlField>
+                <type>interval</type>
+                <lo_value>11</lo_value>
+                <lo_type>closed</lo_type>
+                <hi_value>15</hi_value>
+                <hi_type>closed</hi_type>
+            </constraint>
+            <constraint id="4">
+                <importance>1000</importance>
+                <field>Age</field>
+                <controlField>age16_25</controlField>
+                <type>interval</type>
+                <lo_value>16</lo_value>
+                <lo_type>closed</lo_type>
+                <hi_value>25</hi_value>
+                <hi_type>closed</hi_type>
+            </constraint>
+            <constraint id="5">
+                <importance>1000</importance>
+                <field>Age</field>
+                <controlField>age26_35</controlField>
+                <type>interval</type>
+                <lo_value>26</lo_value>
+                <lo_type>closed</lo_type>
+                <hi_value>35</hi_value>
+                <hi_type>closed</hi_type>
+            </constraint>
+            <constraint id="6">
+                <importance>1000</importance>
+                <field>Age</field>
+                <controlField>age36_45</controlField>
+                <type>interval</type>
+                <lo_value>36</lo_value>
+                <lo_type>closed</lo_type>
+                <hi_value>45</hi_value>
+                <hi_type>closed</hi_type>
+            </constraint>
+            <constraint id="7">
+                <importance>1000</importance>
+                <field>Age</field>
+                <controlField>age46_55</controlField>
+                <type>interval</type>
+                <lo_value>46</lo_value>
+                <lo_type>closed</lo_type>
+                <hi_value>55</hi_value>
+                <hi_type>closed</hi_type>
+            </constraint>
+            <constraint id="8">
+                <importance>1000</importance>
+                <field>Age</field>
+                <controlField>age56_64</controlField>
+                <type>interval</type>
+                <lo_value>56</lo_value>
+                <lo_type>closed</lo_type>
+                <hi_value>64</hi_value>
+                <hi_type>closed</hi_type>
+            </constraint>
+            <constraint id="9">
+                <importance>1000</importance>
+                <field>Age</field>
+                <controlField>age65_200</controlField>
+                <type>interval</type>
+                <lo_value>64</lo_value>
+                <lo_type>closed</lo_type>
+                <hi_value>200</hi_value>
+                <hi_type>closed</hi_type>
+            </constraint>
 
         </marginals>
 
@@ -338,7 +418,7 @@
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>10000000</importance>
+                <importance>1000000</importance>
                 <field>weight</field>
                 <controlField>totpop</controlField>
                 <type>interval</type>
