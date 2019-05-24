@@ -22,7 +22,7 @@
         <pumsHhTable>hhtable</pumsHhTable>
         <pumsHhIdField>hhnum</pumsHhIdField>
         <pumsPersTable>perstable</pumsPersTable>
-        <maxExpansionFactor>300</maxExpansionFactor>
+        <maxExpansionFactor>320</maxExpansionFactor>
         <synpopOutputHhTableName>synpop_hh</synpopOutputHhTableName>
         <synpopOutputPersTableName>synpop_person</synpopOutputPersTableName>
         <outputHhAttributes>HouseholdId, DwellingType, NumberOfPersons, Vehicles, IncomeClass</outputHhAttributes>
@@ -70,7 +70,7 @@
             <geographyType>maz</geographyType>
             <table>hhtable</table>
             <constraint id="1">
-                <importance>100</importance>
+                <importance>1000</importance>
                 <field>weight</field>
                 <controlField>totalhh</controlField>
                 <type>interval</type>
@@ -167,8 +167,6 @@
     </target>
 
     <target>
-
-
         <marginals>
             <id>3</id>
             <description>Employment Zone</description>
@@ -176,7 +174,7 @@
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>5000</importance>
+                <importance>4000</importance>
                 <controlField>employment_zone_0</controlField>
                 <field>EmploymentZone</field>
                 <type>interval</type>
@@ -186,7 +184,7 @@
                 <hi_type>open</hi_type>
             </constraint>
             <constraint id="2">
-                <importance>5000</importance>
+                <importance>4000</importance>
                 <controlField>employment_zone_internal</controlField>
                 <field>EmploymentZone</field>
                 <type>interval</type>
@@ -196,7 +194,7 @@
                 <hi_type>open</hi_type>
             </constraint>
             <constraint id="3">
-                <importance>5000</importance>
+                <importance>4000</importance>
                 <controlField>employment_zone_external</controlField>
                 <field>EmploymentZone</field>
                 <type>interval</type>
@@ -207,7 +205,7 @@
             </constraint>
 
             <constraint id="4">
-                <importance>5000</importance>
+                <importance>4000</importance>
                 <controlField>employment_zone_roaming</controlField>
                 <field>EmploymentZone</field>
                 <type>interval</type>
@@ -237,35 +235,35 @@
                 <value>1</value>
             </constraint>
             <constraint id="2">
-                <importance>1000</importance>
+                <importance>900</importance>
                 <controlField>income_class_2</controlField>
                 <field>IncomeClass</field>
                 <type>equality</type>
                 <value>2</value>
             </constraint>
             <constraint id="3">
-                <importance>1000</importance>
+                <importance>900</importance>
                 <controlField>income_class_3</controlField>
                 <field>IncomeClass</field>
                 <type>equality</type>
                 <value>3</value>
             </constraint>
             <constraint id="4">
-                <importance>1000</importance>
+                <importance>900</importance>
                 <controlField>income_class_4</controlField>
                 <field>IncomeClass</field>
                 <type>equality</type>
                 <value>4</value>
             </constraint>
             <constraint id="5">
-                <importance>1000</importance>
+                <importance>900</importance>
                 <controlField>income_class_5</controlField>
                 <field>IncomeClass</field>
                 <type>equality</type>
                 <value>5</value>
             </constraint>
             <constraint id="6">
-                <importance>1000</importance>
+                <importance>900</importance>
                 <controlField>income_class_6</controlField>
                 <field>IncomeClass</field>
                 <type>equality</type>
@@ -285,7 +283,7 @@
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>1000</importance>
+                <importance>700</importance>
                 <field>Age</field>
                 <controlField>age0_4</controlField>
                 <type>interval</type>
@@ -295,7 +293,7 @@
                 <hi_type>closed</hi_type>
             </constraint>
             <constraint id="2">
-                <importance>1000</importance>
+                <importance>700</importance>
                 <field>Age</field>
                 <controlField>age5_10</controlField>
                 <type>interval</type>
@@ -305,7 +303,7 @@
                 <hi_type>closed</hi_type>
             </constraint>
             <constraint id="3">
-                <importance>1000</importance>
+                <importance>700</importance>
                 <field>Age</field>
                 <controlField>age11_15</controlField>
                 <type>interval</type>
@@ -315,7 +313,7 @@
                 <hi_type>closed</hi_type>
             </constraint>
             <constraint id="4">
-                <importance>1000</importance>
+                <importance>700</importance>
                 <field>Age</field>
                 <controlField>age16_25</controlField>
                 <type>interval</type>
@@ -325,7 +323,7 @@
                 <hi_type>closed</hi_type>
             </constraint>
             <constraint id="5">
-                <importance>1000</importance>
+                <importance>700</importance>
                 <field>Age</field>
                 <controlField>age26_35</controlField>
                 <type>interval</type>
@@ -335,7 +333,7 @@
                 <hi_type>closed</hi_type>
             </constraint>
             <constraint id="6">
-                <importance>1000</importance>
+                <importance>700</importance>
                 <field>Age</field>
                 <controlField>age36_45</controlField>
                 <type>interval</type>
@@ -345,7 +343,7 @@
                 <hi_type>closed</hi_type>
             </constraint>
             <constraint id="7">
-                <importance>1000</importance>
+                <importance>700</importance>
                 <field>Age</field>
                 <controlField>age46_55</controlField>
                 <type>interval</type>
@@ -355,7 +353,7 @@
                 <hi_type>closed</hi_type>
             </constraint>
             <constraint id="8">
-                <importance>1000</importance>
+                <importance>700</importance>
                 <field>Age</field>
                 <controlField>age56_64</controlField>
                 <type>interval</type>
@@ -365,11 +363,11 @@
                 <hi_type>closed</hi_type>
             </constraint>
             <constraint id="9">
-                <importance>1000</importance>
+                <importance>700</importance>
                 <field>Age</field>
                 <controlField>age65_200</controlField>
                 <type>interval</type>
-                <lo_value>64</lo_value>
+                <lo_value>65</lo_value>
                 <lo_type>closed</lo_type>
                 <hi_value>200</hi_value>
                 <hi_type>closed</hi_type>
@@ -387,21 +385,21 @@
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>1000</importance>
+                <importance>800</importance>
                 <field>StudentStatus</field>
                 <controlField>S_S</controlField>
                 <type>equality</type>
                 <value>1</value>
             </constraint>
             <constraint id="2">
-                <importance>1000</importance>
+                <importance>800</importance>
                 <field>StudentStatus</field>
                 <controlField>S_P</controlField>
                 <type>equality</type>
                 <value>2</value>
             </constraint>
             <constraint id="3">
-                <importance>1000</importance>
+                <importance>800</importance>
                 <field>StudentStatus</field>
                 <controlField>S_O</controlField>
                 <type>equality</type>
@@ -429,6 +427,5 @@
             </constraint>
         </marginals>
     </target>
-
 
 </targets>
