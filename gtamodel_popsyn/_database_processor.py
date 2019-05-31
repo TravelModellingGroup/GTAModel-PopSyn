@@ -19,14 +19,16 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
         'object': VARCHAR(1)
     }
 
-    def __init__(self, gtamodel_popsyn_instance):
+    def __init__(self, gtamodel_popsyn_instance, percent_population: list):
         """
-
+        
         :param gtamodel_popsyn_instance:
+        :param percent_population:
         """
         GTAModelPopSynProcessor.__init__(self, gtamodel_popsyn_instance)
         self._engine: Engine = None
         self._connection = None
+        self._percent_population = percent_population
 
     def initialize_database(self, persons=None, households=None):
         """
