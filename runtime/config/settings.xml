@@ -416,7 +416,7 @@
             <controlType>count</controlType>
             <table>perstable</table>
             <constraint id="1">
-                <importance>1000000</importance>
+                <importance>100000</importance>
                 <field>weight</field>
                 <controlField>totpop</controlField>
                 <type>interval</type>

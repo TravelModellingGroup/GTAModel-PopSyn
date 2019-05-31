@@ -4,6 +4,7 @@ import json
 import datetime
 import os
 # parse input arguments
+from collections import defaultdict
 
 from logzero import logger, setup_logger
 
@@ -28,7 +29,16 @@ parser.add_argument('-r', '--validation-report-only',
                     required=False,
                     action="store",
                     help="Only generate a summary report from existing output files. Pass the generated output folder to use.")
+parser.add_argument('-p', '--percent-population',
+                    required=False,
+                    action="store",
+                    nargs='+',
+                    default=1.0,
+                    type=float,
+                    help="Specify % population")
+
 args = parser.parse_args()
+
 
 try:
     config = json.load(args.config)
@@ -39,9 +49,6 @@ except:
 
 start_time = datetime.datetime.now()
 
-
-
-
 if args.database_only:
     gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time)
     gtamodel_popsyn.initialize_database()
@@ -51,17 +58,16 @@ elif args.input_process_only:
     gtamodel_popsyn.generate_inputs()
 
 elif args.output_only:
-    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time,output_path=args.output_only,make_output=False)
+    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, output_path=args.output_only,
+                                     make_output=False)
     gtamodel_popsyn.generate_outputs()
 
 elif args.validation_report_only:
-    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time,output_path=args.validation_report_only,make_output=False)
+    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, output_path=args.validation_report_only,
+                                     make_output=False)
     gtamodel_popsyn.generate_summary_report()
 else:
     gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time)
     gtamodel_popsyn.run()
 
-
 # generating full report
-
-
