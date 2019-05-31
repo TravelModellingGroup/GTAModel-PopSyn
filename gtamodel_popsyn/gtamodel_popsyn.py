@@ -33,7 +33,7 @@ class GTAModelPopSyn(object):
         return self._logger
 
     def __init__(self, config, arguments, start_time=datetime.datetime.now(), output_path=None, make_output = True,
-                 percent_population = None):
+                 percent_populations: list = None):
         """
         Initializes GTAModelPopSyn class responsible for building control totals and
         processing the input seed data.
@@ -44,8 +44,8 @@ class GTAModelPopSyn(object):
         self._config = config
         self._start_time = start_time
 
-        if percent_population is None:
-            percent_population = [1.0]
+        if percent_populations is None:
+            self._percent_populations= [1.0]
 
         if make_output:
             os.makedirs(f'{config["OutputFolder"]}/{start_time:%Y-%m-%d_%H-%M}/', exist_ok=True)
@@ -54,12 +54,15 @@ class GTAModelPopSyn(object):
                                logfile=f'{self._output_path}/gtamodel_popsyn.log')
         self._logger.info(f'GTAModel PopSyn')
         self._arguments = arguments
-        self._summary_report = ValidationReport(self)
-        self._control_totals_builder = ControlTotalsBuilder(self, percent_population)
-        self._input_processor = InputProcessor(self)
-        self._output_processor = OutputProcessor(self)
-        self._database_processor = DatabaseProcessor(self)
-        self._settings_processor = SettingsProcessor(self)
+
+        # iterate over percent_population and perform a run
+        for percent_population in percent_populations:
+            self._summary_report = ValidationReport(self)
+            self._control_totals_builder = ControlTotalsBuilder(self, percent_population)
+            self._input_processor = InputProcessor(self)
+            self._output_processor = OutputProcessor(self)
+            self._database_processor = DatabaseProcessor(self)
+            self._settings_processor = SettingsProcessor(self)
 
         os.makedirs(f'{self._output_path}/Inputs/', exist_ok=True)
 

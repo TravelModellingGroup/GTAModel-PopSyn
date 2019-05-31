@@ -19,9 +19,9 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
         'object': VARCHAR(1)
     }
 
-    def __init__(self, gtamodel_popsyn_instance, percent_population: list):
+    def __init__(self, gtamodel_popsyn_instance, percent_population: int):
         """
-        
+
         :param gtamodel_popsyn_instance:
         :param percent_population:
         """
