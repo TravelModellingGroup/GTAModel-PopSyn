@@ -45,23 +45,32 @@ class GTAModelPopSyn(object):
         self._start_time = start_time
 
         if percent_populations is None:
-            self._percent_populations= [1.0]
+            self._percent_populations = [1.0]
+        else:
+            self._percent_populations = percent_populations
 
-        if make_output:
-            os.makedirs(f'{config["OutputFolder"]}/{start_time:%Y-%m-%d_%H-%M}/', exist_ok=True)
-        self._output_path = f'{self._config["OutputFolder"]}/{self._start_time:%Y-%m-%d_%H-%M}' if output_path is None else output_path
-        self._logger = setup_logger(name='gtamodel',
-                               logfile=f'{self._output_path}/gtamodel_popsyn.log')
-        self._logger.info(f'GTAModel PopSyn')
-        self._arguments = arguments
+        # if make_output:
+        #    os.makedirs(f'{config["OutputFolder"]}/{start_time:%Y-%m-%d_%H-%M}/', exist_ok=True)
+        # self._output_path = f'{self._config["OutputFolder"]}/{self._start_time:%Y-%m-%d_%H-%M}' if output_path is None else output_path
+        # self._logger = setup_logger(name='gtamodel',
+        #                       logfile=f'{self._output_path}/gtamodel_popsyn.log')
+        # self._logger.info(f'GTAModel PopSyn')
+        # self._arguments = arguments
 
         # iterate over percent_population and perform a run
-        for percent_population in percent_populations:
+        for percent_population in self._percent_populations:
+            if make_output:
+                os.makedirs(f'{config["OutputFolder"]}/{start_time:%Y-%m-%d_%H-%M}_{percent_population}/', exist_ok=True)
+                self._output_path = f'{self._config["OutputFolder"]}/{self._start_time:%Y-%m-%d_%H-%M}_{percent_population}' if output_path is None else output_path
+                self._logger = setup_logger(name='gtamodel',
+                                        logfile=f'{self._output_path}/gtamodel_popsyn.log')
+                self._logger.info(f'GTAModel PopSyn')
+                self._arguments = arguments
             self._summary_report = ValidationReport(self)
-            self._control_totals_builder = ControlTotalsBuilder(self, percent_population)
+            self._control_totals_builder = ControlTotalsBuilder(self)
             self._input_processor = InputProcessor(self)
             self._output_processor = OutputProcessor(self)
-            self._database_processor = DatabaseProcessor(self)
+            self._database_processor = DatabaseProcessor(self, percent_population)
             self._settings_processor = SettingsProcessor(self)
 
         os.makedirs(f'{self._output_path}/Inputs/', exist_ok=True)

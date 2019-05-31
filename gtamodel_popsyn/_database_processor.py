@@ -19,7 +19,7 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
         'object': VARCHAR(1)
     }
 
-    def __init__(self, gtamodel_popsyn_instance, percent_population: int):
+    def __init__(self, gtamodel_popsyn_instance, percent_population: float):
         """
 
         :param gtamodel_popsyn_instance:
@@ -156,9 +156,9 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
         metadata.drop_all(self._engine, [maz_controls_table, taz_controls_table, meta_controls_table])
         metadata.create_all(self._engine)
 
-        maz_controls.to_sql('control_totals_maz', self._connection, if_exists='append', index=False)
-        taz_controls.to_sql('control_totals_taz', self._connection, if_exists='replace', index=False)
-        meta_controls.to_sql('control_totals_meta', self._connection, if_exists='replace', index=False)
+        (maz_controls*self._percent_population).to_sql('control_totals_maz', self._connection, if_exists='append', index=False)
+        (taz_controls*self._percent_population).to_sql('control_totals_taz', self._connection, if_exists='replace', index=False)
+        (meta_controls*self._percent_population).to_sql('control_totals_meta', self._connection, if_exists='replace', index=False)
         return
 
     def __del__(self):

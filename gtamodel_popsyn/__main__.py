@@ -67,7 +67,7 @@ elif args.validation_report_only:
                                      make_output=False)
     gtamodel_popsyn.generate_summary_report()
 else:
-    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time)
+    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, percent_populations=args.percent_population)
     gtamodel_popsyn.run()
 
 # generating full report
