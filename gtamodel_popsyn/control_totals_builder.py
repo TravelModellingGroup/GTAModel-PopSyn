@@ -20,7 +20,7 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
     def _sum_column_range(self, group, column, value, value2, weight='weighth'):
         return group[(group[column] >= value) & (group[column] <= value2)][weight].sum()
 
-    def __init__(self, gtamodel_popsyn_instance):
+    def __init__(self, gtamodel_popsyn_instance, percent_population):
         """
 
         :param gtamodel_popsyn_instance:
@@ -29,6 +29,7 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
 
         self._zones = pd.DataFrame()
         self._age_bin_columns = []
+        self._percent_population = percent_population
         for age_bin in AGE_BINS:
             self._age_bin_columns.append(f'age{age_bin.start}_{age_bin.stop}')
 
@@ -163,8 +164,9 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
                                       'employment_zone_0'
                                       ])].sort_values(['puma', 'taz', 'maz'])
 
+
         maz_controls[maz_controls['totpop'] > 0].astype(int).to_csv(
-            f"{self._output_path}/Inputs/{self._config['MazLevelControls']}", index=False)
+            f"{self._output_path}/Inputs/{self._config['MazLevelControls']}_{p}", index=False)
 
     def _write_taz_control_totals_file(self):
         """
@@ -186,7 +188,7 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
                                                       'employment_zone_0'])].sort_values(['puma', 'taz'])
 
         controls_taz[controls_taz['totpop'] > 0].astype(int).to_csv(
-            f"{self._output_path}/Inputs/{self._config['TazLevelControls']}", index=False)
+            f"{self._output_path}/Inputs/{self._config['TazLevelControls']}_{p}", index=False)
 
         return controls_taz
 
@@ -212,4 +214,5 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
                                                               'employment_zone_external',
                                                               'employment_zone_roaming',
                                                               'employment_zone_0'])].apply(sum).reset_index()
-        meta_controls.astype(int).to_csv(f"{self._output_path}/Inputs/{self._config['MetaLevelControls']}", index=False)
+
+        (meta_controls*p).astype(int).to_csv(f"{self._output_path}/Inputs/{self._config['MetaLevelControls']}", index=False)
