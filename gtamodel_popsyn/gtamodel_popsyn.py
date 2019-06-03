@@ -69,7 +69,7 @@ class GTAModelPopSyn(object):
             self._summary_report = ValidationReport(self)
             self._control_totals_builder = ControlTotalsBuilder(self)
             self._input_processor = InputProcessor(self)
-            self._output_processor = OutputProcessor(self)
+            self._output_processor = OutputProcessor(self, percent_population)
             self._database_processor = DatabaseProcessor(self, percent_population)
             self._settings_processor = SettingsProcessor(self)
 

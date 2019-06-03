@@ -14,7 +14,7 @@ class OutputProcessor(GTAModelPopSynProcessor):
     transformed into the input format expected by the GTAModel runtime.
     """
 
-    def __init__(self, gtamodel_popsyn_instance):
+    def __init__(self, gtamodel_popsyn_instance, percent_population: float):
 
         GTAModelPopSynProcessor.__init__(self, gtamodel_popsyn_instance)
         self._db_connection = None
@@ -22,6 +22,7 @@ class OutputProcessor(GTAModelPopSynProcessor):
         self._households = pandas.DataFrame()
         self._persons_households = pandas.DataFrame()
         self._output_folder = self._output_path
+        self._percent_population = percent_population
         self._engine = create_engine(
             f'mysql+pymysql://{self._config["DatabaseUser"]}:'
             f'{self._config["DatabasePassword"]}@{self._config["DatabaseServer"]}/{self._config["DatabaseName"]}'
@@ -36,10 +37,18 @@ class OutputProcessor(GTAModelPopSynProcessor):
         return
 
     def _read_persons_households(self):
+        """
+        Read persons and households from database and scale expansion factor by % population.
+        :return:
+        """
         self._logger.info("Reading persons and households records from database.")
         self._persons = pandas.read_sql_table('gta_persons', self._db_connection)
 
+        self._persons['ExpansionFactor'] = self._persons['ExpansionFactor'] * (1.0 / self._percent_population)
+
         self._households = pandas.read_sql_table('gta_households', self._db_connection)
+
+        self._households['ExpansionFactor'] = self._households['ExpansionFactor'] * (1.0 / self._percent_population)
         return
 
     def _process_persons(self):
