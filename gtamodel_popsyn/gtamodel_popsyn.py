@@ -58,6 +58,7 @@ class GTAModelPopSyn(object):
         # self._arguments = arguments
 
         # iterate over percent_population and perform a run
+
         for percent_population in self._percent_populations:
             if make_output:
                 os.makedirs(f'{config["OutputFolder"]}/{start_time:%Y-%m-%d_%H-%M}_{percent_population}/', exist_ok=True)

@@ -25,6 +25,10 @@ parser.add_argument('-o', '--output-only',
                     required=False,
                     action="store",
                     help="Only write synthesized population from existing database data.")
+parser.add_argument('-s', '--saved-output',
+                    required=False,
+                    action="store",
+                    help="Calculate employment and other output files using data already extract from the database.")
 parser.add_argument('-r', '--validation-report-only',
                     required=False,
                     action="store",
@@ -33,7 +37,7 @@ parser.add_argument('-p', '--percent-population',
                     required=False,
                     action="store",
                     nargs='+',
-                    default=1.0,
+                    default=[1.0],
                     type=float,
                     help="Specify % population")
 

@@ -49,7 +49,7 @@ class ValidationReport(GTAModelPopSynProcessor):
         self._persons_synthesized = pd.read_csv(
             f'{self._output_path}/{self._config["PersonsOutputFile"]}')
 
-        self._zones = pd.read_csv('data/Zones.csv')
+        self._zones = pd.read_csv(self._config['Zones'])
 
     def _process(self):
         self._zones = self._zones[['Zone#', 'PD']].rename(columns={'Zone#': 'HouseholdZone'})

@@ -64,7 +64,7 @@ class InputProcessor(GTAModelPopSynProcessor):
         """
 
         # read zone information
-        self._zones = pd.read_csv("data/Zones.csv",
+        self._zones = pd.read_csv(self._config['Zones'],
                                   dtype={'Zone#': int, 'PD': int})[['Zone#', 'PD']]
 
         self._zones = self._zones.sort_values(['PD', 'Zone#']).reset_index()
