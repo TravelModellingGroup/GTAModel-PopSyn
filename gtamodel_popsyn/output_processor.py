@@ -15,7 +15,11 @@ class OutputProcessor(GTAModelPopSynProcessor):
     """
 
     def __init__(self, gtamodel_popsyn_instance, percent_population: float):
+        """
 
+        :param gtamodel_popsyn_instance:
+        :param percent_population:
+        """
         GTAModelPopSynProcessor.__init__(self, gtamodel_popsyn_instance)
         self._db_connection = None
         self._persons = pandas.DataFrame()
@@ -52,6 +56,10 @@ class OutputProcessor(GTAModelPopSynProcessor):
         return
 
     def _process_persons(self):
+        """
+
+        :return:
+        """
         self._logger.info("Remapping category attributes.")
         for mapping in self._config['CategoryMapping']['Persons'].items():
             inverted_map = {value: key for key, value in mapping[1].items()}
@@ -94,6 +102,9 @@ class OutputProcessor(GTAModelPopSynProcessor):
         :return:
          """
         self._logger.info("Writing synthesized population (persons) to file.")
+
+        # set internal employment zones to 0
+        self._persons[self._persons['EmploymentZone'] < INTERNAL_ZONE_RANGE.stop] = 0
         self._persons.to_csv(f'{self._output_folder}/HouseholdData/Persons.csv', index=False)
         return
 
