@@ -78,6 +78,9 @@ class InputProcessor(GTAModelPopSynProcessor):
         self._households_base = pd.read_csv(f"{self._config['HouseholdsSeedFile']}",
                                             dtype={'HouseholdZone': int, 'HouseholdId': int})
 
+        # down sample input population
+        self._households_base = self._households_base.sample(frac=self._config['InputSample'])
+
         self._households_base = pd.merge(self._households_base, self._zones,
                                          left_on="HouseholdZone", right_on="Zone#")[
             ['HouseholdId', 'DwellingType', 'NumberOfPersons', 'Vehicles',

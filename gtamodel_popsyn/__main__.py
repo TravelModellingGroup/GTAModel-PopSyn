@@ -28,6 +28,8 @@ parser.add_argument('-o', '--output-only',
 parser.add_argument('-s', '--saved-output',
                     required=False,
                     action="store",
+                    type=bool,
+                    default=False,
                     help="Calculate employment and other output files using data already extract from the database.")
 parser.add_argument('-r', '--validation-report-only',
                     required=False,
@@ -70,7 +72,7 @@ elif args.input_process_only:
 elif args.output_only:
     gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, output_path=args.output_only,
                                      make_output=False)
-    gtamodel_popsyn.generate_outputs()
+    gtamodel_popsyn.generate_outputs(args.saved_output)
 
 elif args.validation_report_only:
     gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, output_path=args.validation_report_only,

@@ -90,14 +90,14 @@ class GTAModelPopSyn(object):
         self._summary_report.generate()
         self._logger.info('Summary report has been generated.')
 
-    def generate_outputs(self):
+    def generate_outputs(self, use_saved):
         """
         Generates output files with the synthesized population and other various population vectors required by the
         GTAModel population input.
         :return:
         """
         self._logger.info('Generating population synthesis outputs.')
-        self._output_processor.generate_outputs()
+        self._output_processor.generate_outputs( use_saved)
         self._logger.info('Output generation has completed processing')
 
     def initialize_database(self, persons=None, households=None):

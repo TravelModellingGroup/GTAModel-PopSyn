@@ -163,7 +163,23 @@ class OutputProcessor(GTAModelPopSynProcessor):
                                                          index=False)
         return
 
-    def generate_outputs(self):
+    def _read_persons_households_file(self):
+        """
+        Reads persons and households from saved records file, rather than the configured database.
+        Percent population is not taken into account as it will already exist in the output file.
+        :return:
+        """
+        self._logger.info("Reading persons and households records from saved files.")
+
+        self._persons = pandas.read_csv(f'{self._output_folder}/HouseholdData/Persons.csv')
+
+        # self._persons['ExpansionFactor'] = self._persons['ExpansionFactor'] * (1.0 / self._percent_population)
+
+        self._households = pandas.read_csv(f'{self._output_folder}/HouseholdData/Households.csv')
+
+        # self._households['ExpansionFactor'] = self._households['ExpansionFactor'] * (1.0 / self._percent_population)
+
+    def generate_outputs(self, use_saved: bool):
         """
         Generates and writes all output files to the specified output location
         :return:
@@ -175,7 +191,11 @@ class OutputProcessor(GTAModelPopSynProcessor):
         self._gta_model_transform()
 
         # Read and process household and persons data
-        self._read_persons_households()
+
+        if not use_saved:
+            self._read_persons_households()
+        else:
+            self.read_persons_households_file()
 
         self._process_persons()
         self._process_households()
