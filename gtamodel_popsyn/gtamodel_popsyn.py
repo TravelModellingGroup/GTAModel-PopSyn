@@ -62,8 +62,8 @@ class GTAModelPopSyn(object):
 
         for percent_population in self._percent_populations:
             if make_output:
-                os.makedirs(f'{(self._name+"_") if name is not None else ""}{config["OutputFolder"]}/{start_time:%Y-%m-%d_%H-%M}_{percent_population}/', exist_ok=True)
-                self._output_path = f'{(self._name+"_") if name is not None else ""}{self._config["OutputFolder"]}/{self._start_time:%Y-%m-%d_%H-%M}_{percent_population}' if output_path is None else output_path
+                os.makedirs(f'{config["OutputFolder"]}/{(self._name+"_") if name else ""}{start_time:%Y-%m-%d_%H-%M}_{percent_population}/', exist_ok=True)
+                self._output_path = f'{self._config["OutputFolder"]}/{(self._name+"_") if name else ""}{self._start_time:%Y-%m-%d_%H-%M}_{percent_population}' if output_path is None else output_path
                 self._logger = setup_logger(name='gtamodel',
                                         logfile=f'{self._output_path}/gtamodel_popsyn.log')
                 self._logger.info(f'GTAModel PopSyn')

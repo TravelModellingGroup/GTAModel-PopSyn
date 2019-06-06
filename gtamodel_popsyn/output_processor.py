@@ -104,7 +104,7 @@ class OutputProcessor(GTAModelPopSynProcessor):
         self._logger.info("Writing synthesized population (persons) to file.")
 
         # set internal employment zones to 0
-        self._persons[self._persons['EmploymentZone'] < INTERNAL_ZONE_RANGE.stop] = 0
+        self._persons[self._persons['EmploymentZone']['EmploymentZone'] < INTERNAL_ZONE_RANGE.stop] = 0
         self._persons.to_csv(f'{self._output_folder}/HouseholdData/Persons.csv', index=False)
         return
 
