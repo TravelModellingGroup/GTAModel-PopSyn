@@ -79,7 +79,7 @@ class InputProcessor(GTAModelPopSynProcessor):
                                             dtype={'HouseholdZone': int, 'HouseholdId': int})
 
         # down sample input population
-        self._households_base = self._households_base.sample(frac=self._config['InputSample'])
+        # self._households_base = self._households_base.sample(frac=self._config['InputSample'])
 
         self._households_base = pd.merge(self._households_base, self._zones,
                                          left_on="HouseholdZone", right_on="Zone#")[
@@ -127,7 +127,7 @@ class InputProcessor(GTAModelPopSynProcessor):
         self._zones['puma'] = 0
         for index, pd_range in enumerate(constants.PUMA_PD_RANGES):
             self._zones.loc[self._zones['PD'].isin(pd_range), 'puma'] = index + 1
-            self._households_base.loc[self._households_base['PD'].isin(pd_range), 'puma'] = index + 1
+            self._households_base.loc[self._households_base['PD'].between(pd_range.start,pd_range.stop), 'puma'] = index + 1
 
     def _preprocess_persons(self):
         """
