@@ -40,6 +40,12 @@ parser.add_argument('-p', '--percent-population',
                     default=[1.0],
                     type=float,
                     help="Specify % population")
+parser.add_argument('-n', '--name',
+                    required=False,
+                    action="store",
+                    type=str,
+                    help="Assign a custom name to a run which will be prepended to the output folder location.")
+
 
 args = parser.parse_args()
 
@@ -71,7 +77,7 @@ elif args.validation_report_only:
                                      make_output=False)
     gtamodel_popsyn.generate_summary_report()
 else:
-    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, percent_populations=args.percent_population)
+    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, percent_populations=args.percent_population,name=args.name)
     gtamodel_popsyn.run()
 
 # generating full report
