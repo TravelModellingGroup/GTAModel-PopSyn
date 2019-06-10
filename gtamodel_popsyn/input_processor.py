@@ -126,8 +126,12 @@ class InputProcessor(GTAModelPopSynProcessor):
         self._households_base['puma'] = 0
         self._zones['puma'] = 0
         for index, pd_range in enumerate(constants.PUMA_PD_RANGES):
-            self._zones.loc[self._zones['PD'].isin(pd_range), 'puma'] = index + 1
-            self._households_base.loc[self._households_base['PD'].between(pd_range.start,pd_range.stop), 'puma'] = index + 1
+            print(pd_range)
+            self._zones.loc[self._zones['PD'].between(pd_range.start, pd_range.stop), ['puma']] = index + 1
+            self._households_base.loc[
+                self._households_base['PD'].between(pd_range.start, pd_range.stop), ['puma']] = index + 1
+
+        print(self._households_base['puma'].unique())
 
     def _preprocess_persons(self):
         """
@@ -206,6 +210,10 @@ class InputProcessor(GTAModelPopSynProcessor):
         Post process the joint set of persons and households.
         :return:
         """
+
+        self._persons_households = self._persons_households.sample(frac=self._config['InputSample'])
+        self._persons_households['weightp'] = self._persons_households['weightp'] * (1.0 / self._config['InputSample'])
+        self._persons_households['weighth'] = self._persons_households['weighth'] * (1.0 / self._config['InputSample'])
 
         unmatched = self._persons_households.loc[:, ('HouseholdId', 'NumberOfPersons', 'PersonNumber')].groupby(
             ['HouseholdId']).agg({'NumberOfPersons': lambda x: x.iloc[0], 'PersonNumber': 'count'})

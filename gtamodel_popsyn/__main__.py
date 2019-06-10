@@ -34,23 +34,21 @@ parser.add_argument('-s', '--saved-output',
 parser.add_argument('-r', '--validation-report-only',
                     required=False,
                     action="store",
-                    help="Only generate a summary report from existing output files. Pass the generated output folder to use.")
+                    help='Only generate a summary report from existing output files. Pass the generated output folder to use.')
 parser.add_argument('-p', '--percent-population',
                     required=False,
                     action="store",
                     nargs='+',
-                    default=[1.0],
+                    default=1.0,
                     type=float,
-                    help="Specify % population")
+                    help="Specify percent population")
 parser.add_argument('-n', '--name',
                     required=False,
                     action="store",
                     type=str,
                     help="Assign a custom name to a run which will be prepended to the output folder location.")
 
-
 args = parser.parse_args()
-
 
 try:
     config = json.load(args.config)
@@ -79,7 +77,7 @@ elif args.validation_report_only:
                                      make_output=False)
     gtamodel_popsyn.generate_summary_report()
 else:
-    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, percent_populations=args.percent_population,name=args.name)
+    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, percent_populations=[args.percent_population],name=args.name)
     gtamodel_popsyn.run()
 
 # generating full report

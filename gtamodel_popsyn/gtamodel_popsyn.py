@@ -90,7 +90,7 @@ class GTAModelPopSyn(object):
         self._summary_report.generate()
         self._logger.info('Summary report has been generated.')
 
-    def generate_outputs(self, use_saved):
+    def generate_outputs(self, use_saved:bool = False):
         """
         Generates output files with the synthesized population and other various population vectors required by the
         GTAModel population input.
@@ -123,7 +123,7 @@ class GTAModelPopSyn(object):
             self._input_processor.processed_persons,
             self._input_processor.processed_households)
         self._run_popsyn3()
-        self.generate_outputs()
+        self.generate_outputs(use_saved=False)
         self.generate_summary_report()
 
     def generate_inputs(self):

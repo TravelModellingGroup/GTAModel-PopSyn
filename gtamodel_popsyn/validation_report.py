@@ -23,6 +23,7 @@ class ValidationReport(GTAModelPopSynProcessor):
         self._households_original = pd.DataFrame()
         self._persons_original = pd.DataFrame()
         self._persons_households_original = pd.DataFrame()
+        self._meta_control_totals = pd.DataFrame()
         self._households_synthesized = pd.DataFrame()
         self._persons_synthesized = pd.DataFrame()
         self._persons_households_synthesized = pd.DataFrame()
@@ -41,9 +42,13 @@ class ValidationReport(GTAModelPopSynProcessor):
         self._process()
 
     def _read_data(self):
+        """
+        Reads in all output data
+        :return:
+        """
         self._households_original = pd.read_csv(f"{self._config['HouseholdsSeedFile']}")
         self._persons_original = pd.read_csv(f"{self._config['PersonsSeedFile']}")
-
+        self._meta_control_totals = pd.read_csv(f"{self._output_path}/Inputs/{self._config['MetaLevelControls']}")
         self._households_synthesized = pd.read_csv(
             f'{self._output_path}/{self._config["HouseholdsOutputFile"]}')
         self._persons_synthesized = pd.read_csv(
