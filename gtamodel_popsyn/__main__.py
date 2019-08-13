@@ -52,6 +52,11 @@ parser.add_argument('-u', '--use-generated',
                     action="store",
                     type=bool,
                     help="Use an existing set of input files.")
+parser.add_argument('-c', '--combine-output',
+                    required=False,
+                    action="store",
+                    type=bool,
+                    help="Combine and join multiple household and persons file when generating the output. Must be used with -u")
 
 args = parser.parse_args()
 
