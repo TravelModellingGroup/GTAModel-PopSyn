@@ -47,6 +47,11 @@ parser.add_argument('-n', '--name',
                     action="store",
                     type=str,
                     help="Assign a custom name to a run which will be prepended to the output folder location.")
+parser.add_argument('-u', '--use-generated',
+                    required=False,
+                    action="store",
+                    type=bool,
+                    help="Use an existing set of input files.")
 
 args = parser.parse_args()
 
