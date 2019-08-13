@@ -49,13 +49,13 @@ parser.add_argument('-n', '--name',
                     help="Assign a custom name to a run which will be prepended to the output folder location.")
 parser.add_argument('-u', '--use-generated',
                     required=False,
-                    action="store",
-                    type=bool,
+                    action="store_true",
                     help="Use an existing set of input files.")
 parser.add_argument('-m', '--merge-output',
                     required=False,
                     action="store",
-                    type=bool,
+                    nargs=2,
+                    metavar=('households_file', 'persons_file'),
                     help="Merge and (merge) multiple household and persons file when generating the output. Must be used with -u")
 
 args = parser.parse_args()
@@ -77,6 +77,14 @@ elif args.input_process_only:
     gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time)
     gtamodel_popsyn.generate_inputs()
 
+elif args.use_generated:
+
+    logger.info(args.merge_output)
+    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, output_path=args.output_only,
+                                     make_output=False)
+    gtamodel_popsyn.generate_outputs(use_saved=True,
+                                     merge_outputs=args.merge_output)
+
 elif args.output_only:
     gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, output_path=args.output_only,
                                      make_output=False)
@@ -87,15 +95,11 @@ elif args.validation_report_only:
                                      make_output=False)
     gtamodel_popsyn.generate_summary_report()
 
-elif args.use_generated:
-    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, output_path=args.output_only,
-                                     make_output=False)
-    gtamodel_popsyn.generate_outputs(use_saved=True,
-                                     combine_outputs=args.combine_outputs)
+
 
 else:
-    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, percent_populations=[
-                                     args.percent_population], name=args.name)
+    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time,
+                                     percent_populations=[args.percent_population], name=args.name)
     gtamodel_popsyn.run()
 
 # generating full report

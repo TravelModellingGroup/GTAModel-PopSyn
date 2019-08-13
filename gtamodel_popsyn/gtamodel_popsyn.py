@@ -50,7 +50,7 @@ class GTAModelPopSyn(object):
         else:
             self._percent_populations = percent_populations
 
-        # if make_output:
+
         #    os.makedirs(f'{config["OutputFolder"]}/{start_time:%Y-%m-%d_%H-%M}/', exist_ok=True)
         # self._output_path = f'{self._config["OutputFolder"]}/{self._start_time:%Y-%m-%d_%H-%M}' if output_path is None else output_path
         # self._logger = setup_logger(name='gtamodel',
@@ -64,11 +64,13 @@ class GTAModelPopSyn(object):
             if make_output:
                 os.makedirs(
                     f'{config["OutputFolder"]}/{(self._name+"_") if name else ""}{start_time:%Y-%m-%d_%H-%M}_{percent_population}/', exist_ok=True)
-                self._output_path = f'{self._config["OutputFolder"]}/{(self._name+"_") if name else ""}{self._start_time:%Y-%m-%d_%H-%M}_{percent_population}' if output_path is None else output_path
-                self._logger = setup_logger(name='gtamodel',
-                                            logfile=f'{self._output_path}/gtamodel_popsyn.log')
-                self._logger.info(f'GTAModel PopSyn')
-                self._arguments = arguments
+
+            self._arguments = arguments
+            self._output_path = f'{self._config["OutputFolder"]}/{(
+                        self._name + "_") if name else ""}{self._start_time:%Y-%m-%d_%H-%M}_{percent_population}' if output_path is None else output_path
+            self._logger = setup_logger(name='gtamodel',
+                                        logfile=f'{self._output_path}/gtamodel_popsyn.log')
+            self._logger.info(f'GTAModel PopSyn')
             self._summary_report = ValidationReport(self)
             self._control_totals_builder = ControlTotalsBuilder(self)
             self._input_processor = InputProcessor(self)
@@ -93,7 +95,7 @@ class GTAModelPopSyn(object):
         self._logger.info('Summary report has been generated.')
 
     def generate_outputs(self, use_saved: bool = False,
-                         combine_outputs: bool = False):
+                         merge_outputs: list = []):
         """
         Generates output files with the synthesized population and other 
         various population vectors required by the
@@ -101,7 +103,7 @@ class GTAModelPopSyn(object):
         :return:
         """
         self._logger.info('Generating population synthesis outputs.')
-        self._output_processor.generate_outputs(use_saved)
+        self._output_processor.generate_outputs(use_saved, merge_outputs)
         self._logger.info('Output generation has completed processing')
 
     def initialize_database(self, persons=None, households=None):
