@@ -52,11 +52,11 @@ parser.add_argument('-u', '--use-generated',
                     action="store",
                     type=bool,
                     help="Use an existing set of input files.")
-parser.add_argument('-c', '--combine-output',
+parser.add_argument('-m', '--merge-output',
                     required=False,
                     action="store",
                     type=bool,
-                    help="Combine and join multiple household and persons file when generating the output. Must be used with -u")
+                    help="Merge and (merge) multiple household and persons file when generating the output. Must be used with -u")
 
 args = parser.parse_args()
 
@@ -86,8 +86,16 @@ elif args.validation_report_only:
     gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, output_path=args.validation_report_only,
                                      make_output=False)
     gtamodel_popsyn.generate_summary_report()
+
+elif args.use_generated:
+    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, output_path=args.output_only,
+                                     make_output=False)
+    gtamodel_popsyn.generate_outputs(use_saved=True,
+                                     combine_outputs=args.combine_outputs)
+
 else:
-    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, percent_populations=[args.percent_population],name=args.name)
+    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, percent_populations=[
+                                     args.percent_population], name=args.name)
     gtamodel_popsyn.run()
 
 # generating full report
