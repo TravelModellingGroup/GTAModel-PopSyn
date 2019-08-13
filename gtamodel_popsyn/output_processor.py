@@ -140,9 +140,9 @@ class OutputProcessor(GTAModelPopSynProcessor):
         internal_persons_households = self._persons_households.loc[self._persons_households.EmploymentZone < INTERNAL_ZONE_RANGE.stop].copy()
         internal_persons_households.rename(columns={'HouseholdZone': 'Zone'}, inplace=True)
 
-        gta_ph_grouped = internal_persons_households.groupby(['Zone', 'Occupation', 'EmploymentStatus'], as_index=False,
-                                                             group_keys=False)[
-            'Persons'].apply(sum)
+        gta_ph_grouped = internal_persons_households.groupby(['Zone', 'Occupation', 'EmploymentStatus'])
+
+        gta_ph_grouped = gta_ph_grouped['Persons'].apply(sum)
 
         # gta_ph_grouped.reset_index().to_csv('temp/all.csv',index=False)
 
@@ -173,11 +173,12 @@ class OutputProcessor(GTAModelPopSynProcessor):
         self._logger.info("Reading persons and households records from saved files.")
 
         self._persons = pandas.read_csv(f'{self._output_folder}/HouseholdData/Persons.csv')
+        self._persons.set_index(['HouseholdId', 'PersonNumber'])
 
         # self._persons['ExpansionFactor'] = self._persons['ExpansionFactor'] * (1.0 / self._percent_population)
 
         self._households = pandas.read_csv(f'{self._output_folder}/HouseholdData/Households.csv')
-
+        self._households.set_index(['HouseholdId'])
         # self._households['ExpansionFactor'] = self._households['ExpansionFactor'] * (1.0 / self._percent_population)
 
     def merge_outputs(self, merge_outputs: list):
@@ -211,14 +212,13 @@ class OutputProcessor(GTAModelPopSynProcessor):
             # Create and transform required db tables
             self._gta_model_transform()
             self._read_persons_households()
+            self._process_persons()
+            self._process_households()
         else:
             self._read_persons_households_file()
 
         if len(merge_outputs) == 2:
             self.merge_outputs(merge_outputs)
-
-        self._process_persons()
-        self._process_households()
 
         self._process_persons_households()
 
@@ -228,7 +228,8 @@ class OutputProcessor(GTAModelPopSynProcessor):
         self._write_households_file()
         self._write_persons_file()
 
-        self._db_connection.close()
+        if not use_saved:
+            self._db_connection.close()
 
         self._logger.info("Finished output processing.")
         return
