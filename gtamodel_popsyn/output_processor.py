@@ -172,7 +172,8 @@ class OutputProcessor(GTAModelPopSynProcessor):
         """
         self._logger.info("Reading persons and households records from saved files.")
 
-        self._persons = pandas.read_csv(f'{self._output_folder}/HouseholdData/Persons.csv')
+        self._persons = pandas.read_csv(f'{self._output_folder}/HouseholdData/Persons.csv',
+                                        dtype={'EmploymentZone': 'int64', 'SchoolZone': 'int64'})
         self._persons.set_index(['HouseholdId', 'PersonNumber'])
 
         # self._persons['ExpansionFactor'] = self._persons['ExpansionFactor'] * (1.0 / self._percent_population)
@@ -192,10 +193,13 @@ class OutputProcessor(GTAModelPopSynProcessor):
         self._households = self._households.append(households_merge, sort=False).fillna(0)[
             households_merge.columns.tolist()]
 
-        persons_merge = pandas.read_csv(f'{self._output_folder}/{merge_outputs[1]}')
+        self._households.drop_duplicates(['HouseholdId'], inplace=True)
+        persons_merge = pandas.read_csv(f'{self._output_folder}/{merge_outputs[1]}',
+                                        dtype={'EmploymentZone': 'int64', 'SchoolZone': 'int64'})
         self._persons = self._persons.append(persons_merge, sort=False).fillna(0)[self._persons.columns.tolist()]
 
-        self._households.to_csv('test.csv', index=False)
+        self._persons.drop_duplicates(['HouseholdId', 'PersonNumber'], inplace=True)
+        self._persons = self._persons.astype({'EmploymentZone': 'int64', 'SchoolZone': 'int64'})
 
         return
 

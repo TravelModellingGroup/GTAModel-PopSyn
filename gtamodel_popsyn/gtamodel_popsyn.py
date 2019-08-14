@@ -68,15 +68,13 @@ class GTAModelPopSyn(object):
             self._arguments = arguments
             self._output_path = f'{self._config["OutputFolder"]}/{(
                         self._name + "_") if name else ""}{self._start_time:%Y-%m-%d_%H-%M}_{percent_population}' if output_path is None else output_path
-            self._logger = setup_logger(name='gtamodel',
-                                        logfile=f'{self._output_path}/gtamodel_popsyn.log')
+            self._logger = setup_logger(name='gtamodel', logfile=f'{self._output_path}/gtamodel_popsyn.log')
             self._logger.info(f'GTAModel PopSyn')
             self._summary_report = ValidationReport(self)
             self._control_totals_builder = ControlTotalsBuilder(self)
             self._input_processor = InputProcessor(self)
             self._output_processor = OutputProcessor(self, percent_population)
-            self._database_processor = DatabaseProcessor(
-                self, percent_population)
+            self._database_processor = DatabaseProcessor(self, percent_population)
             self._settings_processor = SettingsProcessor(self)
 
         os.makedirs(f'{self._output_path}/Inputs/', exist_ok=True)
