@@ -51,7 +51,7 @@ parser.add_argument('-u', '--use-generated',
                     required=False,
                     action="store_true",
                     help="Use an existing set of input files.")
-parser.add_argument('-t', '--use-conTrols',
+parser.add_argument('-t', '--use-controls',
                     required=False,
                     action="store_true",
                     help="Use existing control totals.")
@@ -73,9 +73,15 @@ except:
 
 start_time = datetime.datetime.now()
 
+
 if args.database_only:
     gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time)
     gtamodel_popsyn.initialize_database()
+
+elif args.use_controls:
+    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time,output_path=args.output_only)
+    gtamodel_popsyn.post_input_run()
+
 
 elif args.input_process_only:
     gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time)

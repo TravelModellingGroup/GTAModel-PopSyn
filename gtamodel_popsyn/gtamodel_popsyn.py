@@ -115,6 +115,14 @@ class GTAModelPopSyn(object):
         self._logger.info('Database initialization has completed.')
         return
 
+    def post_input_run(self):
+        self.initialize_database(
+            self._input_processor.processed_persons,
+            self._input_processor.processed_households)
+        self._run_popsyn3()
+        self.generate_outputs(use_saved=False)
+        self.generate_summary_report()
+
     def run(self):
         """
         Runs a complete population synthesis procedure. All input transforms, database processing
