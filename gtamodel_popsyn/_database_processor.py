@@ -122,6 +122,8 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
         :return:
         """
 
+
+
         if maz_controls is None:
             maz_controls = pd.read_csv(f"{self._output_path}/Inputs/{self._config['MazLevelControls']}")
 
@@ -156,9 +158,9 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
         metadata.drop_all(self._engine, [maz_controls_table, taz_controls_table, meta_controls_table])
         metadata.create_all(self._engine)
 
-        maz_controls[maz_controls.columns.difference({'puma','region','maz','taz'})] = maz_controls[maz_controls.columns.difference({'puma','region','maz','taz'})] * self._percent_population
-        taz_controls[taz_controls.columns.difference({'puma', 'region', 'taz'})] = taz_controls[taz_controls.columns.difference({'puma', 'region','taz'})] * self._percent_population
-        meta_controls[meta_controls.columns.difference({'region'})] = meta_controls[meta_controls.columns.difference({'region'})] * self._percent_population
+        # maz_controls[maz_controls.columns.difference({'puma','region','maz','taz'})] = maz_controls[maz_controls.columns.difference({'puma','region','maz','taz'})]
+        # taz_controls[taz_controls.columns.difference({'puma', 'region', 'taz'})] = taz_controls[taz_controls.columns.difference({'puma', 'region','taz'})]
+        # meta_controls[meta_controls.columns.difference({'region'})] = meta_controls[meta_controls.columns.difference({'region'})]
         maz_controls.to_sql('control_totals_maz', self._connection, if_exists='append', index=False)
         taz_controls.to_sql('control_totals_taz', self._connection, if_exists='replace', index=False)
         meta_controls.to_sql('control_totals_meta', self._connection, if_exists='replace', index=False)

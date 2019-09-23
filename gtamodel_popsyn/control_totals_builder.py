@@ -144,8 +144,7 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
 
         :return:
         """
-        maz_controls = self._controls.reset_index()
-        maz_controls = maz_controls[(['region', 'puma', 'taz', 'maz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P',
+        maz_controls = self._controls.reset_index()[(['region', 'puma', 'taz', 'maz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P',
                                       'license_Y', 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G',
                                       'S', 'M', 'O'] + self._age_bin_columns +
                                      ['hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p',

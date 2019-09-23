@@ -51,6 +51,10 @@ parser.add_argument('-u', '--use-generated',
                     required=False,
                     action="store_true",
                     help="Use an existing set of input files.")
+parser.add_argument('-t', '--use-conTrols',
+                    required=False,
+                    action="store_true",
+                    help="Use existing control totals.")
 parser.add_argument('-m', '--merge-output',
                     required=False,
                     action="store",
