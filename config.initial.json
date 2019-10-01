@@ -12,6 +12,9 @@
   "Java64Path": "C:\\Path\\To\\Jre",
   "PopSyn3SettingsFile": "runtime\\config\\settings.xml",
   "OutputFolder": "",
+    "PdGroups": [
+    [1,12],[12,24],[24,36],[36,10000]
+  ],
   "CategoryMapping": {
     "Persons": {
 
