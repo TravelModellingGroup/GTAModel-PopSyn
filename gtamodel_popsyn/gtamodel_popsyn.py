@@ -32,6 +32,10 @@ class GTAModelPopSyn(object):
     def logger(self):
         return self._logger
 
+    @property
+    def columns(self):
+        return self._columns
+
     def __init__(self, config, arguments, start_time=datetime.datetime.now(), name=None, output_path=None, make_output=True,
                  percent_populations: list = None):
         """
@@ -44,6 +48,7 @@ class GTAModelPopSyn(object):
         self._config = config
         self._start_time = start_time
         self._name = name
+        self._columns = []
 
         if percent_populations is None:
             self._percent_populations = [1.0]

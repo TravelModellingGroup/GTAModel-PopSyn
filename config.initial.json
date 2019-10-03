@@ -27,5 +27,8 @@
         "InitialValue": 0
       }
     }
+  },
+  "ColumnMapping": {
+    "FromColumName": "ToColumnName"
   }
 }
