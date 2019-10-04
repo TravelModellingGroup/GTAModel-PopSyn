@@ -58,6 +58,7 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
         :return:
         """
         self._controls['totalhh'] = hh_group.weighth.sum()
+
         return
 
     def _process_population_total(self, persons_group):
@@ -196,7 +197,7 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
               ])].sort_values(['puma', 'taz', 'maz']).drop(
             self._config['DropControlColumns'], axis=1)
 
-        maz_controls[(maz_controls['totpop'] > 0) & (maz_controls['totalhh'] > 0)].astype(int).to_csv(
+        maz_controls[(maz_controls['totpop'] > 100) & (maz_controls['totalhh'] > 10)].astype(int).to_csv(
             f"{self._output_path}/Inputs/{self._config['MazLevelControls']}", index=False)
 
     def _write_taz_control_totals_file(self):
@@ -218,7 +219,7 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
                                                       'employment_zone_roaming',
                                                       'employment_zone_0'])].sort_values(['puma', 'taz'])
 
-        controls_taz[(controls_taz['totpop'] > 0) & (controls_taz['totalhh'] > 0)].drop(
+        controls_taz[(controls_taz['totpop'] > 100) & (controls_taz['totalhh'] > 10)].drop(
             self._config['DropControlColumns'], axis=1).astype(int).to_csv(
             f"{self._output_path}/Inputs/{self._config['TazLevelControls']}", index=False)
 

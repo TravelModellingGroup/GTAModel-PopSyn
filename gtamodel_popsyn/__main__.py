@@ -93,11 +93,13 @@ elif args.input_process_only:
 
 elif args.use_generated:
 
-    logger.info(args.merge_output)
+    logger.info('Using generated input from: ' + args.output_only)
     gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, output_path=args.output_only,
                                      make_output=False)
-    gtamodel_popsyn.generate_outputs(use_saved=True,
-                                     merge_outputs=args.merge_output)
+
+    gtamodel_popsyn.initialize_database()
+    # gtamodel_popsyn.generate_outputs(use_saved=True,
+    #                                 merge_outputs=args.merge_output)
 
 elif args.output_only:
     gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, output_path=args.output_only,

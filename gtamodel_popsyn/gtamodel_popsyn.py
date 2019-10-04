@@ -187,7 +187,7 @@ class GTAModelPopSyn(object):
                        f'-Dlog4j.configuration=file:{self._output_path}/Inputs/log4j.xml',
                        'popGenerator.PopGenerator', f'{self._output_path}/Inputs/settings.xml']
 
-        print(popsyn_args)
+        self._logger.info(popsyn_args)
         p = subprocess.run(popsyn_args, shell=True)
 
         self._logger.info(p.stdout)
