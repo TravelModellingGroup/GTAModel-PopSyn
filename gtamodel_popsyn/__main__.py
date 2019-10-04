@@ -47,6 +47,11 @@ parser.add_argument('-n', '--name',
                     action="store",
                     type=str,
                     help="Assign a custom name to a run which will be prepended to the output folder location.")
+parser.add_argument('-v', '--population-vector',
+                    required=False,
+                    action="store",
+                    type=str,
+                    help="Path to a population vector file, will replace the population for those zones.")
 parser.add_argument('-u', '--use-generated',
                     required=False,
                     action="store_true",
