@@ -1,9 +1,8 @@
-PUMA_PD_RANGES = [range(1, 12), range(12, 24), range(24, 36), range(36, 100000)]
-#PUMA_PD_RANGES = [range(351,353),range(353,357)]
+# PUMA_PD_RANGES = [range(1, 12), range(12, 24), range(24, 36), range(36, 100000)]
+# PUMA_PD_RANGES = [range(351,353),range(353,357)]
 # PUMA_PD_RANGES = [range(1, 352), range(352,357)]
-#PUMA_PD_RANGES = [range(1,6000)]
+# PUMA_PD_RANGES = [range(1,6000)]
 ZONE_RANGE = range(1, 6000)
-
 
 # Capture 0 for non workers
 INTERNAL_ZONE_RANGE = range(1, 6000)

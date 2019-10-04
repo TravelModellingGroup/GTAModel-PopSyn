@@ -36,8 +36,9 @@ class GTAModelPopSyn(object):
     def columns(self):
         return self._columns
 
-    def __init__(self, config, arguments, start_time=datetime.datetime.now(), name=None, output_path=None, make_output=True,
-                 percent_populations: list = None):
+    def __init__(self, config, arguments, start_time=datetime.datetime.now(), name=None, output_path=None,
+                 make_output=True,
+                 percent_populations: list = None, population_vector_file: str = None):
         """
         Initializes GTAModelPopSyn class responsible for building control totals and
         processing the input seed data.
@@ -48,13 +49,13 @@ class GTAModelPopSyn(object):
         self._config = config
         self._start_time = start_time
         self._name = name
+        self._population_vector_file = population_vector_file
         self._columns = []
 
         if percent_populations is None:
             self._percent_populations = [1.0]
         else:
             self._percent_populations = percent_populations
-
 
         #    os.makedirs(f'{config["OutputFolder"]}/{start_time:%Y-%m-%d_%H-%M}/', exist_ok=True)
         # self._output_path = f'{self._config["OutputFolder"]}/{self._start_time:%Y-%m-%d_%H-%M}' if output_path is None else output_path

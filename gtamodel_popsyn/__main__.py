@@ -34,7 +34,7 @@ parser.add_argument('-s', '--saved-output',
 parser.add_argument('-r', '--validation-report-only',
                     required=False,
                     action="store",
-                    help='Only generate a summary report from existing output files. Pass the generated output folder to use.')
+                    help="Only generate a summary report from existing output files. Pass the generated output folder to use.")
 parser.add_argument('-p', '--percent-population',
                     required=False,
                     action="store",
@@ -78,13 +78,12 @@ except:
 
 start_time = datetime.datetime.now()
 
-
 if args.database_only:
     gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time)
     gtamodel_popsyn.initialize_database()
 
 elif args.use_controls:
-    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time,output_path=args.output_only)
+    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, output_path=args.output_only)
     gtamodel_popsyn.post_input_run()
 
 
@@ -114,7 +113,8 @@ elif args.validation_report_only:
 
 else:
     gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time,
-                                     percent_populations=[args.percent_population], name=args.name)
+                                     percent_populations=[args.percent_population], name=args.name,
+                                     population_vector_file=args.population_vector)
     gtamodel_popsyn.run()
 
 # generating full report

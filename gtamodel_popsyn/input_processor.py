@@ -125,7 +125,11 @@ class InputProcessor(GTAModelPopSynProcessor):
         """
         self._households_base['puma'] = 0
         self._zones['puma'] = 0
-        for index, pd_range in enumerate(constants.PUMA_PD_RANGES):
+        pd_ranges = []
+        for r in self._config['PdGroups']:
+            pd_ranges.append(range(r[0], r[1]))
+
+        for index, pd_range in enumerate(pd_ranges):
             print(pd_range)
             self._zones.loc[self._zones['PD'].between(pd_range.start, pd_range.stop), ['puma']] = index + 1
             self._households_base.loc[
