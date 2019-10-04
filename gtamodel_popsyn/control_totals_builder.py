@@ -11,22 +11,29 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
     for the specified attributes across all levels of geography.
     """
 
-    def _sum_column(self, group, column, value, weight='weighth'):
+    @staticmethod
+    def _sum_column(group, column, value, weight='weighth'):
         return group[group[column] == value][weight].sum()
 
-    def _sum_column_gte(self, group, column, value, weight='weighth'):
+    @staticmethod
+    def _sum_column_gte(group, column, value, weight='weighth'):
         return group[group[column] >= value][weight].sum()
 
-    def _sum_column_range(self, group, column, value, value2, weight='weighth'):
+    @staticmethod
+    def _sum_column_range(group, column, value, value2, weight='weighth'):
         return group[(group[column] >= value) & (group[column] <= value2)][weight].sum()
 
-    def __init__(self, gtamodel_popsyn_instance):
+    def __init__(self, gtamodel_popsyn_instance, population_vector_file: str = None):
         """
 
         :param gtamodel_popsyn_instance:
+        :param population_vector_file:
         """
         GTAModelPopSynProcessor.__init__(self, gtamodel_popsyn_instance)
+        self._population_vector = None
 
+        if population_vector_file is not None:
+            self._population_vector = pd.read_csv(population_vector_file, index_col=0)
         self._zones = pd.DataFrame()
         self._age_bin_columns = []
         for age_bin in AGE_BINS:
@@ -43,6 +50,29 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
                                                'employment_zone_internal',
                                                'employment_zone_external',
                                                'employment_zone_roaming'] + self._age_bin_columns)
+
+    def _process_household_total(self, hh_group):
+        """
+
+        :param hh_group:
+        :return:
+        """
+        self._controls['totalhh'] = hh_group.weighth.sum()
+        return
+
+    def _process_population_total(self, persons_group):
+        """
+        Processes the total population for the controls. Will use a population vector if it was supplied
+        by the user, otherwise the population total is calculated from the input data.
+        :param persons_group:
+        :return:
+        """
+        if self._population_vector is None:
+            self._controls['totpop'] = persons_group.weightp.sum()
+        else:
+            self._controls['totpop'] = self._population_vector['Population']
+
+        return
 
     def build_control_totals(self, households, persons_households, zones):
         """
@@ -63,10 +93,11 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
         self._controls = self._controls.set_index('maz')
         self._zones = self._zones.set_index('Zone#')
         self._controls['region'] = 1
-        self._controls['totalhh'] = hh2_group.weighth.sum()
-        self._controls['totpop'] = hh_group.weightp.sum()
-        self._controls['puma'] = (self._zones['puma'].astype(int))
 
+        self._process_population_total(hh_group)
+        self._process_household_total(hh2_group)
+
+        self._controls['puma'] = (self._zones['puma'].astype(int))
         self._controls['male'] = hh_group.apply(lambda x: self._sum_column(x, 'Sex', 'M', 'weightp'))
         self._controls['female'] = \
             hh_group.apply(lambda x: self._sum_column(x, 'Sex', 'F', 'weightp'))
@@ -144,26 +175,28 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
 
         :return:
         """
-        maz_controls = self._controls.reset_index()[(['region', 'puma', 'taz', 'maz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P',
-                                      'license_Y', 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P', 'G',
-                                      'S', 'M', 'O'] + self._age_bin_columns +
-                                     ['hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p',
-                                      'income_class_1',
-                                      'income_class_2',
-                                      'income_class_3',
-                                      'income_class_4',
-                                      'income_class_5',
-                                      'income_class_6',
-                                      'male',
-                                      'female',
-                                      'employment_zone_internal',
-                                      'employment_zone_external',
-                                      'employment_zone_roaming',
-                                      'employment_zone_0'
-                                      ])].sort_values(['puma', 'taz', 'maz'])
+        maz_controls = self._controls.reset_index()[
+            (['region', 'puma', 'taz', 'maz', 'totalhh', 'totpop', 'S_O', 'S_S', 'S_P',
+              'license_Y', 'license_N', 'E_O', 'E_F', 'E_P', 'E_J', 'E_H', 'P',
+              'G',
+              'S', 'M', 'O'] + self._age_bin_columns +
+             ['hhsize1', 'hhsize2', 'hhsize3', 'hhsize4p',
+              'income_class_1',
+              'income_class_2',
+              'income_class_3',
+              'income_class_4',
+              'income_class_5',
+              'income_class_6',
+              'male',
+              'female',
+              'employment_zone_internal',
+              'employment_zone_external',
+              'employment_zone_roaming',
+              'employment_zone_0'
+              ])].sort_values(['puma', 'taz', 'maz']).drop(
+            self._config['DropControlColumns'], axis=1)
 
-        # maz_controls['totalhh'].replace(0,1,inplace=True)
-        maz_controls[(maz_controls['totpop']) > 0 & (maz_controls['totalhh'] > 0)].astype(int).to_csv(
+        maz_controls[(maz_controls['totpop'] > 0) & (maz_controls['totalhh'] > 0)].astype(int).to_csv(
             f"{self._output_path}/Inputs/{self._config['MazLevelControls']}", index=False)
 
     def _write_taz_control_totals_file(self):
@@ -185,17 +218,17 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
                                                       'employment_zone_roaming',
                                                       'employment_zone_0'])].sort_values(['puma', 'taz'])
 
-        # controls_taz['totalhh'].replace(0, 1, inplace=True)
-        controls_taz[(controls_taz['totpop'] > 0) & (controls_taz['totalhh'] > 0)].astype(int).to_csv(
+        controls_taz[(controls_taz['totpop'] > 0) & (controls_taz['totalhh'] > 0)].drop(
+            self._config['DropControlColumns'], axis=1).astype(int).to_csv(
             f"{self._output_path}/Inputs/{self._config['TazLevelControls']}", index=False)
 
         return controls_taz
 
     def _write_meta_control_totals_file(self, taz_controls):
         """
-        Writes the meta control totals file.
-        :param self:
-        :return:
+        
+        :param taz_controls: The taz level controls, used as base to generate meta level controls.
+        :return: 
         """
         meta_controls = taz_controls.groupby(['region'])[(['totalhh', 'totpop', 'S_O', 'S_S', 'S_P',
                                                            'P', 'G', 'S', 'M', 'O'] +
@@ -212,6 +245,7 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
                                                               'employment_zone_internal',
                                                               'employment_zone_external',
                                                               'employment_zone_roaming',
-                                                              'employment_zone_0'])].apply(sum).reset_index()
+                                                              'employment_zone_0'])].apply(sum).drop(
+            self._config['DropControlColumns'], axis=1).reset_index()
 
         meta_controls.astype(int).to_csv(f"{self._output_path}/Inputs/{self._config['MetaLevelControls']}", index=False)

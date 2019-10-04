@@ -20,16 +20,18 @@ class InputProcessor(GTAModelPopSynProcessor):
     def processed_households(self):
         return self._persons_households
 
-    def __init__(self, gtamodel_popsyn_instance):
+    def __init__(self, gtamodel_popsyn_instance, control_totals_builder: ctb.ControlTotalsBuilder):
         """
-        :param config: configuration input
+
+        :param gtamodel_popsyn_instance:
+        :param control_totals_builder:
         """
         GTAModelPopSynProcessor.__init__(self, gtamodel_popsyn_instance)
         self._persons_households = pd.DataFrame()
         self._households_base = pd.DataFrame()
         self._persons_base = pd.DataFrame()
         self._zones = pd.DataFrame()
-        self._control_totals_builder = ctb.ControlTotalsBuilder(gtamodel_popsyn_instance)
+        self._control_totals_builder = control_totals_builder
         self._processed_persons = None
         self._processed_households = None
 
@@ -127,15 +129,14 @@ class InputProcessor(GTAModelPopSynProcessor):
         self._zones['puma'] = 0
         pd_ranges = []
         for r in self._config['PdGroups']:
-            pd_ranges.append(range(r[0], r[1]))
+            pd_ranges.append(range(r[0], r[1] + 1))
 
         for index, pd_range in enumerate(pd_ranges):
-            print(pd_range)
             self._zones.loc[self._zones['PD'].between(pd_range.start, pd_range.stop), ['puma']] = index + 1
             self._households_base.loc[
                 self._households_base['PD'].between(pd_range.start, pd_range.stop), ['puma']] = index + 1
 
-        print(self._households_base['puma'].unique())
+        self._logger.info('Unique puma indices: ' + str(self._households_base['puma'].unique()))
 
     def _preprocess_persons(self):
         """

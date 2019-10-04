@@ -69,15 +69,16 @@ class GTAModelPopSyn(object):
         for percent_population in self._percent_populations:
             if make_output:
                 os.makedirs(
-                    f'{config["OutputFolder"]}/{(self._name+"_") if name else ""}{start_time:%Y-%m-%d_%H-%M}_{percent_population}/', exist_ok=True)
+                    f'{config["OutputFolder"]}/{(self._name + "_") if name else ""}{start_time:%Y-%m-%d_%H-%M}_{percent_population}/',
+                    exist_ok=True)
 
             self._arguments = arguments
             self._output_path = f'{self._config["OutputFolder"]}/{(self._name + "_") if name else ""}{self._start_time:%Y-%m-%d_%H-%M}_{percent_population}' if output_path is None else output_path
             self._logger = setup_logger(name='gtamodel', logfile=f'{self._output_path}/gtamodel_popsyn.log')
             self._logger.info(f'GTAModel PopSyn')
             self._summary_report = ValidationReport(self)
-            self._control_totals_builder = ControlTotalsBuilder(self)
-            self._input_processor = InputProcessor(self)
+            self._control_totals_builder = ControlTotalsBuilder(self, population_vector_file)
+            self._input_processor = InputProcessor(self, self._control_totals_builder)
             self._output_processor = OutputProcessor(self, percent_population)
             self._database_processor = DatabaseProcessor(self, percent_population)
             self._settings_processor = SettingsProcessor(self)
@@ -177,14 +178,17 @@ class GTAModelPopSyn(object):
 
         # run popsyn3 subprocess
         self._logger.info('PopSyn3 execution started.')
-        p = subprocess.run(
-            [f'{self._config["Java64Path"]}/bin/java', "-showversion", '-server', '-Xms8000m', '-Xmx15000m',
-             '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005',
-             f'-XX:ErrorFile={self._output_path}/java_error%p.log',
-             '-cp', ';'.join(classpaths), '-Djppf.config=jppf-clientLocal.properties',
-             f'-Djava.library.path={libpath}',
-             f'-Dlog4j.configuration=file:{self._output_path}/Inputs/log4j.xml',
-             'popGenerator.PopGenerator', f'{self._output_path}/Inputs/settings.xml'], shell=True)
+
+        popsyn_args = [f'{self._config["Java64Path"]}/bin/java', "-showversion", '-server', '-Xms8000m', '-Xmx15000m',
+                       '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005',
+                       f'-XX:ErrorFile={self._output_path}/java_error%p.log',
+                       '-cp', ';'.join(classpaths), '-Djppf.config=jppf-clientLocal.properties',
+                       f'-Djava.library.path={libpath}',
+                       f'-Dlog4j.configuration=file:{self._output_path}/Inputs/log4j.xml',
+                       'popGenerator.PopGenerator', f'{self._output_path}/Inputs/settings.xml']
+
+        print(popsyn_args)
+        p = subprocess.run(popsyn_args, shell=True)
 
         self._logger.info(p.stdout)
         self._logger.info('PopSyn3 process has completed.')

@@ -47,10 +47,10 @@ parser.add_argument('-n', '--name',
                     action="store",
                     type=str,
                     help="Assign a custom name to a run which will be prepended to the output folder location.")
-parser.add_argument('-v', '--population-vector',
+parser.add_argument('-v', '--population-vector-file',
                     required=False,
                     action="store",
-                    type=str,
+                    type=argparse.FileType('r'),
                     help="Path to a population vector file, will replace the population for those zones.")
 parser.add_argument('-u', '--use-generated',
                     required=False,
@@ -114,7 +114,7 @@ elif args.validation_report_only:
 else:
     gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time,
                                      percent_populations=[args.percent_population], name=args.name,
-                                     population_vector_file=args.population_vector)
+                                     population_vector_file=args.population_vector_file)
     gtamodel_popsyn.run()
 
 # generating full report
