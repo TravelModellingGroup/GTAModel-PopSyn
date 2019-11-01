@@ -56,10 +56,15 @@ parser.add_argument('-u', '--use-generated',
                     required=False,
                     action="store_true",
                     help="Use an existing set of input files.")
-parser.add_argument('-t', '--use-controls',
+parser.add_argument('-t', '--use-database-controls',
                     required=False,
                     action="store_true",
-                    help="Use existing control totals.")
+                    help="Use existing control totals in database.")
+parser.add_argument('-T','--use-file-controls',
+                    required=False,
+                    action="store",
+                    metavar=('maz_controls','taz_controls','meta_controls'),
+                    nargs=3)
 parser.add_argument('-m', '--merge-output',
                     required=False,
                     action="store",
@@ -82,10 +87,14 @@ if args.database_only:
     gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time)
     gtamodel_popsyn.initialize_database()
 
-elif args.use_controls:
+elif args.use_database_controls:
     gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, output_path=args.output_only)
     gtamodel_popsyn.post_input_run()
 
+elif args.use_file_controls:
+    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, output_path=args.output_only)
+    gtamodel_popsyn.initialize_database_with_controls(args.use_file_controls[0],args.use_file_controls[1],args.use_file_controls[2])
+    gtamodel_popsyn.post_input_run()
 
 elif args.input_process_only:
     gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time)

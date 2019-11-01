@@ -110,6 +110,12 @@ class GTAModelPopSyn(object):
         self._output_processor.generate_outputs(use_saved, merge_outputs)
         self._logger.info('Output generation has completed processing')
 
+    def initialize_database_with_controls(self, maz,taz,meta):
+        self._logger.info('Initializing database.')
+        self._database_processor.initialize_database_with_control_files(maz,taz,meta)
+        self._logger.info('Database initialization has completed.')
+        return
+
     def initialize_database(self, persons=None, households=None):
         """
         Initializes the database and table with required input data for PopSyn3 execution.
@@ -123,9 +129,9 @@ class GTAModelPopSyn(object):
         return
 
     def post_input_run(self):
-        self.initialize_database(
-            self._input_processor.processed_persons,
-            self._input_processor.processed_households)
+        # self.initialize_database(
+        #   self._input_processor.processed_persons,
+        #    self._input_processor.processed_households)
         self._run_popsyn3()
         self.generate_outputs(use_saved=False)
         self.generate_summary_report()

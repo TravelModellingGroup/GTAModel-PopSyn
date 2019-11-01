@@ -194,8 +194,10 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
               'employment_zone_external',
               'employment_zone_roaming',
               'employment_zone_0'
-              ])].sort_values(['puma', 'taz', 'maz']).drop(
-            self._config['DropControlColumns'], axis=1)
+              ])].sort_values(['puma', 'taz', 'maz'])
+
+        if self._config['DropControlColumns'] :
+            maz_controls = maz_controls.drop(self._config['DropControlColumns'], axis=1)
 
         maz_controls[(maz_controls['totpop'] > 100) & (maz_controls['totalhh'] > 10)].astype(int).to_csv(
             f"{self._output_path}/Inputs/{self._config['MazLevelControls']}", index=False)
@@ -219,8 +221,11 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
                                                       'employment_zone_roaming',
                                                       'employment_zone_0'])].sort_values(['puma', 'taz'])
 
-        controls_taz[(controls_taz['totpop'] > 100) & (controls_taz['totalhh'] > 10)].drop(
-            self._config['DropControlColumns'], axis=1).astype(int).to_csv(
+        if self._config['DropControlColumns']:
+            controls_taz = controls_taz[(controls_taz['totpop'] > 100) & (controls_taz['totalhh'] > 10)]\
+                .drop(self._config['DropControlColumns'], axis=1)
+
+        controls_taz = controls_taz.astype(int).to_csv(
             f"{self._output_path}/Inputs/{self._config['TazLevelControls']}", index=False)
 
         return controls_taz

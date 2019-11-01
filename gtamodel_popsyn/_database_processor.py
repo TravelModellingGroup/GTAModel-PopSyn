@@ -30,6 +30,12 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
         self._connection = None
         self._percent_population = percent_population
 
+    def _init_connection(self):
+        self._engine = create_engine(
+            f'mysql+pymysql://{self._config["DatabaseUser"]}:{self._config["DatabasePassword"]}'
+            f'@{self._config["DatabaseServer"]}/{self._config["DatabaseName"]}')
+        self._connection = self._engine.connect()
+
     def initialize_database(self, persons=None, households=None):
         """
         Initializes all databases and tables for PopSyn3 execution
@@ -37,14 +43,17 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
         :param households: Processed households dataframe.
         :return:
         """
-        self._engine = create_engine(
-            f'mysql+pymysql://{self._config["DatabaseUser"]}:{self._config["DatabasePassword"]}'
-            f'@{self._config["DatabaseServer"]}/{self._config["DatabaseName"]}')
-        self._connection = self._engine.connect()
 
+        self._init_connection()
         self._initialize_record_tables(persons, households)
-
         self._initialize_control_tables()
+        self._connection.close()
+
+    def initialize_database_with_control_files(self, maz: str,taz:str ,meta:str):
+
+        self._init_connection()
+        self._initialize_record_tables(None, None)
+        self.initialize_control_tables_from_file(maz,taz,meta)
         self._connection.close()
 
     def _initialize_record_tables(self, persons: DataFrame = None, households: pd.DataFrame = None):
@@ -111,6 +120,13 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
 
         return
 
+    def initialize_control_tables_from_file(self, maz_controls_file, taz_controls_file, meta_controls_file):
+
+        maz_controls = pd.read_csv(f"{maz_controls_file}")
+        taz_controls = pd.read_csv(f"{taz_controls_file}")
+        meta_controls = pd.read_csv(f"{meta_controls_file}")
+        self._initialize_control_tables(maz_controls,taz_controls,meta_controls)
+
     def _initialize_control_tables(self, maz_controls: pd.DataFrame = None,
                                    taz_controls: pd.DataFrame = None,
                                    meta_controls: pd.DataFrame = None):
@@ -121,9 +137,6 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
         :param meta_controls:
         :return:
         """
-
-
-
         if maz_controls is None:
             maz_controls = pd.read_csv(f"{self._output_path}/Inputs/{self._config['MazLevelControls']}")
 
