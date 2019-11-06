@@ -75,6 +75,10 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
 
         return
 
+    def _find_missing(lst):
+        return [x for x in range(lst[0], lst[-1] + 1)
+                if x not in lst]
+
     def build_control_totals(self, households, persons_households, zones):
         """
         Builds control totals for all levels of geography
@@ -87,6 +91,8 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
 
         hh2_group = households.groupby(['HouseholdZone'])
         hh_group = persons_households.groupby(['HouseholdZone'])
+
+        # zones_empty = self._find_missing(self._zones['Zone#'].to_list())
 
         self._controls['maz'] = self._zones['Zone#']
         self._controls['puma'] = 0
@@ -199,7 +205,7 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
         if self._config['DropControlColumns'] :
             maz_controls = maz_controls.drop(self._config['DropControlColumns'], axis=1)
 
-        maz_controls[(maz_controls['totpop'] > 100) & (maz_controls['totalhh'] > 10)].astype(int).to_csv(
+        maz_controls.astype(int).to_csv(
             f"{self._output_path}/Inputs/{self._config['MazLevelControls']}", index=False)
 
     def _write_taz_control_totals_file(self):
@@ -222,10 +228,9 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
                                                       'employment_zone_0'])].sort_values(['puma', 'taz'])
 
         if self._config['DropControlColumns']:
-            controls_taz = controls_taz[(controls_taz['totpop'] > 100) & (controls_taz['totalhh'] > 10)]\
-                .drop(self._config['DropControlColumns'], axis=1)
+            controls_taz = controls_taz.drop(self._config['DropControlColumns'], axis=1)
 
-        controls_taz = controls_taz.astype(int).to_csv(
+        controls_taz.astype(int).to_csv(
             f"{self._output_path}/Inputs/{self._config['TazLevelControls']}", index=False)
 
         return controls_taz

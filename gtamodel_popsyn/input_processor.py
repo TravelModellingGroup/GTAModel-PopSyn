@@ -132,9 +132,9 @@ class InputProcessor(GTAModelPopSynProcessor):
             pd_ranges.append(range(r[0], r[1] + 1))
 
         for index, pd_range in enumerate(pd_ranges):
-            self._zones.loc[self._zones['PD'].between(pd_range.start, pd_range.stop), ['puma']] = index + 1
+            self._zones.loc[self._zones['PD'].between(pd_range.start, pd_range.stop, inclusive=True), ['puma']] = index + 1
             self._households_base.loc[
-                self._households_base['PD'].between(pd_range.start, pd_range.stop), ['puma']] = index + 1
+                self._households_base['PD'].between(pd_range.start, pd_range.stop, inclusive=True), ['puma']] = index + 1
 
         self._logger.info('Unique puma indices: ' + str(self._households_base['puma'].unique()))
 
