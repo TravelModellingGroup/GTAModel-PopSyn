@@ -1,6 +1,6 @@
 from pandas import DataFrame
 import pandas as pd
-from sqlalchemy import Table, Column, Integer, MetaData, FLOAT, VARCHAR
+from sqlalchemy import Table, Column, Integer, MetaData, FLOAT, VARCHAR, PrimaryKeyConstraint
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 from gtamodel_popsyn._gtamodel_popsyn_processor import GTAModelPopSynProcessor
@@ -50,10 +50,15 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
         self._connection.close()
 
     def initialize_database_with_control_files(self, maz: str, taz: str, meta: str):
+        """
 
+        @param maz:
+        @param taz:
+        @param meta:
+        """
         self._init_connection()
-        self._initialize_record_tables(None, None)
         self.initialize_control_tables_from_file(maz, taz, meta)
+        self._initialize_record_tables(None, None)
         self._connection.close()
 
     def _initialize_record_tables(self, persons: DataFrame = None, households: pd.DataFrame = None):
@@ -154,14 +159,16 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
 
         metadata = MetaData()
 
-        maz_columns = [Column(c, self.PANDAS_DTYPE_SQL_TYPE[maz_controls.dtypes[c].name]) for c in
-                       maz_controls.columns]
-        maz_columns[0].primary_key = True
-        maz_columns[1].primary_key = True
-        maz_columns[2].primary_key = True
-        maz_columns[3].primary_key = True
+        maz_columns = [
+            Column(maz_controls.columns[0], self.PANDAS_DTYPE_SQL_TYPE[maz_controls.dtypes[0].name], primary_key=True),
+            Column(maz_controls.columns[1], self.PANDAS_DTYPE_SQL_TYPE[maz_controls.dtypes[1].name], primary_key=True),
+            Column(maz_controls.columns[2], self.PANDAS_DTYPE_SQL_TYPE[maz_controls.dtypes[2].name], primary_key=True),
+            Column(maz_controls.columns[3], self.PANDAS_DTYPE_SQL_TYPE[maz_controls.dtypes[3].name], primary_key=True)]
+        maz_columns.extend([Column(c, self.PANDAS_DTYPE_SQL_TYPE[maz_controls.dtypes[c].name]) for c in
+                            maz_controls.columns[4:]])
         maz_controls_table = Table('control_totals_maz', metadata,
-                                   *maz_columns)
+                                   *maz_columns, PrimaryKeyConstraint('region', 'puma', 'taz', 'maz',
+                                                                      name='maz_pk'))
 
         taz_columns = [Column(c, self.PANDAS_DTYPE_SQL_TYPE[taz_controls.dtypes[c].name]) for c in
                        taz_controls.columns]
@@ -179,9 +186,13 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
         metadata.drop_all(self._engine, [maz_controls_table, taz_controls_table, meta_controls_table])
         metadata.create_all(self._engine)
 
-        maz_controls.to_sql('control_totals_maz', self._connection, if_exists='append', index=False)
+        maz_controls.to_sql('control_totals_maz', self._connection, if_exists='replace', index=False)
         taz_controls.to_sql('control_totals_taz', self._connection, if_exists='replace', index=False)
         meta_controls.to_sql('control_totals_meta', self._connection, if_exists='replace', index=False)
+
+        self._connection.execute('ALTER TABLE `control_totals_maz` ADD PRIMARY KEY (`region`,`puma`,`taz`,`maz`);')
+        self._connection.execute('ALTER TABLE `control_totals_taz` ADD PRIMARY KEY (`region`,`puma`,`taz`);')
+        self._connection.execute('ALTER TABLE `control_totals_meta` ADD PRIMARY KEY (`region`);')
         return
 
     def __del__(self):
