@@ -45,7 +45,7 @@ class InputProcessor(GTAModelPopSynProcessor):
         seed records in the appropriate formats.
         :return:
         """
-
+        self._process_zones_file()
         # read input data
         self._read_persons_households()
         # perform control total processing here
@@ -58,6 +58,37 @@ class InputProcessor(GTAModelPopSynProcessor):
 
         return
 
+    def _find_missing(self, id_list: list):
+        """
+
+        @param id_list:
+        @return: list
+        """
+        return [x for x in range(id_list[0], id_list[-1] + 1)
+                if x not in id_list]
+
+    def _process_zones_file(self):
+        """
+        Process the input zones file and fill missing (intermediate) zone ids with a 0 population
+        """
+        self._zones = pd.read_csv(self._config['Zones'],
+                                  dtype={'Zone#': int, 'PD': int})[['Zone#', 'PD']]
+
+        self._zones = self._zones.sort_values(['PD', 'Zone#']).reset_index()
+        zone_list = self._zones['Zone#'].to_list()
+        missing_zones = self._find_missing(zone_list)
+
+        # extend the zone list with the missing ids
+        zone_list.extend(missing_zones)
+
+        # sort ids
+        zone_list.sort()
+
+        return
+
+        # fill PD values with by surrounding zones
+
+
     def _read_persons_households(self):
         """
         Reads persons and households input data and joins / merges them into a single
@@ -66,10 +97,7 @@ class InputProcessor(GTAModelPopSynProcessor):
         """
 
         # read zone information
-        self._zones = pd.read_csv(self._config['Zones'],
-                                  dtype={'Zone#': int, 'PD': int})[['Zone#', 'PD']]
 
-        self._zones = self._zones.sort_values(['PD', 'Zone#']).reset_index()
 
         # self._zones = self._zones[self._zones.PD > 0]
 

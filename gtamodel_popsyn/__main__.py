@@ -72,6 +72,7 @@ parser.add_argument('-m', '--merge-output',
                     metavar=('households_file', 'persons_file'),
                     help="Merge and (merge) multiple household and persons file when generating the output. Must be used with -u")
 
+
 args = parser.parse_args()
 
 try:
@@ -109,8 +110,7 @@ elif args.use_generated:
                                      make_output=False)
 
     gtamodel_popsyn.initialize_database()
-    # gtamodel_popsyn.generate_outputs(use_saved=True,
-    #                                 merge_outputs=args.merge_output)
+
 
 elif args.output_only:
     gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, output_path=args.output_only,

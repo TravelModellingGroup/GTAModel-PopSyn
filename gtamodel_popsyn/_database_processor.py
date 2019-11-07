@@ -49,11 +49,11 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
         self._initialize_control_tables()
         self._connection.close()
 
-    def initialize_database_with_control_files(self, maz: str,taz:str ,meta:str):
+    def initialize_database_with_control_files(self, maz: str, taz: str, meta: str):
 
         self._init_connection()
         self._initialize_record_tables(None, None)
-        self.initialize_control_tables_from_file(maz,taz,meta)
+        self.initialize_control_tables_from_file(maz, taz, meta)
         self._connection.close()
 
     def _initialize_record_tables(self, persons: DataFrame = None, households: pd.DataFrame = None):
@@ -104,8 +104,9 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
                                                households.columns],
                         Column('hhnum', Integer, unique=True, autoincrement=True, nullable=False))
 
-        perstable = Table('perstable', metadata, *[Column(c, self.PANDAS_DTYPE_SQL_TYPE[persons.dtypes[c].name]) for c in
-                                                   persons.columns],
+        perstable = Table('perstable', metadata,
+                          *[Column(c, self.PANDAS_DTYPE_SQL_TYPE[persons.dtypes[c].name]) for c in
+                            persons.columns],
                           Column('hhnum', Integer))
 
         metadata.drop_all(self._engine, [hhtable, perstable])
@@ -121,11 +122,16 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
         return
 
     def initialize_control_tables_from_file(self, maz_controls_file, taz_controls_file, meta_controls_file):
-
+        """
+        Load control files into database based on passed files.
+        @param maz_controls_file:
+        @param taz_controls_file:
+        @param meta_controls_file:
+        """
         maz_controls = pd.read_csv(f"{maz_controls_file}")
         taz_controls = pd.read_csv(f"{taz_controls_file}")
         meta_controls = pd.read_csv(f"{meta_controls_file}")
-        self._initialize_control_tables(maz_controls,taz_controls,meta_controls)
+        self._initialize_control_tables(maz_controls, taz_controls, meta_controls)
 
     def _initialize_control_tables(self, maz_controls: pd.DataFrame = None,
                                    taz_controls: pd.DataFrame = None,
@@ -148,32 +154,31 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
 
         metadata = MetaData()
 
+        maz_columns = [Column(c, self.PANDAS_DTYPE_SQL_TYPE[maz_controls.dtypes[c].name]) for c in
+                       maz_controls.columns]
+        maz_columns[0].primary_key = True
+        maz_columns[1].primary_key = True
+        maz_columns[2].primary_key = True
+        maz_columns[3].primary_key = True
         maz_controls_table = Table('control_totals_maz', metadata,
-                                   *[Column(c, self.PANDAS_DTYPE_SQL_TYPE[maz_controls.dtypes[c].name]) for c in
-                                     maz_controls.columns])
-        maz_controls_table.columns[maz_controls.columns[0]].primary_key = True
-        maz_controls_table.columns[maz_controls.columns[1]].primary_key = True
-        maz_controls_table.columns[maz_controls.columns[2]].primary_key = True
-        maz_controls_table.columns[maz_controls.columns[3]].primary_key = True
+                                   *maz_columns)
 
+        taz_columns = [Column(c, self.PANDAS_DTYPE_SQL_TYPE[taz_controls.dtypes[c].name]) for c in
+                       taz_controls.columns]
+        taz_columns[0].primary_key = True
+        taz_columns[1].primary_key = True
+        taz_columns[2].primary_key = True
         taz_controls_table = Table('control_totals_taz', metadata,
-                                   *[Column(c, self.PANDAS_DTYPE_SQL_TYPE[taz_controls.dtypes[c].name]) for c in
-                                     taz_controls.columns])
-        taz_controls_table.columns[taz_controls.columns[0]].primary_key = True
-        taz_controls_table.columns[taz_controls.columns[1]].primary_key = True
-        taz_controls_table.columns[taz_controls.columns[2]].primary_key = True
+                                   *taz_columns)
 
-        meta_controls_table = Table('control_totals_meta', metadata,
-                                    *[Column(c, self.PANDAS_DTYPE_SQL_TYPE[meta_controls.dtypes[c].name]) for c in
-                                      meta_controls.columns])
-        meta_controls_table.columns[meta_controls.columns[0]].primary_key = True
+        meta_columns = [Column(c, self.PANDAS_DTYPE_SQL_TYPE[meta_controls.dtypes[c].name]) for c in
+                        meta_controls.columns]
+        meta_columns[0].primary_key = True
+        meta_controls_table = Table('control_totals_meta', metadata, *meta_columns)
 
         metadata.drop_all(self._engine, [maz_controls_table, taz_controls_table, meta_controls_table])
         metadata.create_all(self._engine)
 
-        # maz_controls[maz_controls.columns.difference({'puma','region','maz','taz'})] = maz_controls[maz_controls.columns.difference({'puma','region','maz','taz'})]
-        # taz_controls[taz_controls.columns.difference({'puma', 'region', 'taz'})] = taz_controls[taz_controls.columns.difference({'puma', 'region','taz'})]
-        # meta_controls[meta_controls.columns.difference({'region'})] = meta_controls[meta_controls.columns.difference({'region'})]
         maz_controls.to_sql('control_totals_maz', self._connection, if_exists='append', index=False)
         taz_controls.to_sql('control_totals_taz', self._connection, if_exists='replace', index=False)
         meta_controls.to_sql('control_totals_meta', self._connection, if_exists='replace', index=False)
