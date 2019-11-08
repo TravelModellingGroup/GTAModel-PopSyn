@@ -27,8 +27,7 @@ parser.add_argument('-o', '--output-only',
                     help="Only write synthesized population from existing database data.")
 parser.add_argument('-s', '--saved-output',
                     required=False,
-                    action="store",
-                    type=bool,
+                    action="store_true",
                     default=False,
                     help="Calculate employment and other output files using data already extract from the database.")
 parser.add_argument('-r', '--validation-report-only',
@@ -93,7 +92,7 @@ elif args.use_database_controls:
     gtamodel_popsyn.post_input_run()
 
 elif args.use_file_controls:
-    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, output_path=args.output_only,name=args.name)
+    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, name=args.name)
     gtamodel_popsyn.initialize_database_with_controls(args.use_file_controls[0],
                                                       args.use_file_controls[1],
                                                       args.use_file_controls[2])
@@ -108,9 +107,7 @@ elif args.use_generated:
     logger.info('Using generated input from: ' + args.output_only)
     gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, output_path=args.output_only,
                                      make_output=False)
-
     gtamodel_popsyn.initialize_database()
-
 
 elif args.output_only:
     gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, output_path=args.output_only,

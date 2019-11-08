@@ -1,3 +1,5 @@
+from shutil import copyfile
+
 from pandas import DataFrame
 import pandas as pd
 from sqlalchemy import Table, Column, Integer, MetaData, FLOAT, VARCHAR, PrimaryKeyConstraint
@@ -133,6 +135,10 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
         @param taz_controls_file:
         @param meta_controls_file:
         """
+        self._logger.info("Copying control files to output directory")
+        copyfile(maz_controls_file, f"{self._output_path}/Inputs/{self._config['MazLevelControls']}")
+        copyfile(taz_controls_file, f"{self._output_path}/Inputs/{self._config['TazLevelControls']}")
+        copyfile(meta_controls_file, f"{self._output_path}/Inputs/{self._config['MetaLevelControls']}")
         maz_controls = pd.read_csv(f"{maz_controls_file}")
         taz_controls = pd.read_csv(f"{taz_controls_file}")
         meta_controls = pd.read_csv(f"{meta_controls_file}")
