@@ -1,4 +1,4 @@
-import pandas as pd
+import modin.pandas as pd
 
 from gtamodel_popsyn._gtamodel_popsyn_processor import GTAModelPopSynProcessor
 from gtamodel_popsyn.constants import *

@@ -1,7 +1,7 @@
 from shutil import copyfile
 
 from pandas import DataFrame
-import pandas as pd
+import modin.pandas as pd
 from sqlalchemy import Table, Column, Integer, MetaData, FLOAT, VARCHAR, PrimaryKeyConstraint
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine

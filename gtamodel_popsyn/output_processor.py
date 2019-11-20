@@ -1,4 +1,4 @@
-import pandas
+import modin.pandas as pd
 from logzero import setup_logger
 from sqlalchemy import create_engine
 import gtamodel_popsyn.sql_commands as sql_commands
@@ -22,9 +22,9 @@ class OutputProcessor(GTAModelPopSynProcessor):
         """
         GTAModelPopSynProcessor.__init__(self, gtamodel_popsyn_instance)
         self._db_connection = None
-        self._persons = pandas.DataFrame()
-        self._households = pandas.DataFrame()
-        self._persons_households = pandas.DataFrame()
+        self._persons = pd.DataFrame()
+        self._households = pd.DataFrame()
+        self._persons_households = pd.DataFrame()
         self._output_folder = self._output_path
         self._percent_population = percent_population
         self._engine = create_engine(
@@ -46,11 +46,11 @@ class OutputProcessor(GTAModelPopSynProcessor):
         :return:
         """
         self._logger.info("Reading persons and households records from database.")
-        self._persons = pandas.read_sql_table('gta_persons', self._db_connection)
+        self._persons = pd.read_sql_table('gta_persons', self._db_connection)
 
         self._persons['ExpansionFactor'] = self._persons['ExpansionFactor'] * (1.0 / self._percent_population)
 
-        self._households = pandas.read_sql_table('gta_households', self._db_connection)
+        self._households = pd.read_sql_table('gta_households', self._db_connection)
 
         self._households['ExpansionFactor'] = self._households['ExpansionFactor'] * (1.0 / self._percent_population)
         return
@@ -75,8 +75,8 @@ class OutputProcessor(GTAModelPopSynProcessor):
 
     def _process_persons_households(self):
 
-        self._persons_households = pandas.merge(left=self._persons, right=self._households, left_on="HouseholdId",
-                                                right_on="HouseholdId")
+        self._persons_households = pd.merge(left=self._persons, right=self._households, left_on="HouseholdId",
+                                            right_on="HouseholdId")
         self._persons_households.rename(columns={'ExpansionFactor_x': 'Persons'}, inplace=True)
 
     def _gta_model_transform(self):
@@ -172,13 +172,13 @@ class OutputProcessor(GTAModelPopSynProcessor):
         """
         self._logger.info("Reading persons and households records from saved files.")
 
-        self._persons = pandas.read_csv(f'{self._output_folder}/HouseholdData/Persons.csv',
-                                        dtype={'EmploymentZone': 'int64', 'SchoolZone': 'int64'})
+        self._persons = pd.read_csv(f'{self._output_folder}/HouseholdData/Persons.csv',
+                                    dtype={'EmploymentZone': 'int64', 'SchoolZone': 'int64'})
         self._persons.set_index(['HouseholdId', 'PersonNumber'])
 
         # self._persons['ExpansionFactor'] = self._persons['ExpansionFactor'] * (1.0 / self._percent_population)
 
-        self._households = pandas.read_csv(f'{self._output_folder}/HouseholdData/Households.csv')
+        self._households = pd.read_csv(f'{self._output_folder}/HouseholdData/Households.csv')
         self._households.set_index(['HouseholdId'])
         # self._households['ExpansionFactor'] = self._households['ExpansionFactor'] * (1.0 / self._percent_population)
 
@@ -189,13 +189,13 @@ class OutputProcessor(GTAModelPopSynProcessor):
         """
         self._logger.info(f'Merging outputs: {merge_outputs}')
 
-        households_merge = pandas.read_csv(f'{self._output_folder}/{merge_outputs[0]}')
+        households_merge = pd.read_csv(f'{self._output_folder}/{merge_outputs[0]}')
         self._households = self._households.append(households_merge, sort=False).fillna(0)[
             households_merge.columns.tolist()]
 
         self._households.drop_duplicates(['HouseholdId'], inplace=True)
-        persons_merge = pandas.read_csv(f'{self._output_folder}/{merge_outputs[1]}',
-                                        dtype={'EmploymentZone': 'int64', 'SchoolZone': 'int64'})
+        persons_merge = pd.read_csv(f'{self._output_folder}/{merge_outputs[1]}',
+                                    dtype={'EmploymentZone': 'int64', 'SchoolZone': 'int64'})
         self._persons = self._persons.append(persons_merge, sort=False).fillna(0)[self._persons.columns.tolist()]
 
         self._persons.drop_duplicates(['HouseholdId', 'PersonNumber'], inplace=True)
