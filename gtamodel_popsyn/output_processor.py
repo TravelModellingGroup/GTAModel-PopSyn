@@ -1,4 +1,4 @@
-import modin.pandas as pd
+import pandas as pd
 from logzero import setup_logger
 from sqlalchemy import create_engine
 import gtamodel_popsyn.sql_commands as sql_commands
