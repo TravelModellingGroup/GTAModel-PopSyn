@@ -59,11 +59,16 @@ parser.add_argument('-t', '--use-database-controls',
                     required=False,
                     action="store_true",
                     help="Use existing control totals in database.")
-parser.add_argument('-T','--use-file-controls',
+parser.add_argument('-T', '--use-file-controls',
                     required=False,
                     action="store",
-                    metavar=('maz_controls','taz_controls','meta_controls'),
+                    metavar=('maz_controls', 'taz_controls', 'meta_controls'),
                     nargs=3)
+parser.add_argument('-s', '--slice-population',
+                    required=False,
+                    action='store',
+                    type=float,
+                    help='Take a slice (sample) of the population while adjusting weights accordingly')
 parser.add_argument('-m', '--merge-output',
                     required=False,
                     action="store",
