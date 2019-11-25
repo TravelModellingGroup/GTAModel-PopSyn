@@ -40,6 +40,17 @@ class OutputProcessor(GTAModelPopSynProcessor):
 
         return
 
+    def _extract_control_tables(self):
+        """
+        Outputs the control table as files to the output folder in case  they were not part of input generation
+        """
+        maz = pd.read_sql_table('control_totals_maz', self._db_connection)
+        maz.to_csv(f'{self._output_folder}/Inputs/{self._config["MazLevelControls"]}', index=False)
+        taz = pd.read_sql_table('control_totals_taz', self._db_connection)
+        taz.to_csv(f'{self._output_folder}/Inputs/{self._config["TazLevelControls"]}', index=False)
+        meta = pd.read_sql_table('control_totals_meta', self._db_connection)
+        meta.to_csv(f'{self._output_folder}/Inputs/{self._config["MetaLevelControls"]}', index=False)
+
     def _read_persons_households(self):
         """
         Read persons and households from database and scale expansion factor by % population.
@@ -102,7 +113,6 @@ class OutputProcessor(GTAModelPopSynProcessor):
         :return:
          """
         self._logger.info("Writing synthesized population (persons) to file.")
-
         # set internal employment zones to 0
         # self._persons[self._persons['EmploymentZone'] < INTERNAL_ZONE_RANGE.stop] = 0
         self._persons.to_csv(f'{self._output_folder}/HouseholdData/Persons.csv', index=False)
@@ -208,11 +218,12 @@ class OutputProcessor(GTAModelPopSynProcessor):
         Generates and writes all output files to the specified output location
         :return:
         """
+        self._db_connection = self._engine.connect()
+        if self._arguments.use_database_controls:
+            self._extract_control_tables()
+
         # Read and process household and persons data
-
         if not use_saved:
-            self._db_connection = self._engine.connect()
-
             # Create and transform required db tables
             self._gta_model_transform()
             self._read_persons_households()
@@ -231,10 +242,7 @@ class OutputProcessor(GTAModelPopSynProcessor):
         # Process and write outputs
         self._write_households_file()
         self._write_persons_file()
-
-        if not use_saved:
-            self._db_connection.close()
-
+        self._db_connection.close()
         self._logger.info("Finished output processing.")
         return
 

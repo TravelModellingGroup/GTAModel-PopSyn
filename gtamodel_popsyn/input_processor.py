@@ -95,12 +95,6 @@ class InputProcessor(GTAModelPopSynProcessor):
         data frame for processing.
         :return:
         """
-
-        # read zone information
-
-
-        # self._zones = self._zones[self._zones.PD > 0]
-
         # read in csv data
         self._persons_base = pd.read_csv(f"{self._config['PersonsSeedFile']}",
                                          dtype={'HouseholdId': int})
@@ -180,7 +174,6 @@ class InputProcessor(GTAModelPopSynProcessor):
         of  its associated geography.
         :return:
         """
-
         self._persons_households = self._resample_invalid_category(self._persons_households, 'Occupation', '9')
         self._persons_households = self._resample_invalid_category(self._persons_households, 'EmploymentStatus', '9')
         self._persons_households = self._resample_invalid_category(self._persons_households, 'StudentStatus', '9')

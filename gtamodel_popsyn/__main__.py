@@ -64,7 +64,7 @@ parser.add_argument('-T', '--use-file-controls',
                     action="store",
                     metavar=('maz_controls', 'taz_controls', 'meta_controls'),
                     nargs=3)
-parser.add_argument('-s', '--slice-population',
+parser.add_argument('-S', '--slice-population',
                     required=False,
                     action='store',
                     type=float,
@@ -74,8 +74,7 @@ parser.add_argument('-m', '--merge-output',
                     action="store",
                     nargs=2,
                     metavar=('households_file', 'persons_file'),
-                    help="Merge and (merge) multiple household and persons file when generating the output. Must be used with -u")
-
+                    help='Merge and (merge) multiple household and persons file when generating the output. Must be used with -u')
 
 args = parser.parse_args()
 
@@ -93,7 +92,7 @@ if args.database_only:
     gtamodel_popsyn.initialize_database()
 
 elif args.use_database_controls:
-    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, output_path=args.output_only)
+    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, output_path=args.output_only, name=args.name)
     gtamodel_popsyn.post_input_run()
 
 elif args.use_file_controls:

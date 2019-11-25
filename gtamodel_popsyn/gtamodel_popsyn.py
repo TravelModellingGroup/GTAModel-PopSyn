@@ -132,6 +132,8 @@ class GTAModelPopSyn(object):
         # self.initialize_database(
         #   self._input_processor.processed_persons,
         #    self._input_processor.processed_households)
+        # copy input files to output directory
+
         self._run_popsyn3()
         self.generate_outputs(use_saved=False)
         self.generate_summary_report()
