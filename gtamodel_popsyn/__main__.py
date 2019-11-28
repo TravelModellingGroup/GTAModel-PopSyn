@@ -97,6 +97,7 @@ elif args.use_database_controls:
 
 elif args.use_file_controls:
     gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, name=args.name)
+    gtamodel_popsyn.generate_inputs(False)
     gtamodel_popsyn.initialize_database_with_controls(args.use_file_controls[0],
                                                       args.use_file_controls[1],
                                                       args.use_file_controls[2])

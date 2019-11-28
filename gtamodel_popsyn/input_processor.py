@@ -39,7 +39,7 @@ class InputProcessor(GTAModelPopSynProcessor):
 
         return
 
-    def generate(self):
+    def generate(self, build_controls: bool = True):
         """
         Process the model input data and generate control files and
         seed records in the appropriate formats.
@@ -49,9 +49,11 @@ class InputProcessor(GTAModelPopSynProcessor):
         # read input data
         self._read_persons_households()
         # perform control total processing here
-        self._control_totals_builder.build_control_totals(self._households_base,
-                                                          self._persons_households,
-                                                          self._zones)
+
+        if build_controls:
+            self._control_totals_builder.build_control_totals(self._households_base,
+                                                              self._persons_households,
+                                                              self._zones)
 
         # perform any post process modifications and write results to file
         self._post_process_persons_households()

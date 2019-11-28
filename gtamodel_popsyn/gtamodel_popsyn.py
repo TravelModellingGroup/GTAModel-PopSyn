@@ -144,7 +144,7 @@ class GTAModelPopSyn(object):
         and output generation will be performed.
         :return:
         """
-        self.generate_inputs()
+        self.generate_inputs(True)
         self.initialize_database(
             self._input_processor.processed_persons,
             self._input_processor.processed_households)
@@ -152,13 +152,13 @@ class GTAModelPopSyn(object):
         self.generate_outputs(use_saved=False)
         self.generate_summary_report()
 
-    def generate_inputs(self):
+    def generate_inputs(self, build_controls: bool = True):
         """
         Generates all inputs required for the popsyn3 procedure.
         :return:
         """
         self._logger.info(f'Processing input data.')
-        self._input_processor.generate()
+        self._input_processor.generate(build_controls)
         self._logger.info(f'Input data has completed processing.')
         return
 
@@ -187,7 +187,7 @@ class GTAModelPopSyn(object):
         # run popsyn3 subprocess
         self._logger.info('PopSyn3 execution started.')
 
-        popsyn_args = [f'{self._config["Java64Path"]}/bin/java', "-showversion", '-server', '-Xms8000m', '-Xmx15000m',
+        popsyn_args = [f'{self._config["Java64Path"]}/bin/java', "-showversion", '-server', '-Xms8000m', '-Xmx16000m',
                        '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005',
                        f'-XX:ErrorFile={self._output_path}/java_error%p.log',
                        '-cp', ';'.join(classpaths), '-Djppf.config=jppf-clientLocal.properties',
@@ -197,7 +197,6 @@ class GTAModelPopSyn(object):
 
         self._logger.info(popsyn_args)
         p = subprocess.run(popsyn_args, shell=True)
-
         self._logger.info(p.stdout)
         self._logger.info('PopSyn3 process has completed.')
         return
