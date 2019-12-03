@@ -57,11 +57,11 @@ class OutputProcessor(GTAModelPopSynProcessor):
         :return:
         """
         self._logger.info("Reading persons and households records from database.")
-        self._persons = pd.read_sql_table('gta_persons', self._db_connection)
+        self._persons = pd.read_sql_table('synthesized_persons', self._db_connection)
 
         self._persons['ExpansionFactor'] = self._persons['ExpansionFactor'] * (1.0 / self._percent_population)
 
-        self._households = pd.read_sql_table('gta_households', self._db_connection)
+        self._households = pd.read_sql_table('synthesized_households', self._db_connection)
 
         self._households['ExpansionFactor'] = self._households['ExpansionFactor'] * (1.0 / self._percent_population)
         return
@@ -147,7 +147,8 @@ class OutputProcessor(GTAModelPopSynProcessor):
 
         self._logger.info("Processing zonal residence information for occupation and employment.")
 
-        internal_persons_households = self._persons_households.loc[self._persons_households.EmploymentZone < INTERNAL_ZONE_RANGE.stop].copy()
+        internal_persons_households = self._persons_households.loc[
+            self._persons_households.EmploymentZone < INTERNAL_ZONE_RANGE.stop].copy()
         internal_persons_households.rename(columns={'HouseholdZone': 'Zone'}, inplace=True)
 
         gta_ph_grouped = internal_persons_households.groupby(['Zone', 'Occupation', 'EmploymentStatus'])

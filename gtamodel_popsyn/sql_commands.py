@@ -1,8 +1,8 @@
 TRANSFORM_PERSONS_TABLE_SQL_COMMANDS = [
     """
-    DROP TABLE IF EXISTS GTA_PERSONS
+    DROP TABLE IF EXISTS SYNTHESIZED_PERSONS
     """,
-    """CREATE TABLE GTA_PERSONS(HouseholdId INT(11),
+    """CREATE TABLE SYNTHESIZED_PERSONS(HouseholdId INT(11),
         PersonNumber INT(11),
         Age smallint,
         Sex smallint,
@@ -24,10 +24,10 @@ TRANSFORM_PERSONS_TABLE_SQL_COMMANDS = [
 
 TRANSFORM_HOUSEHOLDS_TABLE_SQL_COMMANDS = [
     """
-    drop table if exists GTA_HOUSEHOLDS
+    drop table if exists SYNTHESIZED_HOUSEHOLDS
     """,
     """
-    CREATE TABLE GTA_HOUSEHOLDS(
+    CREATE TABLE SYNTHESIZED_HOUSEHOLDS(
     HouseholdId INT(11),
     HouseholdZone SMALLINT,
     ExpansionFactor SMALLINT,

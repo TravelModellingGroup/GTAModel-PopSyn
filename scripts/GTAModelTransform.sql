@@ -1,9 +1,9 @@
 
 # HouseholdId,PersonNumber,Age,Sex,License,
     # TransitPass,EmploymentStatus,Occupation,FreeParking,StudentStatus,EmploymentZone,SchoolZone,ExpansionFactor
-drop table if exists GTA_PERSONS;
+drop table if exists SYNTHESIZED_PERSONS;
 
-CREATE TABLE GTA_PERSONS(HouseholdId INT(11),
+CREATE TABLE SYNTHESIZED_PERSONS(HouseholdId INT(11),
 PersonNumber INT(11),
 Age smallint,
 Sex smallint,
@@ -21,10 +21,10 @@ as SELECT tempId as HouseholdId, PersonNumber, Age, Sex, License, TransitPass,
         0 as SchoolZone, finalweight as ExpansionFactor
 from synpop_person order by tempId asc ;
 
-drop table if exists GTA_HOUSEHOLDS;
+drop table if exists SYNTHESIZED_HOUSEHOLDS;
 
 #HouseholdId,HouseholdZone,ExpansionFactor,NumberOfPersons,DwellingType,Vehicles,IncomeClass
-CREATE TABLE GTA_HOUSEHOLDS(
+CREATE TABLE SYNTHESIZED_HOUSEHOLDS(
 HouseholdId INT(11),
 HouseholdZone SMALLINT,
 ExpansionFactor SMALLINT,
@@ -42,4 +42,4 @@ CREATE TABLE ZONAL_TOTALS(
     Zone SMALLINT NOT NULL DEFAULT 0,
     ExpandedHouseholds INT NOT NULL DEFAULT 0
 )
-AS (SELECT  HouseholdZone as Zone, SUM(ExpansionFactor) as ExpandedHouseholds from GTA_HOUSEHOLDS group by HouseholdZone)
+AS (SELECT  HouseholdZone as Zone, SUM(ExpansionFactor) as ExpandedHouseholds from SYNTHESIZED_HOUSEHOLDS group by HouseholdZone)
