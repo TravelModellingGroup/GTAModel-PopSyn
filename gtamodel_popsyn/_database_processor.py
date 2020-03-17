@@ -74,11 +74,11 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
 
         if persons is None:
             persons: pd.DataFrame = pd.read_csv(
-                f"{self._output_path}/Inputs/{self._config['ProcessedPersonsSeedFile']}")
+                f"{self._config['ProcessedPersonsSeedFile']}")
 
         if households is None:
             households: pd.DataFrame = pd.read_csv(
-                f"{self._output_path}/Inputs/{self._config['ProcessedHouseholdsSeedFile']}")
+                f"{self._config['ProcessedHouseholdsSeedFile']}")
 
         metadata = MetaData()
 

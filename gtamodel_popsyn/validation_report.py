@@ -1,7 +1,9 @@
+import os
+
 import pandas as pd
+
 from gtamodel_popsyn._gtamodel_popsyn_processor import GTAModelPopSynProcessor
 from gtamodel_popsyn.constants import *
-import os
 
 
 class ValidationReport(GTAModelPopSynProcessor):
@@ -56,7 +58,7 @@ class ValidationReport(GTAModelPopSynProcessor):
         self._zones = pd.read_csv(self._config['Zones'])
 
     def _process(self):
-        self._zones = self._zones[['Zone#', 'PD']].rename(columns={'Zone#': 'HouseholdZone'})
+        self._zones = self._zones[['Zone', 'PD']].rename(columns={'Zone': 'HouseholdZone'})
 
         self._persons_synthesized['EmploymentZone'] = self._persons_synthesized['EmploymentZone'].astype(int)
         self._persons_original['EmploymentZone'] = self._persons_original['EmploymentZone'].astype(int)
@@ -204,12 +206,10 @@ class ValidationReport(GTAModelPopSynProcessor):
         totals.loc['StudentStatus O', 'Synthesized Total'] = self._persons_households_synthesized.loc[
             self._persons_households_synthesized.StudentStatus == 'O', 'ExpansionFactor'].sum()
 
-
-
         for bin in AGE_BINS:
             totals.loc[f'Age {bin.start} - {bin.stop}', 'Observed Total'] = self._persons_households_original.loc[
                 (self._persons_households_original.Age >= bin.start) & (
-                            self._persons_households_original.Age <= bin.stop), 'ExpansionFactor'].sum()
+                        self._persons_households_original.Age <= bin.stop), 'ExpansionFactor'].sum()
             totals.loc[f'Age {bin.start} - {bin.stop}', 'Synthesized Total'] = self._persons_households_synthesized.loc[
                 (self._persons_households_synthesized.Age >= bin.start) & (
                         self._persons_households_synthesized.Age <= bin.stop), 'ExpansionFactor'].sum()

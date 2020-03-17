@@ -87,18 +87,18 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
         :param zones:
         :return:
         """
-        self._zones = zones[zones['Zone#'].isin(ZONE_RANGE)]
+        self._zones = zones[zones['Zone'].isin(ZONE_RANGE)]
 
         hh2_group = households.groupby(['HouseholdZone'])
         hh_group = persons_households.groupby(['HouseholdZone'])
 
         # zones_empty = self._find_missing(self._zones['Zone#'].to_list())
 
-        self._controls['maz'] = self._zones['Zone#']
+        self._controls['maz'] = self._zones['Zone']
         self._controls['puma'] = 0
-        self._controls['taz'] = self._zones['Zone#']
+        self._controls['taz'] = self._zones['Zone']
         self._controls = self._controls.set_index('maz')
-        self._zones = self._zones.set_index('Zone#')
+        self._zones = self._zones.set_index('Zone')
         self._controls['region'] = 1
 
         self._process_population_total(hh_group)

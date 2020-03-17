@@ -74,10 +74,10 @@ class InputProcessor(GTAModelPopSynProcessor):
         Process the input zones file and fill missing (intermediate) zone ids with a 0 population
         """
         self._zones = pd.read_csv(self._config['Zones'],
-                                  dtype={'Zone#': int, 'PD': int})[['Zone#', 'PD']]
+                                  dtype={'Zone': int, 'PD': int})[['Zone', 'PD']]
 
-        self._zones = self._zones.sort_values(['PD', 'Zone#']).reset_index()
-        zone_list = self._zones['Zone#'].to_list()
+        self._zones = self._zones.sort_values(['PD', 'Zone']).reset_index()
+        zone_list = self._zones['Zone'].to_list()
         missing_zones = self._find_missing(zone_list)
 
         # extend the zone list with the missing ids
@@ -108,7 +108,7 @@ class InputProcessor(GTAModelPopSynProcessor):
         # self._households_base = self._households_base.sample(frac=self._config['InputSample'])
 
         self._households_base = pd.merge(self._households_base, self._zones,
-                                         left_on="HouseholdZone", right_on="Zone#")[
+                                         left_on="HouseholdZone", right_on="Zone")[
             ['HouseholdId', 'DwellingType', 'NumberOfPersons', 'Vehicles',
              'IncomeClass', 'ExpansionFactor', 'HouseholdZone', 'PD']] \
             .sort_values(by=['HouseholdZone'], ascending=True).reset_index()
@@ -275,7 +275,7 @@ class InputProcessor(GTAModelPopSynProcessor):
         households['HouseholdId'] = households['HouseholdId'].astype(int)
         households['puma'] = households['puma'].astype(int)
         self._processed_households = households.copy()
-        households.to_csv(f"{self._output_path}/Inputs/{self._config['ProcessedHouseholdsSeedFile']}", index=False)
+        households.to_csv(f"{self._config['ProcessedHouseholdsSeedFile']}", index=False)
 
     def _postprocess_persons(self):
         """
@@ -295,5 +295,5 @@ class InputProcessor(GTAModelPopSynProcessor):
         persons['HouseholdId'] = persons['HouseholdId'].astype(int)
         persons['puma'] = persons['puma'].astype(int)
         self._processed_persons = persons.copy()
-        self._processed_persons.to_csv(f"{self._output_path}/Inputs/{self._config['ProcessedPersonsSeedFile']}",
+        self._processed_persons.to_csv(f"{self._config['ProcessedPersonsSeedFile']}",
                                        index=False)
