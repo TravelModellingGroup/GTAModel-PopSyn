@@ -41,7 +41,7 @@ class InputProcessor(GTAModelPopSynProcessor):
 
         return
 
-    def generate(self, build_controls: bool = True):
+    def generate(self, build_controls: bool = True, gen_pumas: bool = False):
         """
         Process the model input data and generate control files and
         seed records in the appropriate formats.
@@ -144,6 +144,27 @@ class InputProcessor(GTAModelPopSynProcessor):
         self._persons_households.sort_values(by=['HouseholdZone', 'PD'],
                                              ascending=True).reset_index(inplace=True)
         return
+
+    def assign_puma_using_generated_values(self):
+        """
+        Assigns associated puma values splitting the population as evenly as possible
+        across the number of puma requested.
+
+        This method assumes that some controls are already predefined, and will not be generated from
+        input seed data.
+        @return:
+        """
+
+        if 'GeneratePumas ' in self._config:
+            maz = pd.read_csv(f"{self._output_path}/Inputs/{self._config['MazLevelControls']}")
+
+            # get the list of total population in controls
+            for index,row in maz.iterrows():
+                self._zones.loc[row['maz'],'puma'] = 1
+
+        else:
+            # call standard puma, configuration is missing information
+            return self._assign_puma_values()
 
     def _assign_puma_values(self):
         """
