@@ -64,7 +64,7 @@ parser.add_argument('-T', '--use-file-controls',
                     action="store",
                     metavar=('maz_controls', 'taz_controls', 'meta_controls'),
                     nargs=3)
-parser.add_argument('-u', '--generate-pumas',
+parser.add_argument('-g', '--generate-pumas',
                     required=False,
                     action="store_true",
                     help="Should the database auto generate puma values")

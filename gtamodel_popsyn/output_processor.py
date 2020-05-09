@@ -157,6 +157,8 @@ class OutputProcessor(GTAModelPopSynProcessor):
 
         gta_ph_grouped = gta_ph_grouped['Persons'].apply(sum)
 
+        # print(gta_ph_grouped)
+
         # gta_ph_grouped.reset_index().to_csv('temp/all.csv',index=False)
 
         gta_ph_grouped[:, 'G', 'F'].reset_index().to_csv(f'{self._output_folder}/ZonalResidence/GF.csv',
