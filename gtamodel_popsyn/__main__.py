@@ -64,6 +64,10 @@ parser.add_argument('-T', '--use-file-controls',
                     action="store",
                     metavar=('maz_controls', 'taz_controls', 'meta_controls'),
                     nargs=3)
+parser.add_argument('-u', '--generate-pumas',
+                    required=False,
+                    action="store_true",
+                    help="Should the database auto generate puma values")
 parser.add_argument('-S', '--slice-population',
                     required=False,
                     action='store',
@@ -100,7 +104,8 @@ elif args.use_file_controls:
     gtamodel_popsyn.generate_inputs(False)
     gtamodel_popsyn.initialize_database_with_controls(args.use_file_controls[0],
                                                       args.use_file_controls[1],
-                                                      args.use_file_controls[2])
+                                                      args.use_file_controls[2],
+                                                      gen_puma=args.generate_pumas)
     gtamodel_popsyn.post_input_run()
 
 elif args.input_process_only:

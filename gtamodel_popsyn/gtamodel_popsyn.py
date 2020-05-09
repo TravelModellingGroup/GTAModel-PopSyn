@@ -124,9 +124,9 @@ class GTAModelPopSyn(object):
         self._output_processor.generate_outputs(use_saved, merge_outputs)
         self._logger.info('Output generation has completed processing')
 
-    def initialize_database_with_controls(self, maz,taz,meta):
+    def initialize_database_with_controls(self, maz, taz, meta, gen_puma=False):
         self._logger.info('Initializing database.')
-        self._database_processor.initialize_database_with_control_files(maz,taz,meta)
+        self._database_processor.initialize_database_with_control_files(maz, taz, meta, gen_puma)
         self._logger.info('Database initialization has completed.')
         return
 

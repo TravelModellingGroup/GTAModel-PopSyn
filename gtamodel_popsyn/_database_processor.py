@@ -51,7 +51,7 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
         self._initialize_control_tables()
         self._connection.close()
 
-    def initialize_database_with_control_files(self, maz: str, taz: str, meta: str):
+    def initialize_database_with_control_files(self, maz: str, taz: str, meta: str, gen_puma=False):
         """
 
         @param maz:
@@ -59,7 +59,7 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
         @param meta:
         """
         self._init_connection()
-        self.initialize_control_tables_from_file(maz, taz, meta)
+        self.initialize_control_tables_from_file(maz, taz, meta, gen_puma)
         self._initialize_record_tables(None, None)
         self._connection.close()
 
@@ -128,7 +128,8 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
 
         return
 
-    def initialize_control_tables_from_file(self, maz_controls_file, taz_controls_file, meta_controls_file):
+    def initialize_control_tables_from_file(self, maz_controls_file, taz_controls_file, meta_controls_file,
+                                            gen_puma=False):
         """
         Load control files into database based on passed files.
         @param maz_controls_file:
@@ -144,9 +145,32 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
         meta_controls = pd.read_csv(f"{meta_controls_file}")
         self._initialize_control_tables(maz_controls, taz_controls, meta_controls)
 
+    def _generate_puma_values(self, population: list):
+        """
+        Generates a mapping of puma geography for taz/maz roughly equally dividided
+        by the number configured in the configuration.
+        @param population:
+        @return:
+        """
+        if 'GeneratePumas ' in self._config:
+            # puma_count = self._config['GeneratePumas']
+            pd_pop = population[-1] / int(self._config['GeneratePumas'])
+            pd_list = []
+            curr_pd = 1
+            curr_sum = population[0]
+            for t in population:
+                pd_list.append(curr_pd)
+                if (t - curr_sum) > pd_pop:
+                    curr_pd = curr_pd + 1
+                    curr_sum = t
+            return pd_list
+        else:
+            return []
+
     def _initialize_control_tables(self, maz_controls: pd.DataFrame = None,
                                    taz_controls: pd.DataFrame = None,
-                                   meta_controls: pd.DataFrame = None):
+                                   meta_controls: pd.DataFrame = None,
+                                   gen_puma=False):
         """
         Initializes database control tables for each level of geography
         :param maz_controls:
@@ -164,6 +188,12 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
             meta_controls = pd.read_csv(f"{self._output_path}/Inputs/{self._config['MetaLevelControls']}")
 
         metadata = MetaData()
+
+        if gen_puma:
+            pd_list = self._generate_puma_values(maz_controls.puma.cumsum().tolist())
+            if len(pd_list) == len(maz_controls):
+                maz_controls['puma'] = pd_list
+                taz_controls['puma'] = pd_list
 
         maz_columns = [
             Column(maz_controls.columns[0], self.PANDAS_DTYPE_SQL_TYPE[maz_controls.dtypes[0].name], primary_key=True),
