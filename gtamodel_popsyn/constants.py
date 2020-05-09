@@ -1,16 +1,11 @@
-# PUMA_PD_RANGES = [range(1, 12), range(12, 24), range(24, 36), range(36, 100000)]
-# PUMA_PD_RANGES = [range(351,353),range(353,357)]
-# PUMA_PD_RANGES = [range(1, 352), range(352,357)]
-# PUMA_PD_RANGES = [range(1,6000)]
-ZONE_RANGE = range(1, 100000)
 
-# Capture 0 for non workers
-INTERNAL_ZONE_RANGE = range(1, 900000)
-EXTERNAL_ZONE_RANGE = range(6000, 6999)
+# default zone ranges
+INTERNAL_ZONE_RANGE = range(1, 6000)
+EXTERNAL_ZONE_RANGE = range(6000, 8887)
 ROAMING_ZONE_ID = 8888
 
 """
-Age bins
+Default Age bins
 """
 AGE_BINS = [range(0, 4), range(5, 10), range(11, 15), range(16, 25), range(26, 35), range(36, 45), range(46, 55),
             range(56, 64),

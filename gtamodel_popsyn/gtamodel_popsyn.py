@@ -4,6 +4,7 @@ import subprocess
 from logzero import setup_logger
 from gtamodel_popsyn._database_processor import DatabaseProcessor
 from gtamodel_popsyn.control_totals_builder import ControlTotalsBuilder
+from gtamodel_popsyn.gtamodel_popsyn_config import GTAModelPopSynConfig
 from gtamodel_popsyn.input_processor import InputProcessor
 from gtamodel_popsyn.output_processor import OutputProcessor
 from gtamodel_popsyn.validation_report import ValidationReport
@@ -23,6 +24,10 @@ class GTAModelPopSyn(object):
     @property
     def config(self):
         return self._config
+
+    @property
+    def popsyn_config(self):
+        return self._popsyn_config
 
     @property
     def arguments(self):
@@ -52,6 +57,8 @@ class GTAModelPopSyn(object):
         self._population_vector_file = population_vector_file
         self._columns = []
 
+
+
         if percent_populations is None:
             self._percent_populations = [1.0]
         else:
@@ -76,14 +83,21 @@ class GTAModelPopSyn(object):
             self._output_path = f'{self._config["OutputFolder"]}/{(self._name + "_") if name else ""}{self._start_time:%Y-%m-%d_%H-%M}_{percent_population}' if output_path is None else output_path
             self._logger = setup_logger(name='gtamodel', logfile=f'{self._output_path}/gtamodel_popsyn.log')
             self._logger.info(f'GTAModel PopSyn')
+            self._popsyn_config = GTAModelPopSynConfig(self)
+            self._popsyn_config.initialize()
             self._summary_report = ValidationReport(self)
+            self._summary_report.popsyn_config = self._popsyn_config
             self._control_totals_builder = ControlTotalsBuilder(self, population_vector_file)
+            self._control_totals_builder.popsyn_config = self._popsyn_config
             self._input_processor = InputProcessor(self, self._control_totals_builder)
+            self._input_processor.popsyn_config = self._popsyn_config
             self._output_processor = OutputProcessor(self, percent_population)
+            self._output_processor.popsyn_config = self._popsyn_config
             self._database_processor = DatabaseProcessor(self, percent_population)
             self._settings_processor = SettingsProcessor(self)
 
         os.makedirs(f'{self._output_path}/Inputs/', exist_ok=True)
+        self._popsyn_config = GTAModelPopSynConfig(self)
 
         return
 
@@ -197,6 +211,10 @@ class GTAModelPopSyn(object):
 
         self._logger.info(popsyn_args)
         p = subprocess.run(popsyn_args, shell=True)
+        if p.returncode != 0:
+            self._logger.error("Error occured in PopSyn3")
+
         self._logger.info(p.stdout)
+        self._logger.error(p.stderr)
         self._logger.info('PopSyn3 process has completed.')
         return

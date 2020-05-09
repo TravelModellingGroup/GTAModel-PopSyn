@@ -4,6 +4,7 @@ import pandas as pd
 
 from gtamodel_popsyn._gtamodel_popsyn_processor import GTAModelPopSynProcessor
 from gtamodel_popsyn.constants import *
+from gtamodel_popsyn.util.generate_zone_ranges import generate_zone_ranges
 
 
 class ValidationReport(GTAModelPopSynProcessor):
@@ -79,15 +80,15 @@ class ValidationReport(GTAModelPopSynProcessor):
             self._persons_households_original['PD'] > 0]
 
         self._persons_households_synthesized = self._persons_households_synthesized[
-            self._persons_households_synthesized['HouseholdZone'] < ZONE_RANGE.stop]
+            self._persons_households_synthesized['HouseholdZone'].isin(self.popsyn_config.internal_zone_range)]
         self._persons_households_original = self._persons_households_original[
-            self._persons_households_original['HouseholdZone'] < ZONE_RANGE.stop]
+            self._persons_households_original['HouseholdZone'].isin(self.popsyn_config.internal_zone_range)]
 
         self._households_original = self._households_original[
-            self._households_original['HouseholdZone'] < ZONE_RANGE.stop]
+            self._households_original['HouseholdZone'].isin(self.popsyn_config.internal_zone_range)]
 
         self._households_synthesized = self._households_synthesized[
-            self._households_synthesized['HouseholdZone'] < ZONE_RANGE.stop]
+            self._households_synthesized['HouseholdZone'].isin(self.popsyn_config.internal_zone_range)]
 
         self._persons_households_synthesized = self._persons_households_synthesized.rename(
             columns={'ExpansionFactor_x': 'ExpansionFactor'})
@@ -174,9 +175,9 @@ class ValidationReport(GTAModelPopSynProcessor):
             self._persons_households_synthesized.EmploymentStatus == 'J', 'ExpansionFactor'].sum()
 
         totals.loc['EmploymentZone Internal', 'Observed Total'] = self._persons_households_original.loc[
-            self._persons_households_original.EmploymentZone < INTERNAL_ZONE_RANGE.stop, 'ExpansionFactor'].sum()
+            self._persons_households_original.EmploymentZone.isin(self.popsyn_config.internal_zone_range), 'ExpansionFactor'].sum()
         totals.loc['EmploymentZone Internal', 'Synthesized Total'] = self._persons_households_synthesized.loc[
-            self._persons_households_synthesized.EmploymentZone < INTERNAL_ZONE_RANGE.stop, 'ExpansionFactor'].sum()
+            self._persons_households_synthesized.EmploymentZone.isin(self.popsyn_config.internal_zone_range), 'ExpansionFactor'].sum()
 
         totals.loc['EmploymentZone Roaming', 'Observed Total'] = self._persons_households_original.loc[
             self._persons_households_original.EmploymentZone == ROAMING_ZONE_ID, 'ExpansionFactor'].sum()
@@ -184,12 +185,10 @@ class ValidationReport(GTAModelPopSynProcessor):
             self._persons_households_synthesized.EmploymentZone == ROAMING_ZONE_ID, 'ExpansionFactor'].sum()
 
         totals.loc['EmploymentZone External', 'Observed Total'] = self._persons_households_original.loc[
-            (self._persons_households_original.EmploymentZone >= EXTERNAL_ZONE_RANGE.start) &
-            (self._persons_households_original.EmploymentZone <= EXTERNAL_ZONE_RANGE.stop), 'ExpansionFactor'].sum()
+            self._persons_households_original.EmploymentZone.isin(self.popsyn_config.external_zone_range), 'ExpansionFactor'].sum()
 
         totals.loc['EmploymentZone External', 'Synthesized Total'] = self._persons_households_synthesized.loc[
-            (self._persons_households_synthesized.EmploymentZone >= EXTERNAL_ZONE_RANGE.start) &
-            (self._persons_households_synthesized.EmploymentZone <= EXTERNAL_ZONE_RANGE.stop), 'ExpansionFactor'].sum()
+            self._persons_households_synthesized.EmploymentZone.isin(self.popsyn_config.external_zone_range), 'ExpansionFactor'].sum()
 
         totals.loc['StudentStatus S', 'Observed Total'] = self._persons_households_original.loc[
             self._persons_households_original.StudentStatus == 'S', 'ExpansionFactor'].sum()
@@ -289,20 +288,18 @@ class ValidationReport(GTAModelPopSynProcessor):
     def _process_occupation_employment_zone(self):
         """
 
-        :param group_original:
-        :param group_synthesized:
         :return:
         """
 
         self._persons_households_original['EmploymentZoneType'] = self._persons_households_original.apply(
             lambda x: ('Roaming' if x['EmploymentZone'] == ROAMING_ZONE_ID
                        else (
-                'Internal' if x['EmploymentZone'] < ZONE_RANGE.start else 'External')), axis=1)
+                'Internal' if x['EmploymentZone'].isin(self.popsyn_config.internal_zone_range) else 'External')), axis=1)
 
         self._persons_households_synthesized['EmploymentZoneType'] = self._persons_households_synthesized.apply(
             lambda x: ('Roaming' if x['EmploymentZone'] == ROAMING_ZONE_ID
                        else (
-                'Internal' if x['EmploymentZone'] < ZONE_RANGE.start else 'External')), axis=1)
+                'Internal' if x['EmploymentZone'].isin(self.popsyn_config.internal_zone_range) else 'External')), axis=1)
 
         group_original = self._persons_households_original.groupby(
             ['PD', 'Occupation', 'EmploymentStatus', 'EmploymentZoneType'])[

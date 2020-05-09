@@ -5,6 +5,8 @@ from gtamodel_popsyn._gtamodel_popsyn_processor import GTAModelPopSynProcessor
 import gtamodel_popsyn.control_totals_builder as ctb
 from shutil import copyfile
 
+from gtamodel_popsyn.util.generate_zone_ranges import generate_zone_ranges
+
 
 class InputProcessor(GTAModelPopSynProcessor):
     """
@@ -45,6 +47,7 @@ class InputProcessor(GTAModelPopSynProcessor):
         seed records in the appropriate formats.
         :return:
         """
+
         self._process_zones_file()
         # read input data
         self._read_persons_households()
@@ -87,9 +90,6 @@ class InputProcessor(GTAModelPopSynProcessor):
         zone_list.sort()
 
         return
-
-        # fill PD values with by surrounding zones
-
 
     def _read_persons_households(self):
         """
@@ -134,12 +134,13 @@ class InputProcessor(GTAModelPopSynProcessor):
         Filters household and persons records from invalid zones and PDs
         :return:
         """
-        self._households_base = self._households_base[self._households_base.HouseholdZone.isin(constants.ZONE_RANGE)]
+        self._households_base = \
+            self._households_base[self._households_base.HouseholdZone.isin(self.popsyn_config.internal_zone_range)]
         self._persons_households = self._persons_households[
-            self._persons_households['HouseholdZone'].isin(constants.ZONE_RANGE)]
+            self._persons_households['HouseholdZone'].isin(self.popsyn_config.internal_zone_range)]
 
         self._households_base = self._households_base[
-            self._households_base['HouseholdZone'].isin(constants.ZONE_RANGE)]
+            self._households_base['HouseholdZone'].isin(self.popsyn_config.internal_zone_range)]
         self._persons_households.sort_values(by=['HouseholdZone', 'PD'],
                                              ascending=True).reset_index(inplace=True)
         return
@@ -176,38 +177,49 @@ class InputProcessor(GTAModelPopSynProcessor):
         of  its associated geography.
         :return:
         """
-        self._persons_households = self._resample_invalid_category(self._persons_households, 'Occupation', '9')
-        self._persons_households = self._resample_invalid_category(self._persons_households, 'EmploymentStatus', '9')
-        self._persons_households = self._resample_invalid_category(self._persons_households, 'StudentStatus', '9')
+        self._persons_households = self._resample_invalid_category(self._persons_households, 'Occupation', '9', weight_column='weightp')
+        self._persons_households = self._resample_invalid_category(self._persons_households, 'EmploymentStatus', '9', weight_column='weightp')
+        self._persons_households = self._resample_invalid_category(self._persons_households, 'StudentStatus', '9', weight_column='weightp')
 
-    def _resample_invalid_category(self, df, category, invalid_value, aggregate_column='puma'):
+    def _resample_invalid_category(self, df, category, invalid_value, weight_column: str, aggregate_column='puma'):
         """
         Resamples attributes for all records with an invalid value for the associated
         category.
-        :param records:
         :param category:
         :param invalid_value:
         :return:
         """
-        import numpy as np
-        distributions = df.loc[
-            df[category] != invalid_value].groupby(aggregate_column)[
-            category].value_counts(
-            normalize=True)
+        import numpy as nmp
+        ##distributions = df.loc[
+         #   df[category] != invalid_value].groupby(aggregate_column)[
+        #    category].value_counts(
+        #    normalize=True)
 
-        def apply_resample(row):
-            """
-            Adjust the category for this row
-            :param row:
-            :return:
-            """
-            if row[category] == invalid_value:
-                row[category] = np.random.choice(
-                    distributions[row[aggregate_column]].index.to_list(),
-                    p=distributions[row[aggregate_column]].to_list())
-            return row
+        #def apply_resample(row):
+        #    """
+        #    Adjust the category for this row
+        #    :param row:
+        #    :return:
+         #   """
+         #   if row[category] == invalid_value:
+         #       row[category] = nmp.random.choice(
+         #           distributions[row[aggregate_column]].index.to_list(),
+          #          p=distributions[row[aggregate_column]].to_list())
+          #  return row
 
-        return df.apply(lambda x: apply_resample(x), axis=1)
+        #distributions = df.loc[df[category] != invalid_value].groupby(aggregate_column).
+
+        df_valid = df.loc[df[category] != invalid_value]
+        df_invalid = df[category] == invalid_value
+        valid_options = df.loc[df[category] != invalid_value,category].unique()
+        distributions = df_valid.groupby([aggregate_column, category])[weight_column].sum().apply(lambda x: x) / df_valid.groupby([aggregate_column])[weight_column].sum()
+
+        resampled_values = nmp.random.choice(valid_options, p=distributions[1], size=df_invalid.sum())
+
+        df.loc[df_invalid,category] = resampled_values
+        return df
+
+        #return df.apply(lambda x: apply_resample(x), axis=1)
 
     def _preprocess_households(self):
         """
@@ -224,7 +236,7 @@ class InputProcessor(GTAModelPopSynProcessor):
         #    lambda x: np.random.randint(1, 7)))
 
         self._households_base = self._resample_invalid_category(
-            self._households_base, 'IncomeClass', 7)
+            self._households_base, 'IncomeClass', 7, weight_column='weighth')
 
         # self._households_base.loc[self._households_base.IncomeClass == 7, 'IncomeClass']\
         #    = self._households_base.loc[self._households_base.IncomeClass == 7,'IncomeClass'].apply(
@@ -239,24 +251,32 @@ class InputProcessor(GTAModelPopSynProcessor):
         :return:
         """
 
-        self._persons_households = self._persons_households.sample(frac=self._config['InputSample'])
-        self._persons_households['weightp'] = self._persons_households['weightp'] * (1.0 / self._config['InputSample'])
-        self._persons_households['weighth'] = self._persons_households['weighth'] * (1.0 / self._config['InputSample'])
+        # self._persons_households = self._persons_households.sample(frac=self._config['InputSample'])
+        # self._persons_households['weightp'] = self._persons_households['weightp'] * (1.0 / self._config['InputSample'])
+        # self._persons_households['weighth'] = self._persons_households['weighth'] * (1.0 / self._config['InputSample'])
+        #
+        # unmatched = self._persons_households.loc[:, ('HouseholdId', 'NumberOfPersons', 'PersonNumber')].groupby(
+        #     ['HouseholdId']).agg({'NumberOfPersons': lambda x: x.iloc[0], 'PersonNumber': 'count'})
+        #
+        # unmatched = unmatched.loc[unmatched['NumberOfPersons'] != unmatched['PersonNumber']]
+        #
+        # def adjust(group):
+        #     group['NumberOfPersons'] = unmatched.loc[group.name, 'PersonNumber']
+        #     group['PersonNumber'] = range(1, unmatched.loc[group.name, 'PersonNumber'] + 1)
+        #     return group
+        #
+        # # compare the number of persons
+        # self._persons_households.loc[self._persons_households.HouseholdId.isin(unmatched.index)] = \
+        #     self._persons_households.loc[self._persons_households.HouseholdId.isin(unmatched.index)].groupby(
+        #         'HouseholdId').apply(lambda x: adjust(x))
 
-        unmatched = self._persons_households.loc[:, ('HouseholdId', 'NumberOfPersons', 'PersonNumber')].groupby(
-            ['HouseholdId']).agg({'NumberOfPersons': lambda x: x.iloc[0], 'PersonNumber': 'count'})
+        #sample_hids = pd.Series(self._persons_households('HouseholdId').unique()).sample(
+        #    frac=self._config['InputSample'])
 
-        unmatched = unmatched.loc[unmatched['NumberOfPersons'] != unmatched['PersonNumber']]
+        self._persons_households = \
+            self._persons_households.groupby('puma').apply(lambda x: x[x.HouseholdId.isin(x.HouseholdId.sample(frac=self._config['InputSample']))]).reset_index(drop=True)
 
-        def adjust(group):
-            group['NumberOfPersons'] = unmatched.loc[group.name, 'PersonNumber']
-            group['PersonNumber'] = range(1, unmatched.loc[group.name, 'PersonNumber'] + 1)
-            return group
-
-        # compare the number of persons
-        self._persons_households.loc[self._persons_households.HouseholdId.isin(unmatched.index)] = \
-            self._persons_households.loc[self._persons_households.HouseholdId.isin(unmatched.index)].groupby(
-                'HouseholdId').apply(lambda x: adjust(x))
+        #self._persons_households = self._persons_households[self._persons_households['HouseholdId'].isin(sample_hids)]
 
         self._postprocess_persons()
         self._postprocess_households()
@@ -274,7 +294,8 @@ class InputProcessor(GTAModelPopSynProcessor):
         households.sort_values(by=['HouseholdId'], ascending=True).reset_index(inplace=True)
         households['HouseholdId'] = households['HouseholdId'].astype(int)
         households['puma'] = households['puma'].astype(int)
-        self._processed_households = households.copy()
+        self._processed_households = households
+        self._processed_households['weight'] = self._processed_households['weight'].round(5)
         households.to_csv(f"{self._config['ProcessedHouseholdsSeedFile']}", index=False)
 
     def _postprocess_persons(self):
@@ -294,6 +315,7 @@ class InputProcessor(GTAModelPopSynProcessor):
         persons.sort_values(by=['HouseholdId'], ascending=True).reset_index(inplace=True)
         persons['HouseholdId'] = persons['HouseholdId'].astype(int)
         persons['puma'] = persons['puma'].astype(int)
-        self._processed_persons = persons.copy()
+        self._processed_persons = persons
+        self._processed_persons['weightp'] = self._processed_persons['weight'].round(5)
         self._processed_persons.to_csv(f"{self._config['ProcessedPersonsSeedFile']}",
                                        index=False)

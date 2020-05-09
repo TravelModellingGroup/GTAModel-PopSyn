@@ -3,6 +3,7 @@ from shutil import copyfile
 import pandas as pd
 from gtamodel_popsyn.constants import *
 from gtamodel_popsyn._gtamodel_popsyn_processor import GTAModelPopSynProcessor
+from gtamodel_popsyn.util.generate_zone_ranges import generate_zone_ranges
 
 
 class ControlTotalsBuilder(GTAModelPopSynProcessor):
@@ -75,7 +76,7 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
 
         return
 
-    def _find_missing(lst):
+    def _find_missing(self, lst):
         return [x for x in range(lst[0], lst[-1] + 1)
                 if x not in lst]
 
@@ -87,7 +88,8 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
         :param zones:
         :return:
         """
-        self._zones = zones[zones['Zone'].isin(ZONE_RANGE)]
+
+        self._zones = zones[zones['Zone'].isin(self.popsyn_config.internal_zone_range)]
 
         hh2_group = households.groupby(['HouseholdZone'])
         hh_group = persons_households.groupby(['HouseholdZone'])
@@ -110,12 +112,12 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
             hh_group.apply(lambda x: self._sum_column(x, 'Sex', 'F', 'weightp'))
 
         self._controls['employment_zone_internal'] = \
-            hh_group.apply(lambda x: x[x.EmploymentZone.isin(ZONE_RANGE)]['weightp'].sum())
+            hh_group.apply(lambda x: x[x.EmploymentZone.isin(self.popsyn_config.internal_zone_range)]['weightp'].sum())
         self._controls['employment_zone_roaming'] = \
             hh_group.apply(lambda x: x[x.EmploymentZone == ROAMING_ZONE_ID]['weightp'].sum())
         self._controls['employment_zone_external'] = \
             hh_group.apply(
-                lambda x: x.loc[(x.EmploymentZone >= EXTERNAL_ZONE_RANGE.start) &
+                lambda x: x.loc[(x.EmploymentZone.isin(self.popsyn_config.external_zone_range)) &
                                 (x.EmploymentZone != ROAMING_ZONE_ID), 'weightp'].sum())
         self._controls['employment_zone_0'] = \
             hh_group.apply(

@@ -6,6 +6,8 @@ from gtamodel_popsyn.constants import *
 from gtamodel_popsyn._gtamodel_popsyn_processor import GTAModelPopSynProcessor
 import os
 
+from gtamodel_popsyn.util.generate_zone_ranges import generate_zone_ranges
+
 
 class OutputProcessor(GTAModelPopSynProcessor):
     """
@@ -148,7 +150,7 @@ class OutputProcessor(GTAModelPopSynProcessor):
         self._logger.info("Processing zonal residence information for occupation and employment.")
 
         internal_persons_households = self._persons_households.loc[
-            self._persons_households.EmploymentZone < INTERNAL_ZONE_RANGE.stop].copy()
+            self._persons_households.EmploymentZone.isin(self.popsyn_config.internal_zone_range)].copy()
         internal_persons_households.rename(columns={'HouseholdZone': 'Zone'}, inplace=True)
 
         gta_ph_grouped = internal_persons_households.groupby(['Zone', 'Occupation', 'EmploymentStatus'])
