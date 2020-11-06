@@ -11,6 +11,7 @@ from logzero import logger, setup_logger
 from gtamodel_popsyn.gtamodel_popsyn import GTAModelPopSyn
 
 parser = argparse.ArgumentParser()
+
 parser.add_argument('-c', '--config', action='store', required=False, default='config.json',
                     help="Path of the configuration file to use.", type=argparse.FileType('r'))
 parser.add_argument('-i', '--input-process-only',
@@ -34,6 +35,7 @@ parser.add_argument('-r', '--validation-report-only',
                     required=False,
                     action="store",
                     help="Only generate a summary report from existing output files. Pass the generated output folder to use.")
+
 parser.add_argument('-p', '--percent-population',
                     required=False,
                     action="store",

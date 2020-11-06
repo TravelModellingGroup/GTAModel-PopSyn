@@ -5,6 +5,7 @@ from gtamodel_popsyn.constants import INTERNAL_ZONE_RANGE, EXTERNAL_ZONE_RANGE
 from gtamodel_popsyn.util.generate_zone_ranges import generate_zone_ranges
 import pandas as pd
 
+
 class GTAModelPopSynConfig(GTAModelPopSynProcessor):
     """
     General configuration class for sharing information between sub components, with post processed data
@@ -19,10 +20,20 @@ class GTAModelPopSynConfig(GTAModelPopSynProcessor):
     def external_zone_range(self):
         return self._external_zone_range
 
+    @property
+    def total_population_column_name(self):
+        return self._total_population_column_name
+
+    @property
+    def total_households_column_name(self):
+        return self._total_households_column_name
+
     def __init__(self, gtamodel_popsyn_instance):
         super().__init__(gtamodel_popsyn_instance)
         self._internal_zone_range: pd.Series = pd.Series()
         self._external_zone_range: pd.Series = pd.Series()
+        self._total_population_column_name = self._config['TotalPopulationColumnName'] or 'totpop'
+        self._total_households_column_name = self._config['TotalHouseholdsColumnName'] or 'tothh'
 
     def initialize(self):
         """
