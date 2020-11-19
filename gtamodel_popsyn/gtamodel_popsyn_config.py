@@ -32,8 +32,8 @@ class GTAModelPopSynConfig(GTAModelPopSynProcessor):
         super().__init__(gtamodel_popsyn_instance)
         self._internal_zone_range: pd.Series = pd.Series()
         self._external_zone_range: pd.Series = pd.Series()
-        self._total_population_column_name = self._config['TotalPopulationColumnName'] or 'totpop'
-        self._total_households_column_name = self._config['TotalHouseholdsColumnName'] or 'tothh'
+        self._total_population_column_name = self._config.get('TotalPopulationColumnName', False) or 'totpop'
+        self._total_households_column_name = self._config.get('TotalHouseholdsColumnName', False) or 'tothh'
 
     def initialize(self):
         """

@@ -1,3 +1,4 @@
+from io import TextIOWrapper
 from shutil import copyfile
 
 import pandas as pd
@@ -24,17 +25,12 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
     def _sum_column_range(group, column, value, value2, weight='weighth'):
         return group[(group[column] >= value) & (group[column] <= value2)][weight].sum()
 
-    def __init__(self, gtamodel_popsyn_instance, population_vector_file: str = None):
+    def __init__(self, gtamodel_popsyn_instance):
         """
 
         :param gtamodel_popsyn_instance:
-        :param population_vector_file:
         """
         GTAModelPopSynProcessor.__init__(self, gtamodel_popsyn_instance)
-        self._population_vector = None
-
-        if population_vector_file is not None:
-            self._population_vector = pd.read_csv(population_vector_file, index_col=0)
         self._zones = pd.DataFrame()
         self._age_bin_columns = []
         for age_bin in AGE_BINS:
@@ -61,6 +57,26 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
         self._controls['totalhh'] = hh_group.weighth.sum()
 
         return
+
+    def apply_population_vector(self, maz_file: str, taz_file: str, meta_file: str,
+                                population_vector: TextIOWrapper):
+        """
+        Applies a population vector to an existing set of controls. Population and households
+        and other control data existing in the config file are scaled by the population differences.
+
+        Where base year data is missing, a value will be generated from the averages of nearby
+        zones.
+        @param population_vector:
+        @param maz_file:
+        @param taz_file:
+        @param meta_file:
+        @return:
+        """
+        maz: pd.DataFrame = pd.read_csv(maz_file)
+        taz: pd.DataFrame = pd.read_csv(taz_file)
+        meta: pd.DataFrame = pd.read_csv(meta_file)
+        vector: pd.DataFrame = pd.read_csv(population_vector)
+        return maz, taz, meta
 
     def _process_population_total(self, persons_group):
         """

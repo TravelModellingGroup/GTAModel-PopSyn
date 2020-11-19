@@ -1,6 +1,8 @@
 import datetime
 import os
 import subprocess
+from io import TextIOWrapper
+
 from logzero import setup_logger
 from gtamodel_popsyn._database_processor import DatabaseProcessor
 from gtamodel_popsyn.control_totals_builder import ControlTotalsBuilder
@@ -43,7 +45,7 @@ class GTAModelPopSyn(object):
 
     def __init__(self, config, arguments, start_time=datetime.datetime.now(), name=None, output_path=None,
                  make_output=True,
-                 percent_populations: list = None, population_vector_file: str = None):
+                 percent_populations: list = None, population_vector: TextIOWrapper = None):
         """
         Initializes GTAModelPopSyn class responsible for building control totals and
         processing the input seed data.
@@ -54,40 +56,31 @@ class GTAModelPopSyn(object):
         self._config = config
         self._start_time = start_time
         self._name = name
-        self._population_vector_file = population_vector_file
+        self._population_vector = population_vector
         self._columns = []
-
-
 
         if percent_populations is None:
             self._percent_populations = [1.0]
         else:
             self._percent_populations = percent_populations
-
-        #    os.makedirs(f'{config["OutputFolder"]}/{start_time:%Y-%m-%d_%H-%M}/', exist_ok=True)
-        # self._output_path = f'{self._config["OutputFolder"]}/{self._start_time:%Y-%m-%d_%H-%M}' if output_path is None else output_path
-        # self._logger = setup_logger(name='gtamodel',
-        #                       logfile=f'{self._output_path}/gtamodel_popsyn.log')
-        # self._logger.info(f'GTAModel PopSyn')
-        # self._arguments = arguments
-
-        # iterate over percent_population and perform a run
-
         for percent_population in self._percent_populations:
             if make_output:
                 os.makedirs(
-                    f'{config["OutputFolder"]}/{(self._name + "_") if name else ""}{start_time:%Y-%m-%d_%H-%M}_{percent_population}/',
+                    f'{config["OutputFolder"]}/{(self._name + "_") if name else ""}'
+                    f'{start_time:%Y-%m-%d_%H-%M}_{percent_population}/',
                     exist_ok=True)
 
             self._arguments = arguments
-            self._output_path = f'{self._config["OutputFolder"]}/{(self._name + "_") if name else ""}{self._start_time:%Y-%m-%d_%H-%M}_{percent_population}' if output_path is None else output_path
+            self._output_path = f'{self._config["OutputFolder"]}/{(self._name + "_") if name else ""}' \
+                                f'{self._start_time:%Y-%m-%d_%H-%M}_' \
+                                f'{percent_population}' if output_path is None else output_path
             self._logger = setup_logger(name='gtamodel', logfile=f'{self._output_path}/gtamodel_popsyn.log')
             self._logger.info(f'GTAModel PopSyn')
             self._popsyn_config = GTAModelPopSynConfig(self)
             self._popsyn_config.initialize()
             self._summary_report = ValidationReport(self)
             self._summary_report.popsyn_config = self._popsyn_config
-            self._control_totals_builder = ControlTotalsBuilder(self, population_vector_file)
+            self._control_totals_builder = ControlTotalsBuilder(self)
             self._control_totals_builder.popsyn_config = self._popsyn_config
             self._input_processor = InputProcessor(self, self._control_totals_builder)
             self._input_processor.popsyn_config = self._popsyn_config
@@ -98,7 +91,7 @@ class GTAModelPopSyn(object):
 
         os.makedirs(f'{self._output_path}/Inputs/', exist_ok=True)
         self._popsyn_config = GTAModelPopSynConfig(self)
-
+        self._copy_config_files()
         return
 
     def generate_summary_report(self):
@@ -113,21 +106,46 @@ class GTAModelPopSyn(object):
         self._logger.info('Summary report has been generated.')
 
     def generate_outputs(self, use_saved: bool = False,
-                         merge_outputs: list = []):
+                         merge_outputs=None):
         """
         Generates output files with the synthesized population and other 
         various population vectors required by the
         GTAModel population input.
         :return:
         """
+        if merge_outputs is None:
+            merge_outputs = []
         self._logger.info('Generating population synthesis outputs.')
         self._output_processor.generate_outputs(use_saved, merge_outputs)
         self._logger.info('Output generation has completed processing')
 
-    def initialize_database_with_controls(self, maz, taz, meta, gen_puma=False):
-        self._logger.info('Initializing database.')
-        self._database_processor.initialize_database_with_control_files(maz, taz, meta, gen_puma)
-        self._logger.info('Database initialization has completed.')
+    def _copy_config_files(self):
+        import json
+        with open(self._output_path + '/config.json', 'w') as outfile:
+            json.dump(self._config, outfile)
+
+    def initialize_database_with_controls(self, maz_file: str, taz_file: str, meta_file: str, gen_puma=False):
+        """
+        Initializes the database using control totals passed from an already existing set of files.
+        If a population vector is also used in the procedure, it will be applied before the controls
+        are moved to to the database.
+        @param maz_file:
+        @param taz_file:
+        @param meta_file:
+        @param gen_puma:
+        @return:
+        """
+        import pandas as pd
+        self._logger.info('Initializing database with file controls.')
+        if self._population_vector is not None:
+            # apply forecast / population vector changes in place
+            self._logger.info('Applying population vector to control totals.')
+            (maz, taz, meta) = self._control_totals_builder.apply_population_vector(
+                maz_file, taz_file, meta_file, self._population_vector)
+            self._database_processor.initialize_database_with_control_files(maz, taz, meta, gen_puma)
+        else:
+            self._database_processor.initialize_database_with_control_files(maz_file, taz_file, meta_file, gen_puma)
+        self._logger.info('Database and control initialization has completed.')
         return
 
     def initialize_database(self, persons=None, households=None):
@@ -201,7 +219,7 @@ class GTAModelPopSyn(object):
         # run popsyn3 subprocess
         self._logger.info('PopSyn3 execution started.')
 
-        popsyn_args = [f'{self._config["Java64Path"]}/bin/java', "-showversion", '-server', '-Xms10000m', '-Xmx16000m',
+        popsyn_args = [f'{self._config["Java64Path"]}/bin/java', "-showversion", '-server', '-Xms10000m', '-Xmx20000m',
                        '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005',
                        f'-XX:ErrorFile={self._output_path}/java_error%p.log',
                        '-cp', ';'.join(classpaths), '-Djppf.config=jppf-clientLocal.properties',
@@ -212,7 +230,7 @@ class GTAModelPopSyn(object):
         self._logger.info(popsyn_args)
         p = subprocess.run(popsyn_args, shell=True)
         if p.returncode != 0:
-            self._logger.error("Error occured in PopSyn3")
+            self._logger.error("Error occurred in PopSyn3")
 
         self._logger.info(p.stdout)
         self._logger.error(p.stderr)

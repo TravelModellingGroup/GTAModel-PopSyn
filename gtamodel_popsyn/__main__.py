@@ -2,12 +2,7 @@ import sys
 import argparse
 import json
 import datetime
-import os
-# parse input arguments
-from collections import defaultdict
-
-from logzero import logger, setup_logger
-
+from logzero import logger
 from gtamodel_popsyn.gtamodel_popsyn import GTAModelPopSyn
 
 parser = argparse.ArgumentParser()
@@ -34,7 +29,8 @@ parser.add_argument('-s', '--saved-output',
 parser.add_argument('-r', '--validation-report-only',
                     required=False,
                     action="store",
-                    help="Only generate a summary report from existing output files. Pass the generated output folder to use.")
+                    help='Only generate a summary report from existing output files. '
+                         'Pass the generated output folder to use.')
 
 parser.add_argument('-p', '--percent-population',
                     required=False,
@@ -66,6 +62,12 @@ parser.add_argument('-T', '--use-file-controls',
                     action="store",
                     metavar=('maz_controls', 'taz_controls', 'meta_controls'),
                     nargs=3)
+parser.add_argument('-f', '--forecast-population',
+                    required=False,
+                    action="store",
+                    type=argparse.FileType('r'),
+                    help='Scale input controls to match a population vector. '
+                         'Assumes two columns, zone and total population.')
 parser.add_argument('-g', '--generate-pumas',
                     required=False,
                     action="store_true",
@@ -80,7 +82,8 @@ parser.add_argument('-m', '--merge-output',
                     action="store",
                     nargs=2,
                     metavar=('households_file', 'persons_file'),
-                    help='Merge and (merge) multiple household and persons file when generating the output. Must be used with -u')
+                    help='Merge and (merge) multiple household and persons file when generating the output. '
+                         'Must be used with -u')
 
 args = parser.parse_args()
 
@@ -102,7 +105,8 @@ elif args.use_database_controls:
     gtamodel_popsyn.post_input_run()
 
 elif args.use_file_controls:
-    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, name=args.name)
+    gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, name=args.name,
+                                     population_vector=args.forecast_population or None)
     gtamodel_popsyn.generate_inputs(False)
     gtamodel_popsyn.initialize_database_with_controls(args.use_file_controls[0],
                                                       args.use_file_controls[1],
@@ -131,12 +135,10 @@ elif args.validation_report_only:
                                      make_output=False)
     gtamodel_popsyn.generate_summary_report()
 
-
-
 else:
     gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time,
                                      percent_populations=[args.percent_population], name=args.name,
-                                     population_vector_file=args.population_vector_file)
+                                     population_vector=args.forecast_population or None)
     gtamodel_popsyn.run()
 
 # generating full report
