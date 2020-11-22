@@ -16,6 +16,7 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
 
     PANDAS_DTYPE_SQL_TYPE = {
         'int64': Integer,
+        'int32': Integer,
         'float64': FLOAT,
         'float32': FLOAT,
         'object': VARCHAR(1)
@@ -60,6 +61,18 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
         """
         self._init_connection()
         self.initialize_control_tables_from_file(maz, taz, meta, gen_puma)
+        self._initialize_record_tables(None, None)
+        self._connection.close()
+
+    def initialize_database_with_existing_controls(self, maz: pd.DataFrame, taz: pd.DataFrame, meta: pd.DataFrame):
+        """
+
+        @param maz:
+        @param taz:
+        @param meta:
+        """
+        self._init_connection()
+        self.initialize_control_tables_from_existing(maz, taz, meta)
         self._initialize_record_tables(None, None)
         self._connection.close()
 
@@ -137,6 +150,7 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
         @param meta_controls_file:
         """
         self._logger.info("Copying control files to output directory")
+
         copyfile(maz_controls_file, f"{self._output_path}/Inputs/{self._config['MazLevelControls']}")
         copyfile(taz_controls_file, f"{self._output_path}/Inputs/{self._config['TazLevelControls']}")
         copyfile(meta_controls_file, f"{self._output_path}/Inputs/{self._config['MetaLevelControls']}")
@@ -144,6 +158,21 @@ class DatabaseProcessor(GTAModelPopSynProcessor):
         taz_controls = pd.read_csv(f"{taz_controls_file}")
         meta_controls = pd.read_csv(f"{meta_controls_file}")
         self._initialize_control_tables(maz_controls, taz_controls, meta_controls)
+
+    def initialize_control_tables_from_existing(self, maz_controls_file, taz_controls_file, meta_controls_file,
+                                                gen_puma=False):
+        """
+        Load control files into database based on passed files.
+        @param maz_controls_file:
+        @param taz_controls_file:
+        @param meta_controls_file:
+        """
+        self._logger.info("Copying control files to output directory")
+
+        maz_controls_file.to_csv(f"{self._output_path}/Inputs/{self._config['MazLevelControls']}", index=False)
+        taz_controls_file.to_csv(f"{self._output_path}/Inputs/{self._config['TazLevelControls']}", index=False)
+        meta_controls_file.to_csv(f"{self._output_path}/Inputs/{self._config['MetaLevelControls']}", index=False)
+        self._initialize_control_tables(maz_controls_file, taz_controls_file, meta_controls_file)
 
     def _generate_puma_values(self, population: list):
         """

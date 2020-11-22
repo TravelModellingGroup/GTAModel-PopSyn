@@ -76,10 +76,7 @@ class InputProcessor(GTAModelPopSynProcessor):
         """
         Process the input zones file and fill missing (intermediate) zone ids with a 0 population
         """
-        self._zones = pd.read_csv(self._config['Zones'],
-                                  dtype={'Zone': int, 'PD': int})[['Zone', 'PD']]
-
-        self._zones = self._zones.sort_values(['PD', 'Zone']).reset_index()
+        self._zones = self.popsyn_config.zone_pd_map.copy()
         zone_list = self._zones['Zone'].to_list()
         missing_zones = self._find_missing(zone_list)
 
@@ -88,7 +85,6 @@ class InputProcessor(GTAModelPopSynProcessor):
 
         # sort ids
         zone_list.sort()
-
         return
 
     def _read_persons_households(self):
@@ -175,7 +171,7 @@ class InputProcessor(GTAModelPopSynProcessor):
         self._zones['puma'] = 0
         pd_ranges = []
         for r in self._config['PdGroups']:
-            pd_ranges.append(range(r[0], r[1] + 1))
+            pd_ranges.append(range(r[0], r[1]))
 
         for index, pd_range in enumerate(pd_ranges):
             self._zones.loc[self._zones['PD'].between(pd_range.start, pd_range.stop, inclusive=True), ['puma']] = index + 1

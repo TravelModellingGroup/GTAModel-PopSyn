@@ -142,7 +142,7 @@ class GTAModelPopSyn(object):
             self._logger.info('Applying population vector to control totals.')
             (maz, taz, meta) = self._control_totals_builder.apply_population_vector(
                 maz_file, taz_file, meta_file, self._population_vector)
-            self._database_processor.initialize_database_with_control_files(maz, taz, meta, gen_puma)
+            self._database_processor.initialize_database_with_existing_controls(maz, taz, meta)
         else:
             self._database_processor.initialize_database_with_control_files(maz_file, taz_file, meta_file, gen_puma)
         self._logger.info('Database and control initialization has completed.')
