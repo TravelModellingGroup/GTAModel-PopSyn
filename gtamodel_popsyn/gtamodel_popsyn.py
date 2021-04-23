@@ -219,7 +219,7 @@ class GTAModelPopSyn(object):
         # run popsyn3 subprocess
         self._logger.info('PopSyn3 execution started.')
 
-        popsyn_args = [f'{self._config["Java64Path"]}/bin/java', "-showversion", '-server', '-Xms10000m', '-Xmx20000m',
+        popsyn_args = [f'{self._config["Java64Path"]}/bin/java', "-showversion", '-server', '-Xms14000m', '-Xmx24000m',
                        '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005',
                        f'-XX:ErrorFile={self._output_path}/java_error%p.log',
                        '-cp', ';'.join(classpaths), '-Djppf.config=jppf-clientLocal.properties',

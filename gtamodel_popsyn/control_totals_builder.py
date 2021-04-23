@@ -182,9 +182,10 @@ class ControlTotalsBuilder(GTAModelPopSynProcessor):
             self.popsyn_config.person_control_columns +
             self.popsyn_config.household_control_columns), axis=1, inplace=True)
 
-        maz = maz.astype(int)
-        taz = taz.astype(int)
-        meta = meta.astype(int)
+        import numpy as np
+        maz = maz.apply(np.ceil).astype(int)
+        taz = taz.apply(np.ceil).astype(int)
+        meta = meta.apply(np.ceil).astype(int)
         return maz, taz, meta
 
     def _map_control_puma_values(self, maz: pd.DataFrame, taz: pd.DataFrame):

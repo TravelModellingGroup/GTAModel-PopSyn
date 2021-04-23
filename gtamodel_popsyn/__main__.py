@@ -129,6 +129,7 @@ elif args.output_only:
     gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, output_path=args.output_only,
                                      make_output=False)
     gtamodel_popsyn.generate_outputs(args.saved_output)
+    gtamodel_popsyn.generate_summary_report()
 
 elif args.validation_report_only:
     gtamodel_popsyn = GTAModelPopSyn(config, args, start_time=start_time, output_path=args.validation_report_only,
